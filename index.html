@@ -1,1845 +1,579 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="theme-color" content="#08080d">
 <title>AnimeHindiZone - Watch Anime in Hindi</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#08080d;
-  color:#fff;
-  min-height:100vh;
-}
-
-a{
-  color:inherit;
-}
-
-/* HEADER */
-
-header{
-  position:sticky;
-  top:0;
-  z-index:1000;
-  background:rgba(10,10,15,.96);
-  border-bottom:1px solid #24242e;
-  backdrop-filter:blur(12px);
-}
-
-.nav{
-  max-width:1250px;
-  margin:auto;
-  min-height:62px;
-  padding:0 20px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.logo{
-  color:#ff3575;
-  text-decoration:none;
-  font-size:20px;
-  font-weight:800;
-  white-space:nowrap;
-}
-
-.nav-links{
-  display:flex;
-  align-items:center;
-  gap:15px;
-}
-
-.nav-links a{
-  text-decoration:none;
-  color:#aaa;
-  font-size:13px;
-}
-
-.nav-links a:hover{
-  color:#fff;
-}
-
-.admin-btn{
-  color:#fff !important;
-  border:1px solid #393944;
-  padding:8px 12px;
-  border-radius:8px;
-  background:transparent;
-}
-
-/* HERO */
-
-.hero{
-  min-height:430px;
-  display:flex;
-  align-items:center;
-
-  background:
-    radial-gradient(
-      circle at 80% 30%,
-      rgba(255,35,105,.20),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 20% 80%,
-      rgba(89,30,100,.18),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #101018,
-      #09090e 65%,
-      #160a12
-    );
-
-  border-bottom:1px solid #1e1e27;
-}
-
-.hero-content{
-  max-width:1250px;
-  width:100%;
-  margin:auto;
-  padding:70px 20px;
-}
-
-.hero-badge{
-  display:inline-block;
-  background:#ff3575;
-  color:white;
-  font-size:10px;
-  font-weight:bold;
-  padding:7px 10px;
-  border-radius:5px;
-  margin-bottom:18px;
-}
-
-.hero h1{
-  font-size:54px;
-  line-height:1.03;
-  max-width:650px;
-  margin-bottom:18px;
-}
-
-.hero h1 span{
-  color:#ff3575;
-}
-
-.hero p{
-  color:#aaa;
-  max-width:620px;
-  line-height:1.7;
-  font-size:14px;
-}
-
-.hero-buttons{
-  display:flex;
-  gap:10px;
-  margin-top:25px;
-  flex-wrap:wrap;
-}
-
-.hero-btn{
-  text-decoration:none;
-  padding:12px 18px;
-  border-radius:7px;
-  font-size:13px;
-  font-weight:bold;
-}
-
-.hero-primary{
-  background:#ff3575;
-  color:#fff;
-}
-
-.hero-secondary{
-  background:#24242e;
-  color:#fff;
-}
-
-/* MAIN */
-
-.container{
-  max-width:1250px;
-  margin:auto;
-  padding:25px 20px 90px;
-}
-
-/* SEARCH */
-
-.search-box{
-  margin-bottom:15px;
-}
-
-.search-box input{
-  width:100%;
-  background:#14141d;
-  border:1px solid #292936;
-  color:#fff;
-  padding:15px 17px;
-  border-radius:9px;
-  outline:none;
-}
-
-.search-box input:focus{
-  border-color:#ff3575;
-}
-
-.search-box input::placeholder{
-  color:#777;
-}
-
-/* GENRES */
-
-.genre-list{
-  display:flex;
-  gap:8px;
-  overflow-x:auto;
-  padding-bottom:8px;
-  margin-bottom:28px;
-}
-
-.genre-list::-webkit-scrollbar{
-  height:3px;
-}
-
-.genre-chip{
-  flex:none;
-  background:#15151e;
-  color:#aaa;
-  border:1px solid #292936;
-  padding:8px 14px;
-  border-radius:20px;
-  font-size:11px;
-  cursor:pointer;
-}
-
-.genre-chip.active{
-  background:#ff3575;
-  color:#fff;
-  border-color:#ff3575;
-}
-
-/* TELEGRAM */
-
-.telegram-banner{
-  background:linear-gradient(100deg,#178ac0,#207eb3);
-  border-radius:12px;
-  padding:16px 18px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-  margin-bottom:35px;
-}
-
-.telegram-left{
-  display:flex;
-  align-items:center;
-  gap:13px;
-}
-
-.telegram-icon{
-  font-size:27px;
-}
-
-.telegram-banner h3{
-  font-size:14px;
-  margin-bottom:4px;
-}
-
-.telegram-banner p{
-  font-size:11px;
-  color:#d9f2ff;
-}
-
-.join-btn{
-  background:#fff;
-  color:#1679aa;
-  text-decoration:none;
-  padding:9px 15px;
-  border-radius:7px;
-  font-weight:bold;
-  font-size:11px;
-}
-
-/* SECTION */
-
-.section{
-  margin-bottom:40px;
-  scroll-margin-top:80px;
-}
-
-.section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:17px;
-}
-
-.section-title h2{
-  font-size:20px;
-}
-
-.section-title h2 span{
-  color:#ff3575;
-}
-
-/* GRID */
-
-.anime-grid{
-  display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
-  gap:15px;
-}
-
-.anime-card{
-  background:#13131b;
-  border:1px solid #262630;
-  border-radius:10px;
-  overflow:hidden;
-  min-width:0;
-  transition:.2s;
-}
-
-.anime-card:hover{
-  transform:translateY(-4px);
-  border-color:#ff3575;
-  box-shadow:0 10px 30px rgba(0,0,0,.35);
-}
-
-.poster-wrap{
-  position:relative;
-  aspect-ratio:2/3;
-  background:#20202a;
-  overflow:hidden;
-}
-
-.poster-wrap img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-.status{
-  position:absolute;
-  top:8px;
-  left:8px;
-  background:#ff3575;
-  color:#fff;
-  font-size:8px;
-  padding:5px 7px;
-  border-radius:4px;
-  font-weight:bold;
-}
-
-.view-badge{
-  position:absolute;
-  right:7px;
-  bottom:7px;
-  background:rgba(0,0,0,.75);
-  padding:5px 7px;
-  border-radius:5px;
-  font-size:9px;
-  color:#ddd;
-}
-
-.card-body{
-  padding:10px;
-}
-
-.card-title{
-  font-size:12px;
-  font-weight:bold;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  margin-bottom:7px;
-}
-
-.card-meta{
-  color:#777;
-  font-size:9px;
-  min-height:25px;
-  line-height:1.4;
-}
-
-.card-actions{
-  display:flex;
-  gap:5px;
-  margin-top:9px;
-}
-
-.watch-btn{
-  flex:1;
-  background:#ff3575;
-  color:#fff;
-  text-decoration:none;
-  text-align:center;
-  padding:8px 5px;
-  border-radius:6px;
-  font-size:9px;
-  font-weight:bold;
-}
-
-.list-btn{
-  background:#272731;
-  color:#fff;
-  border:none;
-  padding:0 9px;
-  border-radius:6px;
-  cursor:pointer;
-  font-size:11px;
-}
-
-/* SCHEDULE */
-
-.schedule-list{
-  display:flex;
-  flex-direction:column;
-  gap:9px;
-}
-
-.schedule-item{
-  background:#13131b;
-  border:1px solid #292936;
-  border-radius:9px;
-  padding:13px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
-}
-
-.schedule-name{
-  font-weight:bold;
-  font-size:13px;
-}
-
-.schedule-episode{
-  color:#888;
-  font-size:11px;
-  margin-top:4px;
-}
-
-.schedule-time{
-  color:#ff3575;
-  font-size:11px;
-  white-space:nowrap;
-}
-
-/* MESSAGE */
-
-.message{
-  background:#12121a;
-  border:1px solid #292936;
-  border-radius:10px;
-  padding:30px;
-  text-align:center;
-  color:#888;
-  grid-column:1/-1;
-}
-
-/* FOOTER */
-
-footer{
-  border-top:1px solid #24242e;
-  padding:25px 20px;
-  text-align:center;
-  color:#666;
-  font-size:11px;
-}
-
-/* TOAST */
-
-.toast{
-  position:fixed;
-  left:50%;
-  bottom:85px;
-  transform:translateX(-50%) translateY(20px);
-  background:#20202a;
-  border:1px solid #383844;
-  color:#fff;
-  padding:11px 16px;
-  border-radius:8px;
-  font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  transition:.25s;
-  z-index:5000;
-}
-
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
-
-/* MOBILE NAV */
-
-.bottom-nav{
-  display:none;
-}
-
-/* RESPONSIVE */
-
-@media(max-width:1050px){
-
-  .anime-grid{
-    grid-template-columns:repeat(4,minmax(0,1fr));
-  }
-
-}
-
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:Arial,Helvetica,sans-serif;background:#08080d;color:#fff;min-height:100vh}
+a{color:inherit}
+header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,.96);border-bottom:1px solid #24242e;backdrop-filter:blur(12px)}
+.nav{max-width:1250px;margin:auto;min-height:62px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.logo{color:#ff3575;text-decoration:none;font-size:20px;font-weight:800;white-space:nowrap}
+.nav-links{display:flex;align-items:center;gap:15px}
+.nav-links a{text-decoration:none;color:#aaa;font-size:13px}
+.nav-links a:hover{color:#fff}
+.admin-btn{color:#fff!important;border:1px solid #393944;padding:8px 12px;border-radius:8px;background:transparent}
+.hero{min-height:430px;display:flex;align-items:center;background:radial-gradient(circle at 80% 30%,rgba(255,35,105,.20),transparent 35%),radial-gradient(circle at 20% 80%,rgba(89,30,100,.18),transparent 35%),linear-gradient(135deg,#101018,#09090e 65%,#160a12);border-bottom:1px solid #1e1e27}
+.hero-content{max-width:1250px;width:100%;margin:auto;padding:70px 20px}
+.hero-badge{display:inline-block;background:#ff3575;color:white;font-size:10px;font-weight:bold;padding:7px 10px;border-radius:5px;margin-bottom:18px}
+.hero h1{font-size:54px;line-height:1.03;max-width:650px;margin-bottom:18px}
+.hero h1 span{color:#ff3575}
+.hero p{color:#aaa;max-width:620px;line-height:1.7;font-size:14px}
+.hero-buttons{display:flex;gap:10px;margin-top:25px;flex-wrap:wrap}
+.hero-btn{text-decoration:none;padding:12px 18px;border-radius:7px;font-size:13px;font-weight:bold}
+.hero-primary{background:#ff3575;color:#fff}
+.hero-secondary{background:#24242e;color:#fff}
+.container{max-width:1250px;margin:auto;padding:25px 20px 90px}
+.search-box{margin-bottom:15px}
+.search-box input{width:100%;background:#14141d;border:1px solid #292936;color:#fff;padding:15px 17px;border-radius:9px;outline:none}
+.search-box input:focus{border-color:#ff3575}
+.search-box input::placeholder{color:#777}
+.genre-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:28px}
+.genre-list::-webkit-scrollbar{height:3px}
+.genre-chip{flex:none;background:#15151e;color:#aaa;border:1px solid #292936;padding:8px 14px;border-radius:20px;font-size:11px;cursor:pointer}
+.genre-chip.active{background:#ff3575;color:#fff;border-color:#ff3575}
+.telegram-banner{background:linear-gradient(100deg,#178ac0,#207eb3);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:35px}
+.telegram-left{display:flex;align-items:center;gap:13px}
+.telegram-icon{font-size:27px}
+.telegram-banner h3{font-size:14px;margin-bottom:4px}
+.telegram-banner p{font-size:11px;color:#d9f2ff}
+.join-btn{background:#fff;color:#1679aa;text-decoration:none;padding:9px 15px;border-radius:7px;font-weight:bold;font-size:11px}
+.section{margin-bottom:40px;scroll-margin-top:80px}
+.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
+.section-title h2{font-size:20px}
+.section-title h2 span{color:#ff3575}
+.anime-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:15px}
+.anime-card{background:#13131b;border:1px solid #262630;border-radius:10px;overflow:hidden;min-width:0;transition:.2s}
+.anime-card:hover{transform:translateY(-4px);border-color:#ff3575;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.poster-wrap{position:relative;aspect-ratio:2/3;background:#20202a;overflow:hidden}
+.poster-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.status{position:absolute;top:8px;left:8px;background:#ff3575;color:#fff;font-size:8px;padding:5px 7px;border-radius:4px;font-weight:bold}
+.view-badge{position:absolute;right:7px;bottom:7px;background:rgba(0,0,0,.75);padding:5px 7px;border-radius:5px;font-size:9px;color:#ddd}
+.card-body{padding:10px}
+.card-title{font-size:12px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
+.card-meta{color:#777;font-size:9px;min-height:25px;line-height:1.4}
+.card-actions{display:flex;gap:5px;margin-top:9px}
+.watch-btn{flex:1;background:#ff3575;color:#fff;text-decoration:none;text-align:center;padding:8px 5px;border-radius:6px;font-size:9px;font-weight:bold}
+.list-btn{background:#272731;color:#fff;border:none;padding:0 9px;border-radius:6px;cursor:pointer;font-size:11px}
+.schedule-list{display:flex;flex-direction:column;gap:9px}
+.schedule-item{background:#13131b;border:1px solid #292936;border-radius:9px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.schedule-name{font-weight:bold;font-size:13px}
+.schedule-episode{color:#888;font-size:11px;margin-top:4px}
+.schedule-time{color:#ff3575;font-size:11px;white-space:nowrap}
+.message{background:#12121a;border:1px solid #292936;border-radius:10px;padding:30px;text-align:center;color:#888;grid-column:1/-1;overflow-wrap:anywhere}
+footer{border-top:1px solid #24242e;padding:25px 20px;text-align:center;color:#666;font-size:11px}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%) translateY(20px);background:#20202a;border:1px solid #383844;color:#fff;padding:11px 16px;border-radius:8px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:5000;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.bottom-nav{display:none}
+@media(max-width:1050px){.anime-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:750px){
-
-  .nav{
-    min-height:58px;
-    padding:0 14px;
-  }
-
-  .logo{
-    font-size:17px;
-  }
-
-  .nav-links{
-    gap:5px;
-  }
-
-  .nav-links a{
-    display:none;
-  }
-
-  .nav-links .admin-btn{
-    display:block;
-    padding:6px 8px;
-    font-size:9px;
-  }
-
-  .hero{
-    min-height:360px;
-  }
-
-  .hero-content{
-    padding:55px 18px;
-  }
-
-  .hero h1{
-    font-size:39px;
-  }
-
-  .hero p{
-    font-size:12px;
-  }
-
-  .container{
-    padding:20px 12px 90px;
-  }
-
-  .anime-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:12px;
-  }
-
-  .telegram-banner{
-    padding:14px;
-  }
-
-  .telegram-banner p{
-    display:none;
-  }
-
-  .join-btn{
-    padding:8px 10px;
-  }
-
-  .schedule-item{
-    align-items:flex-start;
-    flex-direction:column;
-    gap:6px;
-  }
-
-  .schedule-time{
-    white-space:normal;
-  }
-
-  .bottom-nav{
-    position:fixed;
-    left:0;
-    right:0;
-    bottom:0;
-    height:64px;
-    background:rgba(13,13,19,.98);
-    border-top:1px solid #292936;
-    display:flex;
-    align-items:center;
-    justify-content:space-around;
-    z-index:3000;
-    padding-bottom:env(safe-area-inset-bottom);
-  }
-
-  .bottom-nav a{
-    text-decoration:none;
-    color:#777;
-    font-size:9px;
-    text-align:center;
-  }
-
-  .bottom-nav a.active{
-    color:#ff3575;
-  }
-
-  .bottom-nav span{
-    display:block;
-    font-size:17px;
-    margin-bottom:3px;
-  }
-
+.nav{min-height:58px;padding:0 14px}.logo{font-size:17px}.nav-links{gap:5px}
+.nav-links a{display:none}.nav-links .admin-btn{display:block;padding:6px 8px;font-size:9px}
+.hero{min-height:360px}.hero-content{padding:55px 18px}.hero h1{font-size:39px}.hero p{font-size:12px}
+.container{padding:20px 12px 90px}.anime-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.telegram-banner{padding:14px}.telegram-banner p{display:none}.join-btn{padding:8px 10px}
+.schedule-item{align-items:flex-start;flex-direction:column;gap:6px}.schedule-time{white-space:normal}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;min-height:64px;background:rgba(13,13,19,.98);border-top:1px solid #292936;display:flex;align-items:center;justify-content:space-around;z-index:3000;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav a{text-decoration:none;color:#777;font-size:9px;text-align:center}
+.bottom-nav a.active{color:#ff3575}.bottom-nav span{display:block;font-size:17px;margin-bottom:3px}
 }
-
 </style>
-
 </head>
 
 <body>
-
-<!-- HEADER -->
-
 <header>
-
   <div class="nav">
-
-    <a href="index.html" class="logo">
-      🔥 AnimeHindiZone
-    </a>
-
+    <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
     <nav class="nav-links">
-
       <a href="#home">Home</a>
-
       <a href="#latest">Latest</a>
-
       <a href="#top">Popular</a>
-
       <a href="#schedule">Schedule</a>
-
       <a href="#mylist">My List</a>
-
-      <a
-        href="admin.html"
-        class="admin-btn"
-      >
-        Admin
-      </a>
-
+      <a href="admin.html" class="admin-btn">Admin</a>
     </nav>
-
   </div>
-
 </header>
 
-
-<!-- HERO -->
-
 <section id="home" class="hero">
-
   <div class="hero-content">
-
-    <span class="hero-badge">
-      ANIMEHINDIZONE
-    </span>
-
-    <h1>
-      Watch Anime
-      <span>in Hindi</span>
-    </h1>
-
-    <p>
-      Watch the latest anime, discover new series,
-      check upcoming episodes and keep your favourite
-      anime in your personal list.
-    </p>
-
+    <span class="hero-badge">ANIMEHINDIZONE</span>
+    <h1>Watch Anime <span>in Hindi</span></h1>
+    <p>Watch the latest anime, discover new series, check upcoming episodes and keep your favourite anime in your personal list.</p>
     <div class="hero-buttons">
-
-      <a
-        href="#latest"
-        class="hero-btn hero-primary"
-      >
-        ▶ Explore Anime
-      </a>
-
-      <a
-        href="#schedule"
-        class="hero-btn hero-secondary"
-      >
-        📅 Schedule
-      </a>
-
+      <a href="#allAnime" class="hero-btn hero-primary">▶ Explore Anime</a>
+      <a href="#schedule" class="hero-btn hero-secondary">📅 Schedule</a>
     </div>
-
   </div>
-
 </section>
 
-
-<!-- MAIN -->
-
 <main class="container">
-
-  <!-- SEARCH -->
-
   <div class="search-box">
-
-    <input
-      type="text"
-      id="searchInput"
-      placeholder="🔍 Search anime..."
-    >
-
+    <input type="text" id="searchInput" placeholder="🔍 Search anime..." autocomplete="off">
   </div>
 
-
-  <!-- GENRES -->
-
-  <div
-    id="genreList"
-    class="genre-list"
-  >
-
-    <button
-      class="genre-chip active"
-      data-genre="all"
-    >
-      All
-    </button>
-
+  <div id="genreList" class="genre-list">
+    <button class="genre-chip active" data-genre="all">All</button>
   </div>
-
-
-  <!-- TELEGRAM -->
 
   <div class="telegram-banner">
-
     <div class="telegram-left">
-
-      <div class="telegram-icon">
-        ✈️
-      </div>
-
+      <div class="telegram-icon">✈️</div>
       <div>
-
-        <h3>
-          Join AnimeHindiZone Telegram
-        </h3>
-
-        <p>
-          New anime & episode updates directly on Telegram.
-        </p>
-
+        <h3>Join AnimeHindiZone Telegram</h3>
+        <p>New anime &amp; episode updates directly on Telegram.</p>
       </div>
-
     </div>
-
-    <a
-      href="https://t.me/Anime_hindizone"
-      target="_blank"
-      rel="noopener noreferrer"
-      class="join-btn"
-    >
-      JOIN
-    </a>
-
+    <a href="https://t.me/Anime_hindizone" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN</a>
   </div>
 
-
-  <!-- TRENDING -->
+  <!-- NEW: ALL ANIME -->
+  <section id="allAnime" class="section">
+    <div class="section-title"><h2>🎬 All Anime</h2></div>
+    <div id="allAnimeGrid" class="anime-grid">
+      <div class="message">Anime load ho rahe hain...</div>
+    </div>
+  </section>
 
   <section id="top" class="section">
-
-    <div class="section-title">
-
-      <h2>
-        🔥 Trending Now
-      </h2>
-
+    <div class="section-title"><h2>🔥 Trending Now</h2></div>
+    <div id="topGrid" class="anime-grid">
+      <div class="message">Trending anime load ho rahe hain...</div>
     </div>
-
-    <div
-      id="topGrid"
-      class="anime-grid"
-    >
-
-      <div class="message">
-        Trending anime load ho rahe hain...
-      </div>
-
-    </div>
-
   </section>
-
-
-  <!-- LATEST -->
 
   <section id="latest" class="section">
-
-    <div class="section-title">
-
-      <h2>
-        🆕 Latest Episodes
-      </h2>
-
+    <div class="section-title"><h2>🆕 Latest Episodes</h2></div>
+    <div id="latestGrid" class="anime-grid">
+      <div class="message">Anime load ho rahe hain...</div>
     </div>
-
-    <div
-      id="latestGrid"
-      class="anime-grid"
-    >
-
-      <div class="message">
-        Anime load ho rahe hain...
-      </div>
-
-    </div>
-
   </section>
 
-
-  <!-- RECENT -->
-
-  <section class="section">
-
-    <div class="section-title">
-
-      <h2>
-        ✨ Recently Added
-      </h2>
-
+  <section id="recent" class="section">
+    <div class="section-title"><h2>✨ Recently Added</h2></div>
+    <div id="recentGrid" class="anime-grid">
+      <div class="message">Loading...</div>
     </div>
-
-    <div
-      id="recentGrid"
-      class="anime-grid"
-    >
-
-      <div class="message">
-        Loading...
-      </div>
-
-    </div>
-
   </section>
-
-
-  <!-- MY LIST -->
 
   <section id="mylist" class="section">
-
-    <div class="section-title">
-
-      <h2>
-        ❤️ My List
-      </h2>
-
+    <div class="section-title"><h2>❤️ My List</h2></div>
+    <div id="myListGrid" class="anime-grid">
+      <div class="message">My List load ho rahi hai...</div>
     </div>
-
-    <div
-      id="myListGrid"
-      class="anime-grid"
-    >
-
-      <div class="message">
-        My List load ho rahi hai...
-      </div>
-
-    </div>
-
   </section>
-
-
-  <!-- SCHEDULE -->
 
   <section id="schedule" class="section">
-
-    <div class="section-title">
-
-      <h2>
-        📅 Anime Schedule
-      </h2>
-
+    <div class="section-title"><h2>📅 Anime Schedule</h2></div>
+    <div id="scheduleList" class="schedule-list">
+      <div class="message">Schedule load ho raha hai...</div>
     </div>
-
-    <div
-      id="scheduleList"
-      class="schedule-list"
-    >
-
-      <div class="message">
-        Schedule load ho raha hai...
-      </div>
-
-    </div>
-
   </section>
-
 </main>
 
-
-<!-- FOOTER -->
-
-<footer>
-
-  © 2026 AnimeHindiZone
-
-</footer>
-
-
-<!-- MOBILE NAV -->
+<footer>© 2026 AnimeHindiZone</footer>
 
 <nav class="bottom-nav">
-
-  <a href="#home" class="active">
-    <span>⌂</span>
-    Home
-  </a>
-
-  <a href="#latest">
-    <span>🎬</span>
-    Anime
-  </a>
-
-  <a href="#top">
-    <span>🔥</span>
-    Top
-  </a>
-
-  <a href="#schedule">
-    <span>📅</span>
-    Schedule
-  </a>
-
-  <a href="#mylist">
-    <span>❤️</span>
-    My List
-  </a>
-
-  <a href="admin.html">
-    <span>⚙️</span>
-    Admin
-  </a>
-
+  <a href="#home" class="active"><span>⌂</span>Home</a>
+  <a href="#allAnime"><span>🎬</span>Anime</a>
+  <a href="#top"><span>🔥</span>Top</a>
+  <a href="#schedule"><span>📅</span>Schedule</a>
+  <a href="#mylist"><span>❤️</span>My List</a>
+  <a href="admin.html"><span>⚙️</span>Admin</a>
 </nav>
-
-
-<!-- TOAST -->
 
 <div id="toast" class="toast"></div>
 
-
 <script>
+"use strict";
 
-// =================================
 // SUPABASE
-// =================================
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-const SUPABASE_URL =
-"https://gmacsiymybvfcxydvkla.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-
-// =================================
 // GLOBAL DATA
-// =================================
-
 let animeList = [];
-
 let viewCounts = {};
-
 let myListIds = new Set();
-
 let selectedGenre = "all";
 
+const searchInput = document.getElementById("searchInput");
+const allAnimeGrid = document.getElementById("allAnimeGrid");
+const topGrid = document.getElementById("topGrid");
+const latestGrid = document.getElementById("latestGrid");
+const recentGrid = document.getElementById("recentGrid");
+const myListGrid = document.getElementById("myListGrid");
+const scheduleList = document.getElementById("scheduleList");
+const genreList = document.getElementById("genreList");
+const toast = document.getElementById("toast");
 
-// =================================
-// ELEMENTS
-// =================================
-
-const searchInput =
-document.getElementById("searchInput");
-
-const topGrid =
-document.getElementById("topGrid");
-
-const latestGrid =
-document.getElementById("latestGrid");
-
-const recentGrid =
-document.getElementById("recentGrid");
-
-const myListGrid =
-document.getElementById("myListGrid");
-
-const scheduleList =
-document.getElementById("scheduleList");
-
-const genreList =
-document.getElementById("genreList");
-
-const toast =
-document.getElementById("toast");
-
-
-// =================================
-// TOAST
-// =================================
-
-function showToast(message){
-
+function showToast(message) {
   toast.textContent = message;
-
   toast.classList.add("show");
-
-  setTimeout(() => {
-
-    toast.classList.remove("show");
-
-  },2200);
-
+  setTimeout(() => toast.classList.remove("show"), 2200);
 }
 
-
-// =================================
-// ESCAPE HTML
-// =================================
-
-function escapeHtml(value){
-
-  return String(value || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
+function getAnimeId(anime) {
+  return String(anime.anime_id || anime.id || "");
+}
 
-// =================================
-// LOAD ANIME
-// =================================
+// LOAD ALL ANIME FROM SUPABASE
+async function loadAnime() {
+  allAnimeGrid.innerHTML = '<div class="message">Anime load ho rahe hain...</div>';
 
-async function loadAnime(){
+  const { data, error } = await supabaseClient
+    .from("anime")
+    .select("*")
+    .order("id", { ascending: false });
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("anime")
-      .select("*")
-      .order(
-        "id",
-        {
-          ascending:false
-        }
-      );
-
-  if(error){
-
-    console.error(error);
-
-    latestGrid.innerHTML =
-      `
-      <div class="message">
-        ❌ Anime load failed:
-        ${escapeHtml(error.message)}
-      </div>
-      `;
-
+  if (error) {
+    console.error("Anime load error:", error);
+    const errorHtml = `<div class="message">❌ Anime load nahi ho sake.<br>${escapeHtml(error.message)}<br><br>Supabase mein anime table ki SELECT policy check karo.</div>`;
+    allAnimeGrid.innerHTML = errorHtml;
+    topGrid.innerHTML = errorHtml;
+    latestGrid.innerHTML = errorHtml;
+    recentGrid.innerHTML = errorHtml;
     return;
-
   }
 
-  animeList =
-    data || [];
-
+  animeList = Array.isArray(data) ? data : [];
   buildGenres();
-
   renderAll();
-
 }
 
-
-// =================================
-// LOAD VIEW COUNTS
-// =================================
-
-async function loadViewCounts(){
-
-  try{
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .rpc(
-          "get_anime_view_counts"
-        );
-
-    if(error){
-
-      console.error(
-        "View count error:",
-        error
-      );
-
+// VIEW COUNTS: if RPC is not configured, show zero
+async function loadViewCounts() {
+  try {
+    const { data, error } = await supabaseClient.rpc("get_anime_view_counts");
+    if (error) {
+      console.warn("View counts unavailable:", error.message);
       viewCounts = {};
-
       return;
-
     }
 
     viewCounts = {};
-
-    (data || []).forEach(
-      item => {
-
-        viewCounts[
-          item.anime_id
-        ] =
-          Number(
-            item.view_count || 0
-          );
-
-      }
-    );
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
+    (data || []).forEach(item => {
+      viewCounts[String(item.anime_id)] = Number(item.view_count || 0);
+    });
+  } catch (error) {
+    console.warn("View counts unavailable:", error);
     viewCounts = {};
-
   }
-
 }
 
-
-// =================================
-// LOCAL MY LIST
-// =================================
-
-function loadMyList(){
-
-  try{
-
-    const saved =
-      JSON.parse(
-        localStorage.getItem(
-          "animehindizone_my_list"
-        ) || "[]"
-      );
-
-    myListIds =
-      new Set(
-        saved.map(
-          id => String(id)
-        )
-      );
-
+function loadMyList() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("animehindizone_my_list") || "[]");
+    myListIds = new Set(saved.map(id => String(id)));
+  } catch (error) {
+    console.warn("Could not load My List:", error);
+    myListIds = new Set();
   }
-
-  catch(error){
-
-    console.error(
-      "Local My List error:",
-      error
-    );
-
-    myListIds =
-      new Set();
-
-  }
-
 }
 
-
-// =================================
-// SAVE LOCAL MY LIST
-// =================================
-
-function saveMyList(){
-
-  localStorage.setItem(
-    "animehindizone_my_list",
-    JSON.stringify(
-      Array.from(myListIds)
-    )
-  );
-
+function saveMyList() {
+  try {
+    localStorage.setItem("animehindizone_my_list", JSON.stringify(Array.from(myListIds)));
+  } catch (error) {
+    showToast("My List save nahi ho saki.");
+  }
 }
 
+function toggleMyList(animeId) {
+  animeId = String(animeId);
 
-// =================================
-// ADD / REMOVE MY LIST
-// =================================
-
-function toggleMyList(animeId){
-
-  animeId =
-    String(animeId);
-
-  if(
-    myListIds.has(animeId)
-  ){
-
-    myListIds.delete(
-      animeId
-    );
-
-    showToast(
-      "🗑️ My List se remove ho gaya"
-    );
-
-  }
-
-  else{
-
-    myListIds.add(
-      animeId
-    );
-
-    showToast(
-      "❤️ My List mein add ho gaya"
-    );
-
+  if (myListIds.has(animeId)) {
+    myListIds.delete(animeId);
+    showToast("🗑️ My List se remove ho gaya");
+  } else {
+    myListIds.add(animeId);
+    showToast("❤️ My List mein add ho gaya");
   }
 
   saveMyList();
-
   renderAll();
-
 }
 
+function buildGenres() {
+  const genres = new Set();
 
-// =================================
-// BUILD GENRES
-// =================================
+  animeList.forEach(anime => {
+    String(anime.genre || "")
+      .split(",")
+      .forEach(genre => {
+        const clean = genre.trim();
+        if (clean) genres.add(clean);
+      });
+  });
 
-function buildGenres(){
+  genreList.innerHTML = "";
 
-  const genres =
-    new Set();
+  const allButton = document.createElement("button");
+  allButton.className = "genre-chip";
+  allButton.dataset.genre = "all";
+  allButton.textContent = "All";
+  allButton.addEventListener("click", () => setGenre("all", allButton));
+  genreList.appendChild(allButton);
 
-  animeList.forEach(
-    anime => {
+  Array.from(genres).sort((a, b) => a.localeCompare(b)).slice(0, 20).forEach(genre => {
+    const button = document.createElement("button");
+    button.className = "genre-chip";
+    button.dataset.genre = genre;
+    button.textContent = genre;
+    button.addEventListener("click", () => setGenre(genre, button));
+    genreList.appendChild(button);
+  });
 
-      if(!anime.genre){
-        return;
-      }
+  const selectedButton = Array.from(genreList.querySelectorAll(".genre-chip"))
+    .find(button => button.dataset.genre.toLowerCase() === selectedGenre.toLowerCase());
 
-      anime.genre
-        .split(",")
-        .forEach(
-          genre => {
+  if (selectedButton) {
+    selectedButton.classList.add("active");
+  } else {
+    selectedGenre = "all";
+    allButton.classList.add("active");
+  }
+}
 
-            const clean =
-              genre.trim();
+function setGenre(genre, button) {
+  selectedGenre = genre;
+  genreList.querySelectorAll(".genre-chip").forEach(item => item.classList.remove("active"));
+  button.classList.add("active");
+  renderAll();
+}
 
-            if(clean){
-              genres.add(clean);
-            }
+function getFilteredAnime() {
+  const search = String(searchInput.value || "").trim().toLowerCase();
 
-          }
-        );
+  return animeList.filter(anime => {
+    const title = String(anime.title || "").toLowerCase();
+    const genre = String(anime.genre || "").toLowerCase();
+    const language = String(anime.language || "").toLowerCase();
+    const animeId = getAnimeId(anime).toLowerCase();
 
-    }
-  );
+    const searchMatch = !search ||
+      title.includes(search) ||
+      genre.includes(search) ||
+      language.includes(search) ||
+      animeId.includes(search);
 
-  genreList.innerHTML =
-    `
-    <button
-      class="genre-chip active"
-      data-genre="all"
-    >
-      All
-    </button>
-    `;
+    const genreMatch = selectedGenre === "all" ||
+      genre.split(",").some(item => item.trim() === selectedGenre.toLowerCase());
 
-  Array.from(genres)
-    .slice(0,12)
-    .forEach(
-      genre => {
+    return searchMatch && genreMatch;
+  });
+}
 
-        const button =
-          document.createElement(
-            "button"
-          );
+function createAnimeCard(anime) {
+  const animeId = getAnimeId(anime);
+  const title = anime.title || "Untitled Anime";
+  const thumbnail = anime.thumbnail_url || "";
+  const genre = anime.genre || "Anime";
+  const status = anime.status || "Available";
+  const views = viewCounts[animeId] || 0;
+  const saved = myListIds.has(animeId);
 
-        button.className =
-          "genre-chip";
+  const card = document.createElement("article");
+  card.className = "anime-card";
 
-        button.dataset.genre =
-          genre;
+  const poster = document.createElement("div");
+  poster.className = "poster-wrap";
 
-        button.textContent =
-          genre;
-
-        button.onclick =
-          () => {
-
-            selectedGenre =
-              genre;
-
-            document
-              .querySelectorAll(
-                ".genre-chip"
-              )
-              .forEach(
-                btn =>
-                  btn.classList.remove(
-                    "active"
-                  )
-              );
-
-            button.classList.add(
-              "active"
-            );
-
-            renderAll();
-
-          };
-
-        genreList.appendChild(
-          button
-        );
-
-      }
-    );
-
-  genreList
-    .querySelector(
-      '[data-genre="all"]'
-    )
-    .onclick =
-    () => {
-
-      selectedGenre =
-        "all";
-
-      document
-        .querySelectorAll(
-          ".genre-chip"
-        )
-        .forEach(
-          btn =>
-            btn.classList.remove(
-              "active"
-            )
-        );
-
-      genreList
-        .querySelector(
-          '[data-genre="all"]'
-        )
-        .classList.add(
-          "active"
-        );
-
-      renderAll();
-
+  if (thumbnail) {
+    const image = document.createElement("img");
+    image.src = thumbnail;
+    image.alt = title;
+    image.loading = "lazy";
+    image.onerror = () => {
+      image.remove();
+      const placeholder = document.createElement("div");
+      placeholder.className = "message";
+      placeholder.style.height = "100%";
+      placeholder.textContent = "Image unavailable";
+      poster.prepend(placeholder);
     };
+    poster.appendChild(image);
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "message";
+    placeholder.style.height = "100%";
+    placeholder.textContent = "No Image";
+    poster.appendChild(placeholder);
+  }
 
-}
+  const statusBadge = document.createElement("span");
+  statusBadge.className = "status";
+  statusBadge.textContent = status;
+  poster.appendChild(statusBadge);
 
+  const viewBadge = document.createElement("span");
+  viewBadge.className = "view-badge";
+  viewBadge.textContent = "👁 " + views;
+  poster.appendChild(viewBadge);
 
-// =================================
-// FILTER
-// =================================
+  const body = document.createElement("div");
+  body.className = "card-body";
 
-function getFilteredAnime(){
+  const cardTitle = document.createElement("div");
+  cardTitle.className = "card-title";
+  cardTitle.title = title;
+  cardTitle.textContent = title;
 
-  const search =
-    (
-      searchInput.value ||
-      ""
-    )
-    .trim()
-    .toLowerCase();
+  const meta = document.createElement("div");
+  meta.className = "card-meta";
+  meta.textContent = genre;
 
-  return animeList.filter(
-    anime => {
+  const actions = document.createElement("div");
+  actions.className = "card-actions";
 
-      const title =
-        String(
-          anime.title || ""
-        )
-        .toLowerCase();
+  const details = document.createElement("a");
+  details.className = "watch-btn";
+  details.href = "anime-details.html?id=" + encodeURIComponent(animeId);
+  details.textContent = "▶ Details";
 
-      const genre =
-        String(
-          anime.genre || ""
-        )
-        .toLowerCase();
+  const listButton = document.createElement("button");
+  listButton.className = "list-btn";
+  listButton.type = "button";
+  listButton.title = saved ? "Remove from My List" : "Add to My List";
+  listButton.textContent = saved ? "❤️" : "＋";
+  listButton.addEventListener("click", () => toggleMyList(animeId));
 
-      const searchMatch =
-        !search ||
-        title.includes(search) ||
-        genre.includes(search);
-
-      const genreMatch =
-        selectedGenre === "all" ||
-        genre.includes(
-          selectedGenre.toLowerCase()
-        );
-
-      return (
-        searchMatch &&
-        genreMatch
-      );
-
-    }
-  );
-
-}
-
-
-// =================================
-// CREATE CARD
-// =================================
-
-function createAnimeCard(anime){
-
-  const animeId =
-    String(
-      anime.anime_id ||
-      anime.id ||
-      ""
-    );
-
-  const title =
-    anime.title ||
-    "Untitled Anime";
-
-  const thumbnail =
-    anime.thumbnail_url ||
-    "";
-
-  const genre =
-    anime.genre ||
-    "Anime";
-
-  const status =
-    anime.status ||
-    "Available";
-
-  const views =
-    viewCounts[animeId] || 0;
-
-  const saved =
-    myListIds.has(animeId);
-
-  const card =
-    document.createElement(
-      "article"
-    );
-
-  card.className =
-    "anime-card";
-
-  card.innerHTML =
-    `
-    <div class="poster-wrap">
-
-      ${
-        thumbnail
-        ?
-        `
-        <img
-          src="${escapeHtml(thumbnail)}"
-          alt="${escapeHtml(title)}"
-          loading="lazy"
-        >
-        `
-        :
-        `
-        <div
-          class="message"
-          style="height:100%;padding:20px;"
-        >
-          No Image
-        </div>
-        `
-      }
-
-      <span class="status">
-        ${escapeHtml(status)}
-      </span>
-
-      <span class="view-badge">
-        👁 ${views}
-      </span>
-
-    </div>
-
-    <div class="card-body">
-
-      <div class="card-title">
-        ${escapeHtml(title)}
-      </div>
-
-      <div class="card-meta">
-        ${escapeHtml(genre)}
-      </div>
-
-      <div class="card-actions">
-
-        <a
-          class="watch-btn"
-          href="anime-details.html?id=${encodeURIComponent(animeId)}"
-        >
-          ▶ Details
-        </a>
-
-        <button
-          class="list-btn"
-          onclick="toggleMyList('${escapeHtml(animeId)}')"
-          title="My List"
-        >
-          ${
-            saved
-            ? "❤️"
-            : "＋"
-          }
-        </button>
-
-      </div>
-
-    </div>
-    `;
+  actions.append(details, listButton);
+  body.append(cardTitle, meta, actions);
+  card.append(poster, body);
 
   return card;
-
 }
 
+function renderGrid(element, list, emptyText) {
+  element.replaceChildren();
 
-// =================================
-// RENDER GRID
-// =================================
-
-function renderGrid(
-  element,
-  list,
-  emptyText
-){
-
-  element.innerHTML =
-    "";
-
-  if(
-    !list ||
-    list.length === 0
-  ){
-
-    element.innerHTML =
-      `
-      <div class="message">
-        ${emptyText}
-      </div>
-      `;
-
+  if (!list || list.length === 0) {
+    const message = document.createElement("div");
+    message.className = "message";
+    message.textContent = emptyText;
+    element.appendChild(message);
     return;
-
   }
 
-  list.forEach(
-    anime => {
-
-      element.appendChild(
-        createAnimeCard(anime)
-      );
-
-    }
-  );
-
+  list.forEach(anime => element.appendChild(createAnimeCard(anime)));
 }
 
+// ALL SECTIONS RENDER FROM THE SAME DATABASE LIST
+function renderAll() {
+  const filtered = getFilteredAnime();
 
-// =================================
-// RENDER ALL
-// =================================
-
-function renderAll(){
-
-  const filtered =
-    getFilteredAnime();
-
-  const top =
-    [...filtered]
-      .sort(
-        (a,b) =>
-          (
-            viewCounts[
-              String(
-                b.anime_id ||
-                b.id ||
-                ""
-              )
-            ] || 0
-          )
-          -
-          (
-            viewCounts[
-              String(
-                a.anime_id ||
-                a.id ||
-                ""
-              )
-            ] || 0
-          )
-      )
-      .slice(0,6);
-
+  // All Anime: every matching anime, no six-card limit
   renderGrid(
-    topGrid,
-    top,
-    "Abhi trending anime available nahi hai."
+    allAnimeGrid,
+    filtered,
+    searchInput.value.trim() || selectedGenre !== "all"
+      ? "Is search ya genre mein koi anime nahi mila."
+      : "Supabase anime table mein abhi koi anime nahi hai."
   );
 
-  const latest =
-    filtered.slice(0,6);
+  const top = [...filtered]
+    .sort((a, b) => (viewCounts[getAnimeId(b)] || 0) - (viewCounts[getAnimeId(a)] || 0))
+    .slice(0, 6);
 
-  renderGrid(
-    latestGrid,
-    latest,
-    "Abhi anime available nahi hai."
-  );
+  renderGrid(topGrid, top, "Abhi trending anime available nahi hai.");
 
-  const recent =
-    filtered.slice(0,6);
+  // This section currently shows latest anime records, not episode records.
+  renderGrid(latestGrid, filtered.slice(0, 6), "Abhi anime available nahi hai.");
 
-  renderGrid(
-    recentGrid,
-    recent,
-    "Abhi recently added anime nahi hai."
-  );
+  renderGrid(recentGrid, filtered.slice(0, 6), "Abhi recently added anime nahi hai.");
 
-  const myAnime =
-    animeList.filter(
-      anime =>
-        myListIds.has(
-          String(
-            anime.anime_id ||
-            anime.id ||
-            ""
-          )
-        )
-    );
-
-  renderGrid(
-    myListGrid,
-    myAnime,
-    "❤️ Tumhari My List abhi empty hai."
-  );
-
+  const myAnime = animeList.filter(anime => myListIds.has(getAnimeId(anime)));
+  renderGrid(myListGrid, myAnime, "❤️ Tumhari My List abhi empty hai.");
 }
 
+async function loadSchedule() {
+  const { data, error } = await supabaseClient
+    .from("schedule")
+    .select("*")
+    .order("release_at", { ascending: true });
 
-// =================================
-// LOAD SCHEDULE
-// =================================
-
-async function loadSchedule(){
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("schedule")
-      .select("*")
-      .order(
-        "release_at",
-        {
-          ascending:true
-        }
-      );
-
-  if(error){
-
-    scheduleList.innerHTML =
-      `
-      <div class="message">
-        ❌ Schedule load failed:
-        ${escapeHtml(error.message)}
-      </div>
-      `;
-
+  if (error) {
+    console.error("Schedule load error:", error);
+    scheduleList.innerHTML = "";
+    const message = document.createElement("div");
+    message.className = "message";
+    message.textContent = "Schedule load failed: " + error.message;
+    scheduleList.appendChild(message);
     return;
-
   }
 
-  if(
-    !data ||
-    data.length === 0
-  ){
+  scheduleList.innerHTML = "";
 
-    scheduleList.innerHTML =
-      `
-      <div class="message">
-        📅 Abhi koi upcoming schedule nahi hai.
-      </div>
-      `;
-
+  if (!data || data.length === 0) {
+    const message = document.createElement("div");
+    message.className = "message";
+    message.textContent = "📅 Abhi koi upcoming schedule nahi hai.";
+    scheduleList.appendChild(message);
     return;
-
   }
 
-  scheduleList.innerHTML =
-    "";
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "schedule-item";
 
-  data.forEach(
-    item => {
+    const info = document.createElement("div");
 
-      const div =
-        document.createElement(
-          "div"
-        );
+    const name = document.createElement("div");
+    name.className = "schedule-name";
+    name.textContent = item.anime_title || "Anime";
 
-      div.className =
-        "schedule-item";
+    const episode = document.createElement("div");
+    episode.className = "schedule-episode";
+    episode.textContent = "Episode " + (item.episode_number ?? "") +
+      (item.episode_title ? " • " + item.episode_title : "");
 
-      const date =
-        item.release_at
-        ?
-        new Date(
-          item.release_at
-        )
-        :
-        null;
+    info.append(name, episode);
 
-      const timeText =
-        date
-        ?
-        date.toLocaleString(
-          "en-IN",
-          {
-            dateStyle:"medium",
-            timeStyle:"short"
-          }
-        )
-        :
-        "Time unavailable";
+    const time = document.createElement("div");
+    time.className = "schedule-time";
 
-      div.innerHTML =
-        `
-        <div>
+    const date = item.release_at ? new Date(item.release_at) : null;
+    time.textContent = date && !Number.isNaN(date.getTime())
+      ? date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
+      : "Time unavailable";
 
-          <div class="schedule-name">
-            ${escapeHtml(
-              item.anime_title ||
-              "Anime"
-            )}
-          </div>
-
-          <div class="schedule-episode">
-            Episode
-            ${escapeHtml(
-              item.episode_number
-            )}
-            ${
-              item.episode_title
-              ?
-              " • " +
-              escapeHtml(
-                item.episode_title
-              )
-              :
-              ""
-            }
-          </div>
-
-        </div>
-
-        <div class="schedule-time">
-          ${escapeHtml(timeText)}
-        </div>
-        `;
-
-      scheduleList.appendChild(
-        div
-      );
-
-    }
-  );
-
+    div.append(info, time);
+    scheduleList.appendChild(div);
+  });
 }
 
+searchInput.addEventListener("input", renderAll);
 
-// =================================
-// SEARCH
-// =================================
-
-searchInput.addEventListener(
-  "input",
-  renderAll
-);
-
-
-// =================================
-// START APP
-// =================================
-
-async function startApp(){
-
-  // Login system completely removed
-
+async function startApp() {
   loadMyList();
-
   await loadAnime();
-
   await loadViewCounts();
-
-  await loadSchedule();
-
   renderAll();
-
+  await loadSchedule();
 }
 
-
-startApp();
-
+startApp().catch(error => {
+  console.error("Website startup error:", error);
+  allAnimeGrid.innerHTML = '<div class="message">Website load karte waqt error aaya. Page refresh karke dobara try karo.</div>';
+});
 </script>
-
 </body>
 </html>
