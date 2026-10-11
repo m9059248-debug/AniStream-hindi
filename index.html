@@ -59,9 +59,11 @@ header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,.96);border-b
 .card-body{padding:10px}
 .card-title{font-size:12px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
 .card-meta{color:#777;font-size:9px;min-height:25px;line-height:1.4}
-.card-actions{display:flex;gap:5px;margin-top:9px}
-.watch-btn{flex:1;background:#ff3575;color:#fff;text-decoration:none;text-align:center;padding:8px 5px;border-radius:6px;font-size:9px;font-weight:bold}
-.list-btn{background:#272731;color:#fff;border:none;padding:0 9px;border-radius:6px;cursor:pointer;font-size:11px}
+.card-actions{display:flex;gap:5px;margin-top:9px;align-items:stretch}
+.watch-btn{flex:1;min-width:0;background:#ff3575;color:#fff;text-decoration:none;text-align:center;padding:8px 4px;border-radius:6px;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center}
+.list-btn,.like-btn{background:#272731;color:#fff;border:1px solid #393944;padding:6px 7px;border-radius:6px;cursor:pointer;font-size:10px;white-space:nowrap}
+.like-btn.liked{color:#ff3575;border-color:#ff3575;background:rgba(255,53,117,.12)}
+.like-btn:disabled{opacity:.6;cursor:wait}
 .schedule-list{display:flex;flex-direction:column;gap:9px}
 .schedule-item{background:#13131b;border:1px solid #292936;border-radius:9px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:15px}
 .schedule-name{font-weight:bold;font-size:13px}
@@ -83,6 +85,11 @@ footer{border-top:1px solid #24242e;padding:25px 20px;text-align:center;color:#6
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;min-height:64px;background:rgba(13,13,19,.98);border-top:1px solid #292936;display:flex;align-items:center;justify-content:space-around;z-index:3000;padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav a{text-decoration:none;color:#777;font-size:9px;text-align:center}
 .bottom-nav a.active{color:#ff3575}.bottom-nav span{display:block;font-size:17px;margin-bottom:3px}
+}
+@media(max-width:380px){
+.card-actions{gap:3px}
+.watch-btn{font-size:8px}
+.list-btn,.like-btn{padding:6px 5px;font-size:9px}
 }
 </style>
 </head>
@@ -134,7 +141,6 @@ footer{border-top:1px solid #24242e;padding:25px 20px;text-align:center;color:#6
     <a href="https://t.me/Anime_hindizone" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN</a>
   </div>
 
-  <!-- NEW: ALL ANIME -->
   <section id="allAnime" class="section">
     <div class="section-title"><h2>🎬 All Anime</h2></div>
     <div id="allAnimeGrid" class="anime-grid">
@@ -189,21 +195,26 @@ footer{border-top:1px solid #24242e;padding:25px 20px;text-align:center;color:#6
   <a href="admin.html"><span>⚙️</span>Admin</a>
 </nav>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
 
-// SUPABASE
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
-// GLOBAL DATA
 let animeList = [];
 let viewCounts = {};
+let animeLikeCounts = {};
+let likedAnimeIds = new Set();
+let likeBusyIds = new Set();
 let myListIds = new Set();
 let selectedGenre = "all";
+let toastTimer = null;
 
 const searchInput = document.getElementById("searchInput");
 const allAnimeGrid = document.getElementById("allAnimeGrid");
@@ -218,7 +229,8 @@ const toast = document.getElementById("toast");
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2200);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
 }
 
 function escapeHtml(value) {
@@ -234,9 +246,30 @@ function getAnimeId(anime) {
   return String(anime.anime_id || anime.id || "");
 }
 
-// LOAD ALL ANIME FROM SUPABASE
+/* Anonymous browser identifier. This is a convenience, not verified identity. */
+function getVoterId() {
+  const key = "animehindizone_voter_id";
+  try {
+    let id = localStorage.getItem(key);
+    if (!id) {
+      id = "voter_" + (
+        window.crypto?.randomUUID?.() ||
+        Date.now() + "_" + Math.random().toString(36).slice(2)
+      );
+      localStorage.setItem(key, id);
+    }
+    return id;
+  } catch (error) {
+    console.error("Could not save voter ID:", error);
+    return "voter_" + Math.random().toString(36).slice(2) +
+      Date.now().toString(36);
+  }
+}
+
+/* Load all anime records. */
 async function loadAnime() {
-  allAnimeGrid.innerHTML = '<div class="message">Anime load ho rahe hain...</div>';
+  allAnimeGrid.innerHTML =
+    '<div class="message">Anime load ho rahe hain...</div>';
 
   const { data, error } = await supabaseClient
     .from("anime")
@@ -245,7 +278,8 @@ async function loadAnime() {
 
   if (error) {
     console.error("Anime load error:", error);
-    const errorHtml = `<div class="message">❌ Anime load nahi ho sake.<br>${escapeHtml(error.message)}<br><br>Supabase mein anime table ki SELECT policy check karo.</div>`;
+    const errorHtml =
+      '<div class="message">Anime load nahi ho sake. Supabase anime table ki SELECT policy check karo.</div>';
     allAnimeGrid.innerHTML = errorHtml;
     topGrid.innerHTML = errorHtml;
     latestGrid.innerHTML = errorHtml;
@@ -258,10 +292,11 @@ async function loadAnime() {
   renderAll();
 }
 
-// VIEW COUNTS: if RPC is not configured, show zero
+/* View count feature retained from the existing homepage. */
 async function loadViewCounts() {
   try {
     const { data, error } = await supabaseClient.rpc("get_anime_view_counts");
+
     if (error) {
       console.warn("View counts unavailable:", error.message);
       viewCounts = {};
@@ -278,9 +313,56 @@ async function loadViewCounts() {
   }
 }
 
+/*
+ * Load likes in pages to avoid the default result limit.
+ * Counts are calculated from the anime_likes table.
+ */
+async function loadAnimeLikes() {
+  const voterId = getVoterId();
+  const counts = {};
+  const myLikes = new Set();
+  const pageSize = 1000;
+  let offset = 0;
+
+  try {
+    while (true) {
+      const { data, error } = await supabaseClient
+        .from("anime_likes")
+        .select("anime_id,voter_id")
+        .range(offset, offset + pageSize - 1);
+
+      if (error) throw error;
+
+      const rows = data || [];
+
+      rows.forEach(row => {
+        const id = String(row.anime_id);
+        counts[id] = (counts[id] || 0) + 1;
+
+        if (row.voter_id === voterId) {
+          myLikes.add(id);
+        }
+      });
+
+      if (rows.length < pageSize) break;
+      offset += pageSize;
+    }
+
+    animeLikeCounts = counts;
+    likedAnimeIds = myLikes;
+    renderAll();
+  } catch (error) {
+    console.error("Like loading error:", error);
+    showToast("Likes load nahi ho sake. Supabase table/policy check karo.");
+  }
+}
+
+/* Load the user's personal list from this browser. */
 function loadMyList() {
   try {
-    const saved = JSON.parse(localStorage.getItem("animehindizone_my_list") || "[]");
+    const saved = JSON.parse(
+      localStorage.getItem("animehindizone_my_list") || "[]"
+    );
     myListIds = new Set(saved.map(id => String(id)));
   } catch (error) {
     console.warn("Could not load My List:", error);
@@ -290,7 +372,10 @@ function loadMyList() {
 
 function saveMyList() {
   try {
-    localStorage.setItem("animehindizone_my_list", JSON.stringify(Array.from(myListIds)));
+    localStorage.setItem(
+      "animehindizone_my_list",
+      JSON.stringify(Array.from(myListIds))
+    );
   } catch (error) {
     showToast("My List save nahi ho saki.");
   }
@@ -301,7 +386,7 @@ function toggleMyList(animeId) {
 
   if (myListIds.has(animeId)) {
     myListIds.delete(animeId);
-    showToast("🗑️ My List se remove ho gaya");
+    showToast("My List se remove ho gaya");
   } else {
     myListIds.add(animeId);
     showToast("❤️ My List mein add ho gaya");
@@ -311,16 +396,77 @@ function toggleMyList(animeId) {
   renderAll();
 }
 
+/* Like or unlike one anime. */
+async function toggleAnimeLike(animeId) {
+  animeId = String(animeId);
+
+  if (likeBusyIds.has(animeId)) return;
+
+  const voterId = getVoterId();
+  const wasLiked = likedAnimeIds.has(animeId);
+
+  likeBusyIds.add(animeId);
+  renderAll();
+
+  try {
+    if (wasLiked) {
+      const { error } = await supabaseClient
+        .from("anime_likes")
+        .delete()
+        .eq("anime_id", animeId)
+        .eq("voter_id", voterId);
+
+      if (error) throw error;
+
+      likedAnimeIds.delete(animeId);
+      animeLikeCounts[animeId] = Math.max(
+        0,
+        (animeLikeCounts[animeId] || 0) - 1
+      );
+
+      showToast("Like hata diya ❤️");
+    } else {
+      const { error } = await supabaseClient
+        .from("anime_likes")
+        .insert({
+          anime_id: animeId,
+          voter_id: voterId
+        });
+
+      if (error) {
+        if (error.code === "23505") {
+          showToast("Tum pehle hi like kar chuke ho.");
+          await loadAnimeLikes();
+          return;
+        }
+        throw error;
+      }
+
+      likedAnimeIds.add(animeId);
+      animeLikeCounts[animeId] =
+        (animeLikeCounts[animeId] || 0) + 1;
+
+      showToast("❤️ Anime liked!");
+    }
+  } catch (error) {
+    console.error("Like update error:", error);
+    showToast("Like update nahi hua. Supabase policies check karo.");
+    await loadAnimeLikes();
+  } finally {
+    likeBusyIds.delete(animeId);
+    renderAll();
+  }
+}
+
+/* Build genre filters from database records. */
 function buildGenres() {
   const genres = new Set();
 
   animeList.forEach(anime => {
-    String(anime.genre || "")
-      .split(",")
-      .forEach(genre => {
-        const clean = genre.trim();
-        if (clean) genres.add(clean);
-      });
+    String(anime.genre || "").split(",").forEach(genre => {
+      const clean = genre.trim();
+      if (clean) genres.add(clean);
+    });
   });
 
   genreList.innerHTML = "";
@@ -332,17 +478,23 @@ function buildGenres() {
   allButton.addEventListener("click", () => setGenre("all", allButton));
   genreList.appendChild(allButton);
 
-  Array.from(genres).sort((a, b) => a.localeCompare(b)).slice(0, 20).forEach(genre => {
-    const button = document.createElement("button");
-    button.className = "genre-chip";
-    button.dataset.genre = genre;
-    button.textContent = genre;
-    button.addEventListener("click", () => setGenre(genre, button));
-    genreList.appendChild(button);
-  });
+  Array.from(genres)
+    .sort((a, b) => a.localeCompare(b))
+    .slice(0, 20)
+    .forEach(genre => {
+      const button = document.createElement("button");
+      button.className = "genre-chip";
+      button.dataset.genre = genre;
+      button.textContent = genre;
+      button.addEventListener("click", () => setGenre(genre, button));
+      genreList.appendChild(button);
+    });
 
-  const selectedButton = Array.from(genreList.querySelectorAll(".genre-chip"))
-    .find(button => button.dataset.genre.toLowerCase() === selectedGenre.toLowerCase());
+  const selectedButton = Array.from(
+    genreList.querySelectorAll(".genre-chip")
+  ).find(button =>
+    button.dataset.genre.toLowerCase() === selectedGenre.toLowerCase()
+  );
 
   if (selectedButton) {
     selectedButton.classList.add("active");
@@ -354,7 +506,9 @@ function buildGenres() {
 
 function setGenre(genre, button) {
   selectedGenre = genre;
-  genreList.querySelectorAll(".genre-chip").forEach(item => item.classList.remove("active"));
+  genreList.querySelectorAll(".genre-chip").forEach(item => {
+    item.classList.remove("active");
+  });
   button.classList.add("active");
   renderAll();
 }
@@ -375,12 +529,15 @@ function getFilteredAnime() {
       animeId.includes(search);
 
     const genreMatch = selectedGenre === "all" ||
-      genre.split(",").some(item => item.trim() === selectedGenre.toLowerCase());
+      genre.split(",").some(item =>
+        item.trim() === selectedGenre.toLowerCase()
+      );
 
     return searchMatch && genreMatch;
   });
 }
 
+/* Create an anime card with Details, My List and Like buttons. */
 function createAnimeCard(anime) {
   const animeId = getAnimeId(anime);
   const title = anime.title || "Untitled Anime";
@@ -453,9 +610,32 @@ function createAnimeCard(anime) {
   listButton.type = "button";
   listButton.title = saved ? "Remove from My List" : "Add to My List";
   listButton.textContent = saved ? "❤️" : "＋";
+  listButton.setAttribute("aria-label", listButton.title);
   listButton.addEventListener("click", () => toggleMyList(animeId));
 
-  actions.append(details, listButton);
+  const likeButton = document.createElement("button");
+  likeButton.className = "like-btn";
+  likeButton.type = "button";
+
+  function updateLikeButton() {
+    const liked = likedAnimeIds.has(animeId);
+    const count = animeLikeCounts[animeId] || 0;
+
+    likeButton.classList.toggle("liked", liked);
+    likeButton.textContent = (liked ? "❤️ " : "🤍 ") + count;
+    likeButton.title = liked ? "Unlike anime" : "Like anime";
+    likeButton.setAttribute(
+      "aria-label",
+      (liked ? "Unlike anime. " : "Like anime. ") +
+      count + " likes"
+    );
+    likeButton.disabled = likeBusyIds.has(animeId);
+  }
+
+  updateLikeButton();
+  likeButton.addEventListener("click", () => toggleAnimeLike(animeId));
+
+  actions.append(details, listButton, likeButton);
   body.append(cardTitle, meta, actions);
   card.append(poster, body);
 
@@ -476,11 +656,10 @@ function renderGrid(element, list, emptyText) {
   list.forEach(anime => element.appendChild(createAnimeCard(anime)));
 }
 
-// ALL SECTIONS RENDER FROM THE SAME DATABASE LIST
+/* Every section uses the same anime list and Like data. */
 function renderAll() {
   const filtered = getFilteredAnime();
 
-  // All Anime: every matching anime, no six-card limit
   renderGrid(
     allAnimeGrid,
     filtered,
@@ -490,20 +669,24 @@ function renderAll() {
   );
 
   const top = [...filtered]
-    .sort((a, b) => (viewCounts[getAnimeId(b)] || 0) - (viewCounts[getAnimeId(a)] || 0))
+    .sort((a, b) =>
+      (viewCounts[getAnimeId(b)] || 0) -
+      (viewCounts[getAnimeId(a)] || 0)
+    )
     .slice(0, 6);
 
   renderGrid(topGrid, top, "Abhi trending anime available nahi hai.");
-
-  // This section currently shows latest anime records, not episode records.
   renderGrid(latestGrid, filtered.slice(0, 6), "Abhi anime available nahi hai.");
-
   renderGrid(recentGrid, filtered.slice(0, 6), "Abhi recently added anime nahi hai.");
 
-  const myAnime = animeList.filter(anime => myListIds.has(getAnimeId(anime)));
+  const myAnime = animeList.filter(anime =>
+    myListIds.has(getAnimeId(anime))
+  );
+
   renderGrid(myListGrid, myAnime, "❤️ Tumhari My List abhi empty hai.");
 }
 
+/* Load anime schedule. */
 async function loadSchedule() {
   const { data, error } = await supabaseClient
     .from("schedule")
@@ -542,7 +725,8 @@ async function loadSchedule() {
 
     const episode = document.createElement("div");
     episode.className = "schedule-episode";
-    episode.textContent = "Episode " + (item.episode_number ?? "") +
+    episode.textContent =
+      "Episode " + (item.episode_number ?? "") +
       (item.episode_title ? " • " + item.episode_title : "");
 
     info.append(name, episode);
@@ -552,7 +736,10 @@ async function loadSchedule() {
 
     const date = item.release_at ? new Date(item.release_at) : null;
     time.textContent = date && !Number.isNaN(date.getTime())
-      ? date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })
+      ? date.toLocaleString("en-IN", {
+          dateStyle: "medium",
+          timeStyle: "short"
+        })
       : "Time unavailable";
 
     div.append(info, time);
@@ -564,15 +751,22 @@ searchInput.addEventListener("input", renderAll);
 
 async function startApp() {
   loadMyList();
+
   await loadAnime();
-  await loadViewCounts();
+
+  await Promise.all([
+    loadViewCounts(),
+    loadAnimeLikes()
+  ]);
+
   renderAll();
   await loadSchedule();
 }
 
 startApp().catch(error => {
   console.error("Website startup error:", error);
-  allAnimeGrid.innerHTML = '<div class="message">Website load karte waqt error aaya. Page refresh karke dobara try karo.</div>';
+  allAnimeGrid.innerHTML =
+    '<div class="message">Website load karte waqt error aaya. Page refresh karke dobara try karo.</div>';
 });
 </script>
 </body>
