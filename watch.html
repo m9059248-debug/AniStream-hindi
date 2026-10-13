@@ -5,66 +5,238 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Watch Anime - AnimeHindiZone</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0b0f;color:#fff}
-header{background:#111118;border-bottom:1px solid #292936;padding:16px 20px}
-.nav{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between}
-.logo{color:#ff1744;text-decoration:none;font-size:22px;font-weight:bold}
-.nav a{color:#fff;text-decoration:none;margin-left:15px}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#0b0b0f;
+  color:#fff;
+}
+
+header{
+  background:#111118;
+  border-bottom:1px solid #292936;
+  padding:16px 20px;
+}
+
+.nav{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  color:#ff1744;
+  text-decoration:none;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.nav a{
+  color:#fff;
+  text-decoration:none;
+  margin-left:15px;
+}
+
 .nav a:hover{color:#ff1744}
-.container{max-width:1100px;margin:auto;padding:20px}
-.back{display:inline-block;color:#ff1744;text-decoration:none;margin-bottom:15px}
-.video-box,.quality-section,.section{background:#14141c;border:1px solid #292936;border-radius:12px;margin-bottom:20px}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.back{
+  display:inline-block;
+  color:#ff1744;
+  text-decoration:none;
+  margin-bottom:15px;
+}
+
+.video-box,.quality-section,.section{
+  background:#14141c;
+  border:1px solid #292936;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
 .video-box{overflow:hidden}
-.video-wrapper{width:100%;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
-video{width:100%;height:100%;display:block;background:#000}
-iframe{width:100%;height:100%;border:none}
+
+.video-wrapper{
+  width:100%;
+  background:#000;
+  aspect-ratio:16/9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+video{
+  width:100%;
+  height:100%;
+  display:block;
+  background:#000;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
 .info{padding:18px}
-.info h1{font-size:24px;margin-bottom:8px}
+
+.info h1{
+  font-size:24px;
+  margin-bottom:8px;
+}
+
 .meta{color:#aaa;font-size:14px}
-.message{text-align:center;padding:25px 15px;color:#aaa;overflow-wrap:anywhere}
+
+.message{
+  text-align:center;
+  padding:30px 15px;
+  color:#aaa;
+  overflow-wrap:anywhere;
+}
+
 .error{color:#ff6b81}
-.view-info{margin-top:12px;color:#888;font-size:13px}
+
+.view-info{
+  margin-top:12px;
+  color:#888;
+  font-size:13px;
+}
+
 .quality-section,.section{padding:20px}
-.quality-section h2,.section h2{color:#ff1744;margin-bottom:15px}
-.quality-buttons,.link-buttons{display:flex;gap:10px;flex-wrap:wrap}
-.quality-btn{background:#22222c;color:#fff;border:1px solid #363642;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:bold}
-.quality-btn:hover,.quality-btn.active{background:#ff1744;border-color:#ff1744}
-.current-quality{color:#aaa;font-size:13px;margin-top:12px}
+
+.quality-section h2,.section h2{
+  color:#ff1744;
+  margin-bottom:15px;
+}
+
+.quality-buttons,.link-buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.quality-btn{
+  background:#22222c;
+  color:#fff;
+  border:1px solid #363642;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.quality-btn:hover,.quality-btn.active{
+  background:#ff1744;
+  border-color:#ff1744;
+}
+
+.current-quality{
+  color:#aaa;
+  font-size:13px;
+  margin-top:12px;
+}
+
 .link-buttons{margin-top:15px}
-.stream-btn,.download-btn{display:inline-block;padding:11px 18px;border-radius:8px;text-decoration:none;color:#fff;font-weight:bold;overflow-wrap:anywhere}
+
+.stream-btn,.download-btn{
+  display:inline-block;
+  padding:11px 18px;
+  border-radius:8px;
+  text-decoration:none;
+  color:#fff;
+  font-weight:bold;
+  overflow-wrap:anywhere;
+}
+
 .stream-btn{background:#ff1744}
 .download-btn{background:#00a86b}
 .stream-btn:hover{background:#e9143d}
 .download-btn:hover{background:#00c77d}
 
-/* Audio language selector */
-.audio-section{margin-top:18px;padding-top:16px;border-top:1px solid #292936}
-.audio-section label{display:block;color:#fff;font-weight:bold;margin-bottom:9px}
-.audio-select{width:100%;max-width:320px;background:#22222c;color:#fff;border:1px solid #363642;padding:12px;border-radius:8px;font-size:15px}
-.audio-note{color:#999;font-size:12px;margin-top:8px;line-height:1.5}
+/* Episode buttons */
+#episodeNav .episode-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
 
-#episodeNav .episode-nav{display:flex;flex-wrap:wrap;gap:10px}
-#episodeNav .episode-nav a{display:inline-flex;align-items:center;justify-content:center;min-width:100px;min-height:42px;padding:10px 15px;background:#22222c;border:1px solid #363642;border-radius:8px;color:#fff;text-decoration:none;font-size:14px;font-weight:bold}
-#episodeNav .episode-nav a.active,#episodeNav .episode-nav a:hover{background:#ff1744;border-color:#ff1744}
+#episodeNav .episode-nav a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:100px;
+  min-height:42px;
+  padding:10px 15px;
+  background:#22222c;
+  border:1px solid #363642;
+  border-radius:8px;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:bold;
+  transition:background .2s,border-color .2s;
+}
+
+#episodeNav .episode-nav a.active,
+#episodeNav .episode-nav a:hover{
+  background:#ff1744;
+  border-color:#ff1744;
+}
 
 @media(max-width:600px){
-.container{padding:14px}
-.info h1{font-size:20px}
-.nav{flex-direction:column;gap:10px}
-.nav a{margin-left:8px}
-.quality-buttons{display:grid;grid-template-columns:repeat(3,1fr)}
-.quality-btn{width:100%;padding:10px 5px}
-.link-buttons{display:grid;grid-template-columns:1fr 1fr}
-.stream-btn,.download-btn{text-align:center;padding:11px 8px}
-#episodeNav .episode-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-#episodeNav .episode-nav a{min-width:0;width:100%;padding:10px 4px;font-size:12px}
-.audio-select{max-width:100%}
+  .container{padding:14px}
+  .info h1{font-size:20px}
+
+  .nav{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .nav a{margin-left:8px}
+
+  .quality-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .quality-btn{
+    width:100%;
+    padding:10px 5px;
+  }
+
+  .link-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stream-btn,.download-btn{
+    text-align:center;
+    padding:11px 8px;
+  }
+
+  #episodeNav .episode-nav{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  #episodeNav .episode-nav a{
+    min-width:0;
+    width:100%;
+    padding:10px 4px;
+    font-size:12px;
+  }
 }
 </style>
 </head>
@@ -73,48 +245,41 @@ iframe{width:100%;height:100%;border:none}
 <header>
   <div class="nav">
     <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
-    <div><a href="index.html">Home</a><a href="admin.html">Admin</a></div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="admin.html">Admin</a>
+    </div>
   </div>
 </header>
 
 <div class="container">
-<a href="index.html" class="back">← Home</a>
+  <a href="index.html" class="back">← Home</a>
 
-<div class="video-box">
-  <div id="videoContainer" class="video-wrapper">
-    <div class="message">Video load ho raha hai...</div>
-  </div>
-  <div class="info">
-    <h1 id="episodeTitle">Loading...</h1>
-    <div id="episodeMeta" class="meta"></div>
-    <div id="viewInfo" class="view-info"></div>
-  </div>
-</div>
+  <div class="video-box">
+    <div id="videoContainer" class="video-wrapper">
+      <div class="message">Video load ho raha hai...</div>
+    </div>
 
-<div id="qualitySection" class="quality-section" style="display:none">
-  <h2>🎥 Quality</h2>
-  <div id="qualityButtons" class="quality-buttons"></div>
-  <div id="currentQuality" class="current-quality"></div>
-
-  <div class="audio-section">
-    <label for="audioLanguage">🎧 Audio Language</label>
-    <select id="audioLanguage" class="audio-select" disabled>
-      <option value="">Audio tracks load ho rahe hain...</option>
-    </select>
-    <div id="audioNote" class="audio-note">
-      Available audio tracks yahan dikhenge.
+    <div class="info">
+      <h1 id="episodeTitle">Loading...</h1>
+      <div id="episodeMeta" class="meta"></div>
+      <div id="viewInfo" class="view-info"></div>
     </div>
   </div>
 
-  <div id="linkButtons" class="link-buttons"></div>
-</div>
-
-<div class="section">
-  <h2>📺 Episodes</h2>
-  <div id="episodeNav">
-    <div class="message">Episodes load ho rahe hain...</div>
+  <div id="qualitySection" class="quality-section" style="display:none">
+    <h2>🎥 Quality</h2>
+    <div id="qualityButtons" class="quality-buttons"></div>
+    <div id="currentQuality" class="current-quality"></div>
+    <div id="linkButtons" class="link-buttons"></div>
   </div>
-</div>
+
+  <div class="section">
+    <h2>📺 Episodes</h2>
+    <div id="episodeNav">
+      <div class="message">Episodes load ho rahe hain...</div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -142,142 +307,32 @@ const qualitySection = document.getElementById("qualitySection");
 const qualityButtons = document.getElementById("qualityButtons");
 const currentQuality = document.getElementById("currentQuality");
 const linkButtons = document.getElementById("linkButtons");
-const audioLanguage = document.getElementById("audioLanguage");
-const audioNote = document.getElementById("audioNote");
 
 let qualityLinks = [];
 let selectedQuality = null;
-let hlsInstance = null;
-let currentVideo = null;
-let playerGeneration = 0;
 
-const LANGUAGES = [
-  {name:"Hindi", codes:["hi","hin","hindi"]},
-  {name:"Japanese", codes:["ja","jpn","japanese","jp"]},
-  {name:"English", codes:["en","eng","english"]},
-  {name:"Tamil", codes:["ta","tam","tamil"]},
-  {name:"Telugu", codes:["te","tel","telugu"]}
-];
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
 
 function safeUrl(value){
   if(!value) return "";
+
   try{
     const parsed = new URL(value);
+
     return ["http:","https:"].includes(parsed.protocol)
-      ? parsed.href : "";
+      ? parsed.href
+      : "";
   }catch{
     return "";
   }
 }
-
-function cleanupPlayer(){
-  playerGeneration++;
-
-  if(hlsInstance){
-    hlsInstance.destroy();
-    hlsInstance = null;
-  }
-
-  currentVideo = null;
-}
-
-function resetAudioSelector(message){
-  audioLanguage.innerHTML = "";
-  const option = document.createElement("option");
-  option.value = "";
-  option.textContent = "Audio track unavailable";
-  audioLanguage.appendChild(option);
-  audioLanguage.disabled = true;
-  audioNote.textContent = message;
-}
-
-function updateAudioTracks(hls, generation){
-  if(generation !== playerGeneration || hls !== hlsInstance) return;
-
-  const previous = audioLanguage.value;
-  const tracks = hls.audioTracks || [];
-
-  audioLanguage.innerHTML = "";
-
-  if(!tracks.length){
-    resetAudioSelector(
-      "Is video mein HLS audio tracks detect nahi hue. " +
-      "Video source mein multiple audio renditions hone chahiye."
-    );
-    return;
-  }
-
-  const options = tracks.map((track,index) => {
-    const raw = [
-      track.name,
-      track.lang,
-      track.language,
-      track.label
-    ].filter(Boolean).join(" ").toLowerCase();
-
-    const match = LANGUAGES.find(lang =>
-      lang.codes.some(code =>
-        new RegExp("(^|[^a-z])" + code + "([^a-z]|$)").test(raw)
-      ) || raw.includes(lang.name.toLowerCase())
-    );
-
-    return {
-      index,
-      label: match ? match.name : (
-        track.name || track.lang || track.label ||
-        "Audio track " + (index+1)
-      ),
-      lang: (track.lang || track.language || "").toLowerCase()
-    };
-  });
-
-  // Preferred languages first, without hiding other available tracks.
-  options.sort((a,b) => {
-    const ai = LANGUAGES.findIndex(l =>
-      l.name.toLowerCase() === a.label.toLowerCase()
-    );
-    const bi = LANGUAGES.findIndex(l =>
-      l.name.toLowerCase() === b.label.toLowerCase()
-    );
-    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-  });
-
-  options.forEach(item => {
-    const option = document.createElement("option");
-    option.value = String(item.index);
-    option.textContent = item.label;
-    audioLanguage.appendChild(option);
-  });
-
-  audioLanguage.disabled = false;
-
-  const preferred = options.find(item =>
-    LANGUAGES.some(l => l.name.toLowerCase() === item.label.toLowerCase())
-  );
-
-  const restore = options.find(item => String(item.index) === previous);
-  const selected = restore || preferred || options[0];
-
-  audioLanguage.value = String(selected.index);
-  hls.audioTrack = selected.index;
-
-  audioNote.textContent =
-    "Detected " + tracks.length + " audio track(s). " +
-    "Sirf source mein maujood languages hi select hongi.";
-}
-
-audioLanguage.addEventListener("change", () => {
-  if(!hlsInstance || audioLanguage.value === "") return;
-
-  const index = Number(audioLanguage.value);
-  if(Number.isInteger(index) && index >= 0){
-    hlsInstance.audioTrack = index;
-    audioNote.textContent =
-      "Selected: " + audioLanguage.options[
-        audioLanguage.selectedIndex
-      ].textContent;
-  }
-});
 
 async function recordAnimeView(){
   if(!animeId) return;
@@ -292,7 +347,10 @@ async function recordAnimeView(){
 
     const {error} = await supabaseClient
       .from("anime_views")
-      .insert({anime_id:animeId,user_id:user.id});
+      .insert({
+        anime_id:animeId,
+        user_id:user.id
+      });
 
     if(error?.code === "23505"){
       viewInfo.textContent = "👁️ Already viewed";
@@ -307,9 +365,12 @@ async function recordAnimeView(){
 }
 
 async function loadEpisode(){
-  if(!animeId || !episodeNumber ||
-     !Number.isInteger(Number(episodeNumber)) ||
-     Number(episodeNumber) < 1){
+  if(
+    !animeId ||
+    !episodeNumber ||
+    !Number.isInteger(Number(episodeNumber)) ||
+    Number(episodeNumber) < 1
+  ){
     showError("Anime ID ya Episode number missing hai.");
     episodeTitle.textContent = "Episode unavailable";
     return;
@@ -329,7 +390,6 @@ async function loadEpisode(){
 
   if(!data){
     showError("Ye episode nahi mila.");
-    episodeTitle.textContent = "Episode unavailable";
     return;
   }
 
@@ -347,10 +407,7 @@ async function loadEpisode(){
   await loadQualityLinks(data.anime_title);
 
   if(qualityLinks.length === 0){
-    resetAudioSelector(
-      "Purane episode ke fallback video mein language switching " +
-      "tabhi chalegi jab supported multi-audio HLS source ho."
-    );
+    // Purane episodes ke liye fallback.
     loadVideo(data.video_url);
   }
 
@@ -358,14 +415,10 @@ async function loadEpisode(){
 }
 
 function showError(message){
-  cleanupPlayer();
-  resetAudioSelector(message);
-  videoContainer.innerHTML = "";
-
-  const div = document.createElement("div");
-  div.className = "message error";
-  div.textContent = message;
-  videoContainer.appendChild(div);
+  videoContainer.innerHTML =
+    '<div class="message error">' +
+    escapeHtml(message) +
+    '</div>';
 }
 
 async function loadQualityLinks(animeTitle){
@@ -392,7 +445,12 @@ async function loadQualityLinks(animeTitle){
 
   if(!data?.length) return;
 
-  const order = {"1080p":1,"720p":2,"480p":3};
+  const order = {
+    "1080p":1,
+    "720p":2,
+    "480p":3
+  };
+
   qualityLinks = data.sort(
     (a,b) => (order[a.quality] || 99) -
              (order[b.quality] || 99)
@@ -403,8 +461,8 @@ async function loadQualityLinks(animeTitle){
   qualityLinks.forEach(link => {
     const button = document.createElement("button");
     button.className = "quality-btn";
-    button.type = "button";
     button.textContent = link.quality;
+    button.type = "button";
     button.onclick = () => selectQuality(link.quality);
     qualityButtons.appendChild(button);
   });
@@ -416,28 +474,32 @@ function selectQuality(quality){
   const selected = qualityLinks.find(
     item => item.quality === quality
   );
+
   if(!selected) return;
 
   selectedQuality = selected;
 
   document.querySelectorAll(".quality-btn").forEach(button => {
     button.classList.toggle(
-      "active",button.textContent === quality
+      "active",
+      button.textContent === quality
     );
   });
 
   currentQuality.textContent = "Selected Quality: " + quality;
 
+  // Player uses the saved stream_url.
   const streamUrl = safeUrl(selected.stream_url);
+
+  // Download button uses download_url only.
   const downloadUrl = safeUrl(selected.download_url);
 
   if(streamUrl){
     loadVideo(streamUrl);
   }else{
-    cleanupPlayer();
-    resetAudioSelector("Stream link available nahi hai.");
     videoContainer.innerHTML =
-      '<div class="message">▶ ' + quality +
+      '<div class="message">▶ ' +
+      escapeHtml(quality) +
       ' ka Stream Link available nahi hai.</div>';
   }
 
@@ -472,101 +534,42 @@ function selectQuality(quality){
 function loadVideo(url){
   const safe = safeUrl(url);
 
-  cleanupPlayer();
-  resetAudioSelector("Audio tracks check ho rahe hain...");
-
   if(!safe){
-    videoContainer.innerHTML =
-      '<div class="message error">Video URL available nahi hai.</div>';
-    resetAudioSelector("Video URL available nahi hai.");
+    showError("Video URL available nahi hai.");
     return;
   }
 
-  const generation = playerGeneration;
   const path = new URL(safe).pathname.toLowerCase();
-  const isHls = /\.m3u8$/.test(path);
+  const isVideoFile = /\.(mp4|webm|ogg|m3u8)$/.test(path);
 
   videoContainer.innerHTML = "";
 
-  const video = document.createElement("video");
-  video.controls = true;
-  video.playsInline = true;
-  video.preload = "metadata";
-  videoContainer.appendChild(video);
-  currentVideo = video;
-
-  video.addEventListener("error", () => {
-    if(generation !== playerGeneration) return;
-    if(hlsInstance) return;
-
-    resetAudioSelector("Video load nahi hua. Source URL check karo.");
-  });
-
-  if(isHls && window.Hls && Hls.isSupported()){
-    const hls = new Hls();
-    hlsInstance = hls;
-
-    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-      if(generation === playerGeneration){
-        hls.loadSource(safe);
-      }
-    });
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      updateAudioTracks(hls,generation);
-    });
-
-    hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => {
-      updateAudioTracks(hls,generation);
-    });
-
-    hls.on(Hls.Events.ERROR, (event,info) => {
-      if(generation !== playerGeneration) return;
-
-      if(info.fatal){
-        console.error("HLS playback error:",info);
-        audioNote.textContent =
-          "HLS playback error. Video source ya server settings check karo.";
-      }
-    });
-
-    hls.attachMedia(video);
-    return;
-  }
-
-  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")){
+  if(isVideoFile && !path.endsWith(".m3u8")){
+    const video = document.createElement("video");
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = "metadata";
     video.src = safe;
-    resetAudioSelector(
-      "Native HLS playback mein is browser par audio-track switching " +
-      "control available na bhi ho sakta hai. HLS.js supported browser try karo."
-    );
+
+    video.addEventListener("error",() => {
+      showError(
+        "Video play nahi ho saka. Video URL ya hosting settings check karo."
+      );
+    });
+
+    videoContainer.appendChild(video);
     return;
   }
-
-  if(/\.(mp4|webm|ogg)$/.test(path)){
-    video.src = safe;
-    resetAudioSelector(
-      "Direct video file ke liye browser mein multiple audio-track " +
-      "switching universally supported nahi hai. Multi-audio HLS (.m3u8) use karo."
-    );
-    return;
-  }
-
-  // External embed pages can be played, but their internal audio tracks
-  // are controlled by that hosting player's own controls.
-  cleanupPlayer();
-  resetAudioSelector(
-    "External player hai. Language change karne ke liye us player ke " +
-    "Audio/Settings controls use karo, agar available hon."
-  );
 
   const iframe = document.createElement("iframe");
   iframe.src = safe;
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
   iframe.setAttribute(
-    "allow","autoplay; fullscreen; picture-in-picture"
+    "allow",
+    "autoplay; fullscreen; picture-in-picture"
   );
+
   videoContainer.appendChild(iframe);
 }
 
@@ -585,6 +588,7 @@ async function loadEpisodeList(){
 
   if(error){
     console.error("Episode list error:",error);
+
     episodeNav.innerHTML =
       '<div class="message error">Episodes load failed.</div>';
     return;
@@ -596,7 +600,9 @@ async function loadEpisodeList(){
     return;
   }
 
+  // Episode buttons ka container.
   episodeNav.innerHTML = "";
+
   const episodeButtons = document.createElement("div");
   episodeButtons.className = "episode-nav";
 
@@ -608,10 +614,14 @@ async function loadEpisodeList(){
       "&episode=" + encodeURIComponent(episode.episode_number);
 
     link.textContent = "Episode " + episode.episode_number;
-    link.title = episode.episode_title ||
+    link.title =
+      episode.episode_title ||
       "Episode " + episode.episode_number;
 
-    if(Number(episode.episode_number) === Number(episodeNumber)){
+    if(
+      Number(episode.episode_number) ===
+      Number(episodeNumber)
+    ){
       link.classList.add("active");
       link.setAttribute("aria-current","page");
     }
