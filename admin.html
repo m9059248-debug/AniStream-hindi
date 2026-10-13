@@ -112,7 +112,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
   <div id="episodeForm" class="box" style="display:none;">
     <h2>➕ Add Episode</h2>
     <p class="small">Selected anime ke liye episode number aur title enter karo. Uske baad jis quality ko add karna hai uska Stream + Download link bharo.</p>
-    <div class="toggle-row"><input type="checkbox" id="autoShortenLinks" checked><label for="autoShortenLinks">AroLinks se Stream/Download URLs automatically short karo. Isse links AroLinks ke through khulenge.</label></div>
+    <div class="toggle-row"><input type="checkbox" id="autoShortenLinks" checked><label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label></div>
     <input id="episodeNumber" type="number" min="1" placeholder="Episode Number e.g. 1">
     <input id="episodeTitle" placeholder="Episode Title e.g. The Beginning">
     <div class="quality-box"><div class="quality-title">📱 480p</div><input id="stream480" placeholder="480p Stream Link"><input id="download480" placeholder="480p Download Link"></div>
@@ -340,13 +340,17 @@ async function addEpisode(){
   const duplicateQuality=qualityLinks.find(item=>existingQualitySet.has(item.quality));
   if(duplicateQuality){setMessage(message,"error","❌ "+duplicateQuality.quality+" already added hai is episode me.");return;}
 
+  // Sirf Download URLs shorten honge; Stream URLs original rahenge.
   // Shorten only after duplicate checks, so duplicate submissions don't consume API requests.
   if(autoShorten){
     try{
       let done=0;
       for(const link of qualityLinks){
-        if(link.stream_url){link.stream_url=await shortenWithAroLinks(link.stream_url);done++;setMessage(message,"info","Short links ban rahe hain... ("+done+")");}
-        if(link.download_url){link.download_url=await shortenWithAroLinks(link.download_url);done++;setMessage(message,"info","Short links ban rahe hain... ("+done+")");}
+        if(link.download_url){
+          link.download_url=await shortenWithAroLinks(link.download_url);
+          done++;
+          setMessage(message,"info","Download links short ho rahe hain... ("+done+")");
+        }
       }
     }catch(error){
       setMessage(message,"error","❌ AroLinks shortener failed: "+error.message+" — Episode links save nahi hue. Function/secret check karo.");
