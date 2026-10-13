@@ -1,629 +1,111 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Watch Anime - AnimeHindiZone</title>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09090f"><title>Watch Episode - AnimeHindiZone</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0b0f;color:#fff}
-header{background:#111118;border-bottom:1px solid #292936;padding:16px 20px}
-.nav{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between}
-.logo{color:#ff1744;text-decoration:none;font-size:22px;font-weight:bold}
-.nav a{color:#fff;text-decoration:none;margin-left:15px}
-.nav a:hover{color:#ff1744}
-.container{max-width:1100px;margin:auto;padding:20px}
-.back{display:inline-block;color:#ff1744;text-decoration:none;margin-bottom:15px}
-.video-box,.quality-section,.section{background:#14141c;border:1px solid #292936;border-radius:12px;margin-bottom:20px}
-.video-box{overflow:hidden}
-.video-wrapper{width:100%;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
-video{width:100%;height:100%;display:block;background:#000}
-iframe{width:100%;height:100%;border:none}
-.info{padding:18px}
-.info h1{font-size:24px;margin-bottom:8px}
-.meta{color:#aaa;font-size:14px}
-.message{text-align:center;padding:25px 15px;color:#aaa;overflow-wrap:anywhere}
-.error{color:#ff6b81}
-.view-info{margin-top:12px;color:#888;font-size:13px}
-.quality-section,.section{padding:20px}
-.quality-section h2,.section h2{color:#ff1744;margin-bottom:15px}
-.quality-buttons,.link-buttons{display:flex;gap:10px;flex-wrap:wrap}
-.quality-btn{background:#22222c;color:#fff;border:1px solid #363642;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:bold}
-.quality-btn:hover,.quality-btn.active{background:#ff1744;border-color:#ff1744}
-.current-quality{color:#aaa;font-size:13px;margin-top:12px}
-.link-buttons{margin-top:15px}
-.stream-btn,.download-btn{display:inline-block;padding:11px 18px;border-radius:8px;text-decoration:none;color:#fff;font-weight:bold;overflow-wrap:anywhere}
-.stream-btn{background:#ff1744}
-.download-btn{background:#00a86b}
-.stream-btn:hover{background:#e9143d}
-.download-btn:hover{background:#00c77d}
-
-/* Audio language selector */
-.audio-section{margin-top:18px;padding-top:16px;border-top:1px solid #292936}
-.audio-section label{display:block;color:#fff;font-weight:bold;margin-bottom:9px}
-.audio-select{width:100%;max-width:320px;background:#22222c;color:#fff;border:1px solid #363642;padding:12px;border-radius:8px;font-size:15px}
-.audio-note{color:#999;font-size:12px;margin-top:8px;line-height:1.5}
-
-#episodeNav .episode-nav{display:flex;flex-wrap:wrap;gap:10px}
-#episodeNav .episode-nav a{display:inline-flex;align-items:center;justify-content:center;min-width:100px;min-height:42px;padding:10px 15px;background:#22222c;border:1px solid #363642;border-radius:8px;color:#fff;text-decoration:none;font-size:14px;font-weight:bold}
-#episodeNav .episode-nav a.active,#episodeNav .episode-nav a:hover{background:#ff1744;border-color:#ff1744}
-
-@media(max-width:600px){
-.container{padding:14px}
-.info h1{font-size:20px}
-.nav{flex-direction:column;gap:10px}
-.nav a{margin-left:8px}
-.quality-buttons{display:grid;grid-template-columns:repeat(3,1fr)}
-.quality-btn{width:100%;padding:10px 5px}
-.link-buttons{display:grid;grid-template-columns:1fr 1fr}
-.stream-btn,.download-btn{text-align:center;padding:11px 8px}
-#episodeNav .episode-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-#episodeNav .episode-nav a{min-width:0;width:100%;padding:10px 4px;font-size:12px}
-.audio-select{max-width:100%}
-}
+:root{color-scheme:dark;--bg:#09090f;--panel:#11111b;--line:#292936;--text:#f5f5fa;--muted:#a7a7b8;--red:#e63946}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#11111bf2;border-bottom:1px solid var(--line)}
+.head{max-width:1120px;margin:auto;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.brand{color:#ff5360;font-weight:800;font-size:21px;text-decoration:none}.home{color:white;text-decoration:none;background:#242432;border:1px solid var(--line);padding:9px 13px;border-radius:9px}
+main{max-width:1120px;margin:auto;padding:18px 14px 40px}h1{font-size:clamp(20px,4vw,30px);margin:0 0 6px}.sub{color:var(--muted);font-size:14px}
+.card,.section{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.player{position:relative;aspect-ratio:16/9;background:#000;display:flex;align-items:center;justify-content:center}
+#playerHost{width:100%;height:100%;background:#000}#playerHost movi-player{display:block;width:100%;height:100%;--movi-accent:var(--red)}
+#message{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:22px;color:#ccc;line-height:1.5;pointer-events:none}
+#message strong{display:block;color:white;margin-bottom:8px}
+.actions,.quality,.audio{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:12px;border-top:1px solid var(--line)}
+button,.link,select{font:inherit;border-radius:9px;padding:10px 13px}
+button,.link{border:1px solid #39394a;cursor:pointer;text-decoration:none;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.primary{background:var(--red);border-color:var(--red);color:white}.secondary,.q{background:#242432;color:white}
+button:disabled{opacity:.45;cursor:not-allowed}.q.active{background:var(--red);border-color:var(--red)}
+.label,.audio label{color:var(--muted);font-size:14px}select{background:#20202e;color:white;border:1px solid #414153;min-width:175px;max-width:100%}
+.hint{padding:0 12px 13px;color:var(--muted);font-size:12px;line-height:1.5}
+.section{margin-top:18px;padding:15px}.section h2{margin:0 0 13px;font-size:18px}
+#episodeNav{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:9px}
+#episodeNav a{min-height:42px;display:flex;align-items:center;justify-content:center;text-decoration:none;color:white;background:#222230;border:1px solid #39394a;border-radius:9px;padding:9px 7px;font-size:14px;font-weight:700}
+#episodeNav a.current,#episodeNav a:hover{background:var(--red);border-color:var(--red)}
+.status{padding:12px;color:var(--muted);font-size:14px}.error{color:#ff9ca3}footer{text-align:center;color:#777789;padding:25px;font-size:12px}
+@media(max-width:520px){.head{padding:12px}.brand{font-size:18px}main{padding:14px 10px 30px}.actions>*{flex:1}.section{padding:13px}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script type="module" src="https://cdn.jsdelivr.net/npm/movi-player/dist/element.js"></script>
 </head>
-
 <body>
-<header>
-  <div class="nav">
-    <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
-    <div><a href="index.html">Home</a><a href="admin.html">Admin</a></div>
-  </div>
-</header>
-
-<div class="container">
-<a href="index.html" class="back">← Home</a>
-
-<div class="video-box">
-  <div id="videoContainer" class="video-wrapper">
-    <div class="message">Video load ho raha hai...</div>
-  </div>
-  <div class="info">
-    <h1 id="episodeTitle">Loading...</h1>
-    <div id="episodeMeta" class="meta"></div>
-    <div id="viewInfo" class="view-info"></div>
-  </div>
-</div>
-
-<div id="qualitySection" class="quality-section" style="display:none">
-  <h2>🎥 Quality</h2>
-  <div id="qualityButtons" class="quality-buttons"></div>
-  <div id="currentQuality" class="current-quality"></div>
-
-  <div class="audio-section">
-    <label for="audioLanguage">🎧 Audio Language</label>
-    <select id="audioLanguage" class="audio-select" disabled>
-      <option value="">Audio tracks load ho rahe hain...</option>
-    </select>
-    <div id="audioNote" class="audio-note">
-      Available audio tracks yahan dikhenge.
-    </div>
-  </div>
-
-  <div id="linkButtons" class="link-buttons"></div>
-</div>
-
-<div class="section">
-  <h2>📺 Episodes</h2>
-  <div id="episodeNav">
-    <div class="message">Episodes load ho rahe hain...</div>
-  </div>
-</div>
-</div>
-
+<header><div class="head"><a class="brand" href="index.html">AnimeHindiZone</a><a class="home" href="index.html">← Home</a></div></header>
+<main>
+<h1 id="episodeTitle">Loading episode…</h1><p class="sub" id="animeTitle">Please wait</p>
+<section class="card">
+ <div class="player"><div id="playerHost"></div><div id="message"><strong>Loading video…</strong><span>Opening the episode player.</span></div></div>
+ <div class="actions"><button id="streamBtn" class="primary" disabled>▶ Stream</button><a id="downloadBtn" class="link secondary" href="#" target="_blank" rel="noopener" aria-disabled="true">↓ Download</a></div>
+ <div class="quality" id="qualityRow"><span class="label">Quality:</span><span class="sub">Loading…</span></div>
+ <div class="audio"><label for="audioLanguage">Audio language</label><select id="audioLanguage" disabled><option>Waiting for audio tracks…</option></select></div>
+ <div class="hint" id="hint">Available audio tracks will appear here when the file has multiple tracks.</div>
+</section>
+<section class="section"><h2>Episodes</h2><div id="episodeNav"><div class="status">Loading episodes…</div></div></section>
+<div id="status" class="status"></div>
+</main><footer>AnimeHindiZone</footer>
 <script>
-const SUPABASE_URL =
-  "https://gmacsiymybvfcxydvkla.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-const params = new URLSearchParams(location.search);
-const animeId = params.get("id");
-const episodeNumber = params.get("episode");
-
-const videoContainer = document.getElementById("videoContainer");
-const episodeTitle = document.getElementById("episodeTitle");
-const episodeMeta = document.getElementById("episodeMeta");
-const episodeNav = document.getElementById("episodeNav");
-const viewInfo = document.getElementById("viewInfo");
-const qualitySection = document.getElementById("qualitySection");
-const qualityButtons = document.getElementById("qualityButtons");
-const currentQuality = document.getElementById("currentQuality");
-const linkButtons = document.getElementById("linkButtons");
-const audioLanguage = document.getElementById("audioLanguage");
-const audioNote = document.getElementById("audioNote");
-
-let qualityLinks = [];
-let selectedQuality = null;
-let hlsInstance = null;
-let currentVideo = null;
-let playerGeneration = 0;
-
-const LANGUAGES = [
-  {name:"Hindi", codes:["hi","hin","hindi"]},
-  {name:"Japanese", codes:["ja","jpn","japanese","jp"]},
-  {name:"English", codes:["en","eng","english"]},
-  {name:"Tamil", codes:["ta","tam","tamil"]},
-  {name:"Telugu", codes:["te","tel","telugu"]}
-];
-
-function safeUrl(value){
-  if(!value) return "";
-  try{
-    const parsed = new URL(value);
-    return ["http:","https:"].includes(parsed.protocol)
-      ? parsed.href : "";
-  }catch{
-    return "";
-  }
-}
-
-function cleanupPlayer(){
-  playerGeneration++;
-
-  if(hlsInstance){
-    hlsInstance.destroy();
-    hlsInstance = null;
-  }
-
-  currentVideo = null;
-}
-
-function resetAudioSelector(message){
-  audioLanguage.innerHTML = "";
-  const option = document.createElement("option");
-  option.value = "";
-  option.textContent = "Audio track unavailable";
-  audioLanguage.appendChild(option);
-  audioLanguage.disabled = true;
-  audioNote.textContent = message;
-}
-
-function updateAudioTracks(hls, generation){
-  if(generation !== playerGeneration || hls !== hlsInstance) return;
-
-  const previous = audioLanguage.value;
-  const tracks = hls.audioTracks || [];
-
-  audioLanguage.innerHTML = "";
-
-  if(!tracks.length){
-    resetAudioSelector(
-      "Is video mein HLS audio tracks detect nahi hue. " +
-      "Video source mein multiple audio renditions hone chahiye."
-    );
-    return;
-  }
-
-  const options = tracks.map((track,index) => {
-    const raw = [
-      track.name,
-      track.lang,
-      track.language,
-      track.label
-    ].filter(Boolean).join(" ").toLowerCase();
-
-    const match = LANGUAGES.find(lang =>
-      lang.codes.some(code =>
-        new RegExp("(^|[^a-z])" + code + "([^a-z]|$)").test(raw)
-      ) || raw.includes(lang.name.toLowerCase())
-    );
-
-    return {
-      index,
-      label: match ? match.name : (
-        track.name || track.lang || track.label ||
-        "Audio track " + (index+1)
-      ),
-      lang: (track.lang || track.language || "").toLowerCase()
-    };
-  });
-
-  // Preferred languages first, without hiding other available tracks.
-  options.sort((a,b) => {
-    const ai = LANGUAGES.findIndex(l =>
-      l.name.toLowerCase() === a.label.toLowerCase()
-    );
-    const bi = LANGUAGES.findIndex(l =>
-      l.name.toLowerCase() === b.label.toLowerCase()
-    );
-    return (ai < 0 ? 99 : ai) - (bi < 0 ? 99 : bi);
-  });
-
-  options.forEach(item => {
-    const option = document.createElement("option");
-    option.value = String(item.index);
-    option.textContent = item.label;
-    audioLanguage.appendChild(option);
-  });
-
-  audioLanguage.disabled = false;
-
-  const preferred = options.find(item =>
-    LANGUAGES.some(l => l.name.toLowerCase() === item.label.toLowerCase())
-  );
-
-  const restore = options.find(item => String(item.index) === previous);
-  const selected = restore || preferred || options[0];
-
-  audioLanguage.value = String(selected.index);
-  hls.audioTrack = selected.index;
-
-  audioNote.textContent =
-    "Detected " + tracks.length + " audio track(s). " +
-    "Sirf source mein maujood languages hi select hongi.";
-}
-
-audioLanguage.addEventListener("change", () => {
-  if(!hlsInstance || audioLanguage.value === "") return;
-
-  const index = Number(audioLanguage.value);
-  if(Number.isInteger(index) && index >= 0){
-    hlsInstance.audioTrack = index;
-    audioNote.textContent =
-      "Selected: " + audioLanguage.options[
-        audioLanguage.selectedIndex
-      ].textContent;
-  }
-});
-
-async function recordAnimeView(){
-  if(!animeId) return;
-
-  try{
-    const {
-      data:{user},
-      error:userError
-    } = await supabaseClient.auth.getUser();
-
-    if(userError || !user) return;
-
-    const {error} = await supabaseClient
-      .from("anime_views")
-      .insert({anime_id:animeId,user_id:user.id});
-
-    if(error?.code === "23505"){
-      viewInfo.textContent = "👁️ Already viewed";
-    }else if(!error){
-      viewInfo.textContent = "👁️ View counted";
-    }else{
-      console.error("View save failed:",error);
-    }
-  }catch(error){
-    console.error("View tracking error:",error);
-  }
-}
-
-async function loadEpisode(){
-  if(!animeId || !episodeNumber ||
-     !Number.isInteger(Number(episodeNumber)) ||
-     Number(episodeNumber) < 1){
-    showError("Anime ID ya Episode number missing hai.");
-    episodeTitle.textContent = "Episode unavailable";
-    return;
-  }
-
-  const {data,error} = await supabaseClient
-    .from("episodes")
-    .select("*")
-    .eq("anime_id",animeId)
-    .eq("episode_number",Number(episodeNumber))
-    .maybeSingle();
-
-  if(error){
-    showError("Episode load failed: " + error.message);
-    return;
-  }
-
-  if(!data){
-    showError("Ye episode nahi mila.");
-    episodeTitle.textContent = "Episode unavailable";
-    return;
-  }
-
-  episodeTitle.textContent =
-    data.episode_title || "Episode " + data.episode_number;
-
-  episodeMeta.textContent =
-    (data.anime_title || animeId) +
-    " • Episode " + data.episode_number;
-
-  document.title =
-    (data.anime_title || "Anime") +
-    " - Episode " + data.episode_number;
-
-  await loadQualityLinks(data.anime_title);
-
-  if(qualityLinks.length === 0){
-    resetAudioSelector(
-      "Purane episode ke fallback video mein language switching " +
-      "tabhi chalegi jab supported multi-audio HLS source ho."
-    );
-    loadVideo(data.video_url);
-  }
-
-  recordAnimeView();
-}
-
-function showError(message){
-  cleanupPlayer();
-  resetAudioSelector(message);
-  videoContainer.innerHTML = "";
-
-  const div = document.createElement("div");
-  div.className = "message error";
-  div.textContent = message;
-  videoContainer.appendChild(div);
-}
-
-async function loadQualityLinks(animeTitle){
-  qualityLinks = [];
-  selectedQuality = null;
-
-  qualitySection.style.display = "none";
-  qualityButtons.innerHTML = "";
-  linkButtons.innerHTML = "";
-  currentQuality.textContent = "";
-
-  if(!animeTitle || !episodeNumber) return;
-
-  const {data,error} = await supabaseClient
-    .from("episode_links")
-    .select("*")
-    .eq("anime_name",animeTitle)
-    .eq("episode_number",Number(episodeNumber));
-
-  if(error){
-    console.error("episode_links error:",error);
-    return;
-  }
-
-  if(!data?.length) return;
-
-  const order = {"1080p":1,"720p":2,"480p":3};
-  qualityLinks = data.sort(
-    (a,b) => (order[a.quality] || 99) -
-             (order[b.quality] || 99)
-  );
-
-  qualitySection.style.display = "block";
-
-  qualityLinks.forEach(link => {
-    const button = document.createElement("button");
-    button.className = "quality-btn";
-    button.type = "button";
-    button.textContent = link.quality;
-    button.onclick = () => selectQuality(link.quality);
-    qualityButtons.appendChild(button);
-  });
-
-  selectQuality(qualityLinks[0].quality);
-}
-
-function selectQuality(quality){
-  const selected = qualityLinks.find(
-    item => item.quality === quality
-  );
-  if(!selected) return;
-
-  selectedQuality = selected;
-
-  document.querySelectorAll(".quality-btn").forEach(button => {
-    button.classList.toggle(
-      "active",button.textContent === quality
-    );
-  });
-
-  currentQuality.textContent = "Selected Quality: " + quality;
-
-  const streamUrl = safeUrl(selected.stream_url);
-  const downloadUrl = safeUrl(selected.download_url);
-
-  if(streamUrl){
-    loadVideo(streamUrl);
-  }else{
-    cleanupPlayer();
-    resetAudioSelector("Stream link available nahi hai.");
-    videoContainer.innerHTML =
-      '<div class="message">▶ ' + quality +
-      ' ka Stream Link available nahi hai.</div>';
-  }
-
-  linkButtons.innerHTML = "";
-
-  if(streamUrl){
-    const streamButton = document.createElement("a");
-    streamButton.className = "stream-btn";
-    streamButton.href = streamUrl;
-    streamButton.target = "_blank";
-    streamButton.rel = "noopener noreferrer";
-    streamButton.textContent = "▶ Stream " + quality;
-    linkButtons.appendChild(streamButton);
-  }
-
-  if(downloadUrl){
-    const downloadButton = document.createElement("a");
-    downloadButton.className = "download-btn";
-    downloadButton.href = downloadUrl;
-    downloadButton.target = "_blank";
-    downloadButton.rel = "noopener noreferrer";
-    downloadButton.textContent = "⬇ Download " + quality;
-    linkButtons.appendChild(downloadButton);
-  }
-
-  if(!streamUrl && !downloadUrl){
-    linkButtons.innerHTML =
-      '<div class="message">Is quality ke links available nahi hain.</div>';
-  }
-}
-
-function loadVideo(url){
-  const safe = safeUrl(url);
-
-  cleanupPlayer();
-  resetAudioSelector("Audio tracks check ho rahe hain...");
-
-  if(!safe){
-    videoContainer.innerHTML =
-      '<div class="message error">Video URL available nahi hai.</div>';
-    resetAudioSelector("Video URL available nahi hai.");
-    return;
-  }
-
-  const generation = playerGeneration;
-  const path = new URL(safe).pathname.toLowerCase();
-  const isHls = /\.m3u8$/.test(path);
-
-  videoContainer.innerHTML = "";
-
-  const video = document.createElement("video");
-  video.controls = true;
-  video.playsInline = true;
-  video.preload = "metadata";
-  videoContainer.appendChild(video);
-  currentVideo = video;
-
-  video.addEventListener("error", () => {
-    if(generation !== playerGeneration) return;
-    if(hlsInstance) return;
-
-    resetAudioSelector("Video load nahi hua. Source URL check karo.");
-  });
-
-  if(isHls && window.Hls && Hls.isSupported()){
-    const hls = new Hls();
-    hlsInstance = hls;
-
-    hls.on(Hls.Events.MEDIA_ATTACHED, () => {
-      if(generation === playerGeneration){
-        hls.loadSource(safe);
-      }
-    });
-
-    hls.on(Hls.Events.MANIFEST_PARSED, () => {
-      updateAudioTracks(hls,generation);
-    });
-
-    hls.on(Hls.Events.AUDIO_TRACKS_UPDATED, () => {
-      updateAudioTracks(hls,generation);
-    });
-
-    hls.on(Hls.Events.ERROR, (event,info) => {
-      if(generation !== playerGeneration) return;
-
-      if(info.fatal){
-        console.error("HLS playback error:",info);
-        audioNote.textContent =
-          "HLS playback error. Video source ya server settings check karo.";
-      }
-    });
-
-    hls.attachMedia(video);
-    return;
-  }
-
-  if(isHls && video.canPlayType("application/vnd.apple.mpegurl")){
-    video.src = safe;
-    resetAudioSelector(
-      "Native HLS playback mein is browser par audio-track switching " +
-      "control available na bhi ho sakta hai. HLS.js supported browser try karo."
-    );
-    return;
-  }
-
-  if(/\.(mp4|webm|ogg)$/.test(path)){
-    video.src = safe;
-    resetAudioSelector(
-      "Direct video file ke liye browser mein multiple audio-track " +
-      "switching universally supported nahi hai. Multi-audio HLS (.m3u8) use karo."
-    );
-    return;
-  }
-
-  // External embed pages can be played, but their internal audio tracks
-  // are controlled by that hosting player's own controls.
-  cleanupPlayer();
-  resetAudioSelector(
-    "External player hai. Language change karne ke liye us player ke " +
-    "Audio/Settings controls use karo, agar available hon."
-  );
-
-  const iframe = document.createElement("iframe");
-  iframe.src = safe;
-  iframe.allowFullscreen = true;
-  iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.setAttribute(
-    "allow","autoplay; fullscreen; picture-in-picture"
-  );
-  videoContainer.appendChild(iframe);
-}
-
-async function loadEpisodeList(){
-  if(!animeId){
-    episodeNav.innerHTML =
-      '<div class="message error">Anime ID nahi mili.</div>';
-    return;
-  }
-
-  const {data,error} = await supabaseClient
-    .from("episodes")
-    .select("episode_number,episode_title")
-    .eq("anime_id",animeId)
-    .order("episode_number",{ascending:true});
-
-  if(error){
-    console.error("Episode list error:",error);
-    episodeNav.innerHTML =
-      '<div class="message error">Episodes load failed.</div>';
-    return;
-  }
-
-  if(!data?.length){
-    episodeNav.innerHTML =
-      '<div class="message">Abhi koi episode available nahi hai.</div>';
-    return;
-  }
-
-  episodeNav.innerHTML = "";
-  const episodeButtons = document.createElement("div");
-  episodeButtons.className = "episode-nav";
-
-  data.forEach(episode => {
-    const link = document.createElement("a");
-
-    link.href =
-      "watch.html?id=" + encodeURIComponent(animeId) +
-      "&episode=" + encodeURIComponent(episode.episode_number);
-
-    link.textContent = "Episode " + episode.episode_number;
-    link.title = episode.episode_title ||
-      "Episode " + episode.episode_number;
-
-    if(Number(episode.episode_number) === Number(episodeNumber)){
-      link.classList.add("active");
-      link.setAttribute("aria-current","page");
-    }
-
-    episodeButtons.appendChild(link);
-  });
-
-  episodeNav.appendChild(episodeButtons);
-}
-
-loadEpisode();
-loadEpisodeList();
+(async function(){
+ const SUPABASE_URL="https://gmacsiymybvfcxydvkla.supabase.co";
+ const SUPABASE_KEY="sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+ const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+ const params=new URLSearchParams(location.search), animeId=params.get("id"), episodeNo=Number(params.get("episode")||1);
+ const $=id=>document.getElementById(id);
+ let player=null, animeTitle="Anime";
+ function message(title,detail,show=true){const box=$("message");box.innerHTML="";const b=document.createElement("strong");b.textContent=title;box.appendChild(b);const s=document.createElement("span");s.textContent=detail||"";box.appendChild(s);box.style.display=show?"flex":"none"}
+ function download(url){const a=$("downloadBtn");if(url){a.href=url;a.style.opacity="1";a.style.pointerEvents="auto";a.setAttribute("aria-disabled","false")}else{a.href="#";a.style.opacity=".45";a.style.pointerEvents="none";a.setAttribute("aria-disabled","true")}}
+ function cleanup(){if(player){try{player.pause()}catch(e){}player.remove();player=null}$("playerHost").innerHTML="";$("audioLanguage").innerHTML='<option value="">Waiting for audio tracks…</option>';$("audioLanguage").disabled=true}
+ function languageName(t,i){const x=((t.lang||t.language||"")+" "+(t.label||t.title||"")).toLowerCase();if(/\b(hi|hin|hindi)\b/.test(x))return"Hindi";if(/\b(ja|jpn|japanese)\b/.test(x))return"Japanese";if(/\b(en|eng|english)\b/.test(x))return"English";if(/\b(ta|tam|tamil)\b/.test(x))return"Tamil";if(/\b(te|tel|telugu)\b/.test(x))return"Telugu";return t.label||t.title||t.lang||("Audio track "+(i+1))}
+ async function audioOptions(el){
+   const sel=$("audioLanguage");sel.innerHTML="";
+   try{
+    const tracks=typeof el.getAudioLangs==="function"?el.getAudioLangs():[];
+    if(!tracks||!tracks.length){sel.innerHTML='<option value="">No audio tracks detected</option>';sel.disabled=true;$("hint").textContent="No tracks were detected, or the video host blocks browser access.";return}
+    tracks.forEach((t,i)=>{const o=document.createElement("option");o.value=t.lang||t.language||t.label||t.title||String(i);o.textContent=languageName(t,i);if(t.active)o.selected=true;sel.appendChild(o)});
+    sel.disabled=tracks.length<2;
+    sel.onchange=async()=>{try{if(typeof el.selectAudioLang==="function"){await el.selectAudioLang(sel.value);$("hint").textContent="Audio track changed."}}catch(e){console.error(e);$("hint").textContent="Could not switch this audio track."}};
+    $("hint").textContent=tracks.length>1?"Choose a language to switch audio.":"Only one audio track is available in this file.";
+   }catch(e){console.error(e);sel.innerHTML='<option value="">Audio selector unavailable</option>';sel.disabled=true}
+ }
+ async function playUrl(url){
+   cleanup();if(!url){message("No video link found","Add a Stream URL in the admin panel.");return}
+   message("Loading video…","The MKV player is opening this file.");
+   try{
+    await customElements.whenDefined("movi-player");
+    const el=document.createElement("movi-player");el.setAttribute("controls","");el.setAttribute("playsinline","");el.setAttribute("src",url);el.style.width="100%";el.style.height="100%";
+    el.addEventListener("loadeddata",()=>{if(player!==el)return;message("","",false);audioOptions(el)});
+    el.addEventListener("trackschange",()=>{if(player===el)audioOptions(el)});
+    el.addEventListener("errordisplay",e=>{console.error("Player error",e.detail);message("Video could not play","The host may block CORS/range requests, or the codec may not be supported.")});
+    el.addEventListener("error",()=>message("Video failed to load","Check that the link is active and allows browser playback."));
+    player=el;$("playerHost").appendChild(el);$("message").style.display="none";
+   }catch(e){console.error(e);message("Player could not start","Refresh and try again.")}
+ }
+ function showQualities(rows,fallback){
+  const box=$("qualityRow");box.innerHTML='<span class="label">Quality:</span>';
+  const order={"1080p":0,"720p":1,"480p":2};
+  rows.sort((a,b)=>(order[a.quality]??9)-(order[b.quality]??9));
+  if(!rows.length){box.insertAdjacentHTML("beforeend",'<span class="sub">Default</span>');$("streamBtn").disabled=!fallback;$("streamBtn").onclick=()=>fallback&&window.open(fallback,"_blank","noopener");download("");if(fallback)playUrl(fallback);return}
+  rows.forEach((row,i)=>{const b=document.createElement("button");b.className="q"+(i===0?" active":"");b.textContent=row.quality||"Quality";b.onclick=()=>{box.querySelectorAll(".q").forEach(x=>x.classList.remove("active"));b.classList.add("active");$("streamBtn").disabled=!row.stream_url;$("streamBtn").onclick=()=>row.stream_url&&window.open(row.stream_url,"_blank","noopener");download(row.download_url);playUrl(row.stream_url||row.download_url)};box.appendChild(b)});
+  const first=rows[0];$("streamBtn").disabled=!first.stream_url;$("streamBtn").onclick=()=>first.stream_url&&window.open(first.stream_url,"_blank","noopener");download(first.download_url);playUrl(first.stream_url||first.download_url);
+ }
+ async function loadEpisodes(){
+  const nav=$("episodeNav");const {data,error}=await db.from("episodes").select("episode_number,episode_title").eq("anime_id",animeId).order("episode_number",{ascending:true});
+  nav.innerHTML="";if(error||!data){nav.innerHTML='<div class="status error">Could not load episodes.</div>';console.error(error);return}
+  if(!data.length){nav.innerHTML='<div class="status">No episodes added yet.</div>';return}
+  data.forEach(ep=>{const a=document.createElement("a");a.href="watch.html?id="+encodeURIComponent(animeId)+"&episode="+encodeURIComponent(ep.episode_number);a.textContent="EP "+ep.episode_number;a.title=ep.episode_title||("Episode "+ep.episode_number);if(Number(ep.episode_number)===episodeNo){a.className="current";a.setAttribute("aria-current","page")}nav.appendChild(a)})
+ }
+ try{
+  $("streamBtn").disabled=true;download("");
+  if(!animeId){message("Episode ID missing","Open an episode from the anime page.");$("status").textContent="URL needs ?id=ANIME_ID&episode=NUMBER.";return}
+  const {data:anime,error:ae}=await db.from("anime").select("anime_id,title").eq("anime_id",animeId).maybeSingle();if(ae)console.warn(ae);
+  animeTitle=anime?.title||"Anime";$("animeTitle").textContent=animeTitle+" • Episode "+episodeNo;$("episodeTitle").textContent=animeTitle+" — Episode "+episodeNo;
+  const {data:ep,error:ee}=await db.from("episodes").select("video_url,episode_title").eq("anime_id",animeId).eq("episode_number",episodeNo).maybeSingle();if(ee)console.warn(ee);
+  if(ep?.episode_title)$("episodeTitle").textContent=animeTitle+" — "+ep.episode_title;
+  const {data:links,error:le}=await db.from("episode_links").select("quality,stream_url,download_url").eq("anime_name",animeTitle).eq("episode_number",episodeNo);if(le)console.warn(le);
+  showQualities((links||[]).filter(x=>x.stream_url||x.download_url),ep?.video_url||"");await loadEpisodes();
+ }catch(e){console.error(e);message("Could not load episode","Refresh the page and check the Supabase setup.");$("status").textContent="An error occurred while loading this episode."}
+})();
 </script>
-</body>
-</html>
+</body></html>
