@@ -6,92 +6,293 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Watch Anime - AnimeHindiZone</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Arial,sans-serif;background:#0b0b0f;color:#fff}
-header{background:#111118;border-bottom:1px solid #292936;padding:16px 20px}
-.nav{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between}
-.logo{color:#ff1744;text-decoration:none;font-size:22px;font-weight:bold}
-.nav a{color:#fff;text-decoration:none;margin-left:15px}
+
+body{
+  font-family:Arial,sans-serif;
+  background:#0b0b0f;
+  color:#fff;
+}
+
+header{
+  background:#111118;
+  border-bottom:1px solid #292936;
+  padding:16px 20px;
+}
+
+.nav{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  color:#ff1744;
+  text-decoration:none;
+  font-size:22px;
+  font-weight:bold;
+}
+
+.nav a{
+  color:#fff;
+  text-decoration:none;
+  margin-left:15px;
+}
+
 .nav a:hover{color:#ff1744}
-.container{max-width:1100px;margin:auto;padding:20px}
-.back{display:inline-block;color:#ff1744;text-decoration:none;margin-bottom:15px}
-.video-box,.quality-section,.section{background:#14141c;border:1px solid #292936;border-radius:12px;margin-bottom:20px}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:20px;
+}
+
+.back{
+  display:inline-block;
+  color:#ff1744;
+  text-decoration:none;
+  margin-bottom:15px;
+}
+
+.video-box,.quality-section,.section{
+  background:#14141c;
+  border:1px solid #292936;
+  border-radius:12px;
+  margin-bottom:20px;
+}
+
 .video-box{overflow:hidden}
-.video-wrapper{width:100%;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
-video{width:100%;height:100%;display:block;background:#000}
-iframe{width:100%;height:100%;border:none}
+
+.video-wrapper{
+  width:100%;
+  background:#000;
+  aspect-ratio:16/9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+video{
+  width:100%;
+  height:100%;
+  display:block;
+  background:#000;
+}
+
+iframe{
+  width:100%;
+  height:100%;
+  border:none;
+}
+
 .info{padding:18px}
-.info h1{font-size:24px;margin-bottom:8px}
+
+.info h1{
+  font-size:24px;
+  margin-bottom:8px;
+}
+
 .meta{color:#aaa;font-size:14px}
-.message{text-align:center;padding:30px 15px;color:#aaa;overflow-wrap:anywhere}
+
+.message{
+  text-align:center;
+  padding:30px 15px;
+  color:#aaa;
+  overflow-wrap:anywhere;
+}
+
 .error{color:#ff6b81}
-.view-info{margin-top:12px;color:#888;font-size:13px}
+
+.view-info{
+  margin-top:12px;
+  color:#888;
+  font-size:13px;
+}
+
 .quality-section,.section{padding:20px}
-.quality-section h2,.section h2{color:#ff1744;margin-bottom:15px}
-.quality-buttons,.link-buttons,.episode-nav{display:flex;gap:10px;flex-wrap:wrap}
-.quality-btn{background:#22222c;color:#fff;border:1px solid #363642;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:bold}
-.quality-btn:hover,.quality-btn.active{background:#ff1744;border-color:#ff1744}
-.current-quality{color:#aaa;font-size:13px;margin-top:12px}
+
+.quality-section h2,.section h2{
+  color:#ff1744;
+  margin-bottom:15px;
+}
+
+.quality-buttons,.link-buttons{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.quality-btn{
+  background:#22222c;
+  color:#fff;
+  border:1px solid #363642;
+  padding:10px 18px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.quality-btn:hover,.quality-btn.active{
+  background:#ff1744;
+  border-color:#ff1744;
+}
+
+.current-quality{
+  color:#aaa;
+  font-size:13px;
+  margin-top:12px;
+}
+
 .link-buttons{margin-top:15px}
-.stream-btn,.download-btn{display:inline-block;padding:11px 18px;border-radius:8px;text-decoration:none;color:#fff;font-weight:bold;overflow-wrap:anywhere}
+
+.stream-btn,.download-btn{
+  display:inline-block;
+  padding:11px 18px;
+  border-radius:8px;
+  text-decoration:none;
+  color:#fff;
+  font-weight:bold;
+  overflow-wrap:anywhere;
+}
+
 .stream-btn{background:#ff1744}
 .download-btn{background:#00a86b}
 .stream-btn:hover{background:#e9143d}
 .download-btn:hover{background:#00c77d}
-.episode-nav a{display:inline-block;background:#22222c;color:#fff;text-decoration:none;padding:9px 13px;border-radius:7px;font-size:13px}
-.episode-nav a.active,.episode-nav a:hover{background:#ff1744}
+
+/* Episode buttons */
+#episodeNav .episode-nav{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+#episodeNav .episode-nav a{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:100px;
+  min-height:42px;
+  padding:10px 15px;
+  background:#22222c;
+  border:1px solid #363642;
+  border-radius:8px;
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+  font-weight:bold;
+  transition:background .2s,border-color .2s;
+}
+
+#episodeNav .episode-nav a.active,
+#episodeNav .episode-nav a:hover{
+  background:#ff1744;
+  border-color:#ff1744;
+}
+
 @media(max-width:600px){
-.container{padding:14px}
-.info h1{font-size:20px}
-.nav{flex-direction:column;gap:10px}
-.nav a{margin-left:8px}
-.quality-buttons{display:grid;grid-template-columns:repeat(3,1fr)}
-.quality-btn{width:100%;padding:10px 5px}
-.link-buttons{display:grid;grid-template-columns:1fr 1fr}
-.stream-btn,.download-btn{text-align:center;padding:11px 8px}
+  .container{padding:14px}
+  .info h1{font-size:20px}
+
+  .nav{
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .nav a{margin-left:8px}
+
+  .quality-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .quality-btn{
+    width:100%;
+    padding:10px 5px;
+  }
+
+  .link-buttons{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stream-btn,.download-btn{
+    text-align:center;
+    padding:11px 8px;
+  }
+
+  #episodeNav .episode-nav{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:8px;
+  }
+
+  #episodeNav .episode-nav a{
+    min-width:0;
+    width:100%;
+    padding:10px 4px;
+    font-size:12px;
+  }
 }
 </style>
 </head>
+
 <body>
 <header>
   <div class="nav">
     <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
-    <div><a href="index.html">Home</a><a href="admin.html">Admin</a></div>
+    <div>
+      <a href="index.html">Home</a>
+      <a href="admin.html">Admin</a>
+    </div>
   </div>
 </header>
 
 <div class="container">
-<a href="index.html" class="back">← Home</a>
+  <a href="index.html" class="back">← Home</a>
 
-<div class="video-box">
-  <div id="videoContainer" class="video-wrapper">
-    <div class="message">Video load ho raha hai...</div>
+  <div class="video-box">
+    <div id="videoContainer" class="video-wrapper">
+      <div class="message">Video load ho raha hai...</div>
+    </div>
+
+    <div class="info">
+      <h1 id="episodeTitle">Loading...</h1>
+      <div id="episodeMeta" class="meta"></div>
+      <div id="viewInfo" class="view-info"></div>
+    </div>
   </div>
-  <div class="info">
-    <h1 id="episodeTitle">Loading...</h1>
-    <div id="episodeMeta" class="meta"></div>
-    <div id="viewInfo" class="view-info"></div>
+
+  <div id="qualitySection" class="quality-section" style="display:none">
+    <h2>🎥 Quality</h2>
+    <div id="qualityButtons" class="quality-buttons"></div>
+    <div id="currentQuality" class="current-quality"></div>
+    <div id="linkButtons" class="link-buttons"></div>
   </div>
-</div>
 
-<div id="qualitySection" class="quality-section" style="display:none">
-  <h2>🎥 Quality</h2>
-  <div id="qualityButtons" class="quality-buttons"></div>
-  <div id="currentQuality" class="current-quality"></div>
-  <div id="linkButtons" class="link-buttons"></div>
-</div>
-
-<div class="section">
-  <h2>📺 Episodes</h2>
-  <div id="episodeNav"><div class="message">Episodes load ho rahe hain...</div></div>
-</div>
+  <div class="section">
+    <h2>📺 Episodes</h2>
+    <div id="episodeNav">
+      <div class="message">Episodes load ho rahe hain...</div>
+    </div>
+  </div>
 </div>
 
 <script>
-const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const SUPABASE_URL =
+  "https://gmacsiymybvfcxydvkla.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
@@ -110,113 +311,158 @@ const linkButtons = document.getElementById("linkButtons");
 let qualityLinks = [];
 let selectedQuality = null;
 
-function escapeHtml(value) {
+function escapeHtml(value){
   return String(value ?? "")
-    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
 }
 
-function safeUrl(value) {
-  if (!value) return "";
-  try {
+function safeUrl(value){
+  if(!value) return "";
+
+  try{
     const parsed = new URL(value);
-    return ["http:","https:"].includes(parsed.protocol) ? parsed.href : "";
-  } catch {
+
+    return ["http:","https:"].includes(parsed.protocol)
+      ? parsed.href
+      : "";
+  }catch{
     return "";
   }
 }
 
-async function recordAnimeView() {
-  if (!animeId) return;
-  try {
-    const { data:{user}, error:userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) return;
+async function recordAnimeView(){
+  if(!animeId) return;
 
-    const { error } = await supabaseClient.from("anime_views").insert({
-      anime_id: animeId,
-      user_id: user.id
-    });
+  try{
+    const {
+      data:{user},
+      error:userError
+    } = await supabaseClient.auth.getUser();
 
-    if (error?.code === "23505") {
+    if(userError || !user) return;
+
+    const {error} = await supabaseClient
+      .from("anime_views")
+      .insert({
+        anime_id:animeId,
+        user_id:user.id
+      });
+
+    if(error?.code === "23505"){
       viewInfo.textContent = "👁️ Already viewed";
-    } else if (!error) {
+    }else if(!error){
       viewInfo.textContent = "👁️ View counted";
-    } else {
-      console.error("View save failed:", error);
+    }else{
+      console.error("View save failed:",error);
     }
-  } catch (error) {
-    console.error("View tracking error:", error);
+  }catch(error){
+    console.error("View tracking error:",error);
   }
 }
 
-async function loadEpisode() {
-  if (!animeId || !episodeNumber || !Number.isInteger(Number(episodeNumber))) {
+async function loadEpisode(){
+  if(
+    !animeId ||
+    !episodeNumber ||
+    !Number.isInteger(Number(episodeNumber)) ||
+    Number(episodeNumber) < 1
+  ){
     showError("Anime ID ya Episode number missing hai.");
     episodeTitle.textContent = "Episode unavailable";
     return;
   }
 
-  const { data, error } = await supabaseClient.from("episodes")
+  const {data,error} = await supabaseClient
+    .from("episodes")
     .select("*")
-    .eq("anime_id", animeId)
-    .eq("episode_number", Number(episodeNumber))
+    .eq("anime_id",animeId)
+    .eq("episode_number",Number(episodeNumber))
     .maybeSingle();
 
-  if (error) {
+  if(error){
     showError("Episode load failed: " + error.message);
     return;
   }
-  if (!data) {
+
+  if(!data){
     showError("Ye episode nahi mila.");
     return;
   }
 
-  episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
-  episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
-  document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
+  episodeTitle.textContent =
+    data.episode_title || "Episode " + data.episode_number;
+
+  episodeMeta.textContent =
+    (data.anime_title || animeId) +
+    " • Episode " + data.episode_number;
+
+  document.title =
+    (data.anime_title || "Anime") +
+    " - Episode " + data.episode_number;
 
   await loadQualityLinks(data.anime_title);
 
-  if (qualityLinks.length === 0) {
+  if(qualityLinks.length === 0){
     // Purane episodes ke liye fallback.
     loadVideo(data.video_url);
   }
+
   recordAnimeView();
 }
 
-function showError(message) {
-  videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
+function showError(message){
+  videoContainer.innerHTML =
+    '<div class="message error">' +
+    escapeHtml(message) +
+    '</div>';
 }
 
-async function loadQualityLinks(animeTitle) {
+async function loadQualityLinks(animeTitle){
   qualityLinks = [];
+  selectedQuality = null;
+
   qualitySection.style.display = "none";
   qualityButtons.innerHTML = "";
   linkButtons.innerHTML = "";
   currentQuality.textContent = "";
 
-  if (!animeTitle || !episodeNumber) return;
+  if(!animeTitle || !episodeNumber) return;
 
-  const { data, error } = await supabaseClient.from("episode_links")
+  const {data,error} = await supabaseClient
+    .from("episode_links")
     .select("*")
-    .eq("anime_name", animeTitle)
-    .eq("episode_number", Number(episodeNumber));
+    .eq("anime_name",animeTitle)
+    .eq("episode_number",Number(episodeNumber));
 
-  if (error) {
-    console.error("episode_links error:", error);
+  if(error){
+    console.error("episode_links error:",error);
     return;
   }
-  if (!data?.length) return;
 
-  const order = {"1080p":1,"720p":2,"480p":3};
-  qualityLinks = data.sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
+  if(!data?.length) return;
+
+  const order = {
+    "1080p":1,
+    "720p":2,
+    "480p":3
+  };
+
+  qualityLinks = data.sort(
+    (a,b) => (order[a.quality] || 99) -
+             (order[b.quality] || 99)
+  );
+
   qualitySection.style.display = "block";
 
   qualityLinks.forEach(link => {
     const button = document.createElement("button");
     button.className = "quality-btn";
     button.textContent = link.quality;
+    button.type = "button";
     button.onclick = () => selectQuality(link.quality);
     qualityButtons.appendChild(button);
   });
@@ -224,31 +470,42 @@ async function loadQualityLinks(animeTitle) {
   selectQuality(qualityLinks[0].quality);
 }
 
-function selectQuality(quality) {
-  const selected = qualityLinks.find(item => item.quality === quality);
-  if (!selected) return;
+function selectQuality(quality){
+  const selected = qualityLinks.find(
+    item => item.quality === quality
+  );
+
+  if(!selected) return;
+
   selectedQuality = selected;
 
   document.querySelectorAll(".quality-btn").forEach(button => {
-    button.classList.toggle("active", button.textContent === quality);
+    button.classList.toggle(
+      "active",
+      button.textContent === quality
+    );
   });
 
   currentQuality.textContent = "Selected Quality: " + quality;
 
-  // IMPORTANT: Player always uses the ORIGINAL stream_url.
+  // Player uses the saved stream_url.
   const streamUrl = safeUrl(selected.stream_url);
+
+  // Download button uses download_url only.
   const downloadUrl = safeUrl(selected.download_url);
 
-  if (streamUrl) {
+  if(streamUrl){
     loadVideo(streamUrl);
-  } else {
-    videoContainer.innerHTML = '<div class="message">▶ ' +
-      escapeHtml(quality) + ' ka Stream Link available nahi hai.</div>';
+  }else{
+    videoContainer.innerHTML =
+      '<div class="message">▶ ' +
+      escapeHtml(quality) +
+      ' ka Stream Link available nahi hai.</div>';
   }
 
   linkButtons.innerHTML = "";
 
-  if (streamUrl) {
+  if(streamUrl){
     const streamButton = document.createElement("a");
     streamButton.className = "stream-btn";
     streamButton.href = streamUrl;
@@ -258,8 +515,7 @@ function selectQuality(quality) {
     linkButtons.appendChild(streamButton);
   }
 
-  // IMPORTANT: Only the Download button uses the saved download_url.
-  if (downloadUrl) {
+  if(downloadUrl){
     const downloadButton = document.createElement("a");
     downloadButton.className = "download-btn";
     downloadButton.href = downloadUrl;
@@ -269,14 +525,16 @@ function selectQuality(quality) {
     linkButtons.appendChild(downloadButton);
   }
 
-  if (!streamUrl && !downloadUrl) {
-    linkButtons.innerHTML = '<div class="message">Is quality ke links available nahi hain.</div>';
+  if(!streamUrl && !downloadUrl){
+    linkButtons.innerHTML =
+      '<div class="message">Is quality ke links available nahi hain.</div>';
   }
 }
 
-function loadVideo(url) {
+function loadVideo(url){
   const safe = safeUrl(url);
-  if (!safe) {
+
+  if(!safe){
     showError("Video URL available nahi hai.");
     return;
   }
@@ -286,15 +544,19 @@ function loadVideo(url) {
 
   videoContainer.innerHTML = "";
 
-  if (isVideoFile && !path.endsWith(".m3u8")) {
+  if(isVideoFile && !path.endsWith(".m3u8")){
     const video = document.createElement("video");
     video.controls = true;
     video.playsInline = true;
     video.preload = "metadata";
     video.src = safe;
-    video.addEventListener("error", () => {
-      showError("Video play nahi ho saka. Hosting server ne embedding block ki ho sakti hai.");
+
+    video.addEventListener("error",() => {
+      showError(
+        "Video play nahi ho saka. Video URL ya hosting settings check karo."
+      );
     });
+
     videoContainer.appendChild(video);
     return;
   }
@@ -303,38 +565,71 @@ function loadVideo(url) {
   iframe.src = safe;
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+  iframe.setAttribute(
+    "allow",
+    "autoplay; fullscreen; picture-in-picture"
+  );
+
   videoContainer.appendChild(iframe);
 }
 
-async function loadEpisodeList() {
-  if (!animeId) return;
+async function loadEpisodeList(){
+  if(!animeId){
+    episodeNav.innerHTML =
+      '<div class="message error">Anime ID nahi mili.</div>';
+    return;
+  }
 
-  const { data, error } = await supabaseClient.from("episodes")
+  const {data,error} = await supabaseClient
+    .from("episodes")
     .select("episode_number,episode_title")
-    .eq("anime_id", animeId)
-    .order("episode_number", {ascending:true});
+    .eq("anime_id",animeId)
+    .order("episode_number",{ascending:true});
 
-  if (error) {
-    episodeNav.innerHTML = '<div class="message error">Episodes load failed.</div>';
+  if(error){
+    console.error("Episode list error:",error);
+
+    episodeNav.innerHTML =
+      '<div class="message error">Episodes load failed.</div>';
     return;
   }
-  if (!data?.length) {
-    episodeNav.innerHTML = '<div class="message">Abhi koi episode available nahi hai.</div>';
+
+  if(!data?.length){
+    episodeNav.innerHTML =
+      '<div class="message">Abhi koi episode available nahi hai.</div>';
     return;
   }
 
+  // Episode buttons ka container.
   episodeNav.innerHTML = "";
+
+  const episodeButtons = document.createElement("div");
+  episodeButtons.className = "episode-nav";
+
   data.forEach(episode => {
     const link = document.createElement("a");
-    link.href = "watch.html?id=" + encodeURIComponent(animeId) +
+
+    link.href =
+      "watch.html?id=" + encodeURIComponent(animeId) +
       "&episode=" + encodeURIComponent(episode.episode_number);
+
     link.textContent = "Episode " + episode.episode_number;
-    if (Number(episode.episode_number) === Number(episodeNumber)) {
+    link.title =
+      episode.episode_title ||
+      "Episode " + episode.episode_number;
+
+    if(
+      Number(episode.episode_number) ===
+      Number(episodeNumber)
+    ){
       link.classList.add("active");
+      link.setAttribute("aria-current","page");
     }
-    episodeNav.appendChild(link);
+
+    episodeButtons.appendChild(link);
   });
+
+  episodeNav.appendChild(episodeButtons);
 }
 
 loadEpisode();
