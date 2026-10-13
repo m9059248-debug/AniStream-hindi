@@ -1,1362 +1,344 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Watch Anime - AnimeHindiZone</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#0b0b0f;
-  color:#fff;
-}
-
-header{
-  background:#111118;
-  border-bottom:1px solid #292936;
-  padding:16px 20px;
-}
-
-.nav{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-}
-
-.logo{
-  color:#ff1744;
-  text-decoration:none;
-  font-size:22px;
-  font-weight:bold;
-}
-
-.nav a{
-  color:#fff;
-  text-decoration:none;
-  margin-left:15px;
-}
-
-.nav a:hover{
-  color:#ff1744;
-}
-
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-}
-
-.back{
-  display:inline-block;
-  color:#ff1744;
-  text-decoration:none;
-  margin-bottom:15px;
-}
-
-.video-box{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  overflow:hidden;
-  margin-bottom:20px;
-}
-
-.video-wrapper{
-  width:100%;
-  background:#000;
-  aspect-ratio:16/9;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-video{
-  width:100%;
-  height:100%;
-  display:block;
-  background:#000;
-}
-
-iframe{
-  width:100%;
-  height:100%;
-  border:none;
-}
-
-.info{
-  padding:18px;
-}
-
-.info h1{
-  color:#fff;
-  font-size:24px;
-  margin-bottom:8px;
-}
-
-.meta{
-  color:#aaa;
-  font-size:14px;
-}
-
-.message{
-  text-align:center;
-  padding:40px 15px;
-  color:#aaa;
-}
-
-.error{
-  color:#ff6b81;
-}
-
-.view-info{
-  margin-top:12px;
-  color:#888;
-  font-size:13px;
-}
-
-
-/* ================================
-   QUALITY SECTION
-================================ */
-
-.quality-section{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
-}
-
-.quality-section h2{
-  color:#ff1744;
-  margin-bottom:15px;
-}
-
-.quality-buttons{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.quality-btn{
-  background:#22222c;
-  color:#fff;
-  border:1px solid #363642;
-  padding:10px 18px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.quality-btn:hover{
-  background:#ff1744;
-  border-color:#ff1744;
-}
-
-.quality-btn.active{
-  background:#ff1744;
-  border-color:#ff1744;
-}
-
-.current-quality{
-  color:#aaa;
-  font-size:13px;
-  margin-top:12px;
-}
-
-
-/* ================================
-   STREAM / DOWNLOAD
-================================ */
-
-.link-buttons{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  margin-top:15px;
-}
-
-.stream-btn,
-.download-btn{
-  display:inline-block;
-  padding:11px 18px;
-  border-radius:8px;
-  text-decoration:none;
-  color:#fff;
-  font-weight:bold;
-}
-
-.stream-btn{
-  background:#ff1744;
-}
-
-.stream-btn:hover{
-  background:#e9143d;
-}
-
-.download-btn{
-  background:#00a86b;
-}
-
-.download-btn:hover{
-  background:#00c77d;
-}
-
-
-/* ================================
-   EPISODES
-================================ */
-
-.section{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
-}
-
-.section h2{
-  color:#ff1744;
-  margin-bottom:15px;
-}
-
-.episode-nav{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.episode-nav a{
-  display:inline-block;
-  background:#22222c;
-  color:#fff;
-  text-decoration:none;
-  padding:9px 13px;
-  border-radius:7px;
-  font-size:13px;
-}
-
-.episode-nav a.active{
-  background:#ff1744;
-}
-
-.episode-nav a:hover{
-  background:#ff1744;
-}
-
-
-/* ================================
-   MOBILE
-================================ */
-
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#0b0b0f;color:#fff}
+header{background:#111118;border-bottom:1px solid #292936;padding:16px 20px}
+.nav{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between}
+.logo{color:#ff1744;text-decoration:none;font-size:22px;font-weight:bold}
+.nav a{color:#fff;text-decoration:none;margin-left:15px}
+.nav a:hover{color:#ff1744}
+.container{max-width:1100px;margin:auto;padding:20px}
+.back{display:inline-block;color:#ff1744;text-decoration:none;margin-bottom:15px}
+.video-box,.quality-section,.section{background:#14141c;border:1px solid #292936;border-radius:12px;margin-bottom:20px}
+.video-box{overflow:hidden}
+.video-wrapper{width:100%;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center}
+video{width:100%;height:100%;display:block;background:#000}
+iframe{width:100%;height:100%;border:none}
+.info{padding:18px}
+.info h1{font-size:24px;margin-bottom:8px}
+.meta{color:#aaa;font-size:14px}
+.message{text-align:center;padding:30px 15px;color:#aaa;overflow-wrap:anywhere}
+.error{color:#ff6b81}
+.view-info{margin-top:12px;color:#888;font-size:13px}
+.quality-section,.section{padding:20px}
+.quality-section h2,.section h2{color:#ff1744;margin-bottom:15px}
+.quality-buttons,.link-buttons,.episode-nav{display:flex;gap:10px;flex-wrap:wrap}
+.quality-btn{background:#22222c;color:#fff;border:1px solid #363642;padding:10px 18px;border-radius:8px;cursor:pointer;font-weight:bold}
+.quality-btn:hover,.quality-btn.active{background:#ff1744;border-color:#ff1744}
+.current-quality{color:#aaa;font-size:13px;margin-top:12px}
+.link-buttons{margin-top:15px}
+.stream-btn,.download-btn{display:inline-block;padding:11px 18px;border-radius:8px;text-decoration:none;color:#fff;font-weight:bold;overflow-wrap:anywhere}
+.stream-btn{background:#ff1744}
+.download-btn{background:#00a86b}
+.stream-btn:hover{background:#e9143d}
+.download-btn:hover{background:#00c77d}
+.episode-nav a{display:inline-block;background:#22222c;color:#fff;text-decoration:none;padding:9px 13px;border-radius:7px;font-size:13px}
+.episode-nav a.active,.episode-nav a:hover{background:#ff1744}
 @media(max-width:600px){
-
-  .container{
-    padding:14px;
-  }
-
-  .info h1{
-    font-size:20px;
-  }
-
-  .nav{
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .nav a{
-    margin-left:8px;
-  }
-
-  .quality-buttons{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-  }
-
-  .quality-btn{
-    width:100%;
-    padding:10px 5px;
-  }
-
-  .link-buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-
-  .stream-btn,
-  .download-btn{
-    text-align:center;
-    padding:11px 8px;
-  }
-
+.container{padding:14px}
+.info h1{font-size:20px}
+.nav{flex-direction:column;gap:10px}
+.nav a{margin-left:8px}
+.quality-buttons{display:grid;grid-template-columns:repeat(3,1fr)}
+.quality-btn{width:100%;padding:10px 5px}
+.link-buttons{display:grid;grid-template-columns:1fr 1fr}
+.stream-btn,.download-btn{text-align:center;padding:11px 8px}
 }
-
 </style>
-
 </head>
-
 <body>
-
-
-<!-- HEADER -->
-
 <header>
-
   <div class="nav">
-
-    <a href="index.html" class="logo">
-      🔥 AnimeHindiZone
-    </a>
-
-    <div>
-
-      <a href="index.html">
-        Home
-      </a>
-
-      <a href="admin.html">
-        Admin
-      </a>
-
-    </div>
-
+    <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
+    <div><a href="index.html">Home</a><a href="admin.html">Admin</a></div>
   </div>
-
 </header>
 
-
 <div class="container">
-
-
-<!-- BACK -->
-
-<a href="index.html" class="back">
-  ← Home
-</a>
-
-
-<!-- VIDEO -->
+<a href="index.html" class="back">← Home</a>
 
 <div class="video-box">
-
-  <div
-    id="videoContainer"
-    class="video-wrapper"
-  >
-
-    <div class="message">
-      Video load ho raha hai...
-    </div>
-
+  <div id="videoContainer" class="video-wrapper">
+    <div class="message">Video load ho raha hai...</div>
   </div>
-
-
   <div class="info">
-
-    <h1 id="episodeTitle">
-      Loading...
-    </h1>
-
-    <div
-      id="episodeMeta"
-      class="meta"
-    ></div>
-
-    <div
-      id="viewInfo"
-      class="view-info"
-    ></div>
-
+    <h1 id="episodeTitle">Loading...</h1>
+    <div id="episodeMeta" class="meta"></div>
+    <div id="viewInfo" class="view-info"></div>
   </div>
-
 </div>
 
-
-<!-- QUALITY -->
-
-<div
-  id="qualitySection"
-  class="quality-section"
-  style="display:none;"
->
-
-  <h2>
-    🎥 Quality
-  </h2>
-
-  <div
-    id="qualityButtons"
-    class="quality-buttons"
-  ></div>
-
-  <div
-    id="currentQuality"
-    class="current-quality"
-  ></div>
-
-  <div
-    id="linkButtons"
-    class="link-buttons"
-  ></div>
-
+<div id="qualitySection" class="quality-section" style="display:none">
+  <h2>🎥 Quality</h2>
+  <div id="qualityButtons" class="quality-buttons"></div>
+  <div id="currentQuality" class="current-quality"></div>
+  <div id="linkButtons" class="link-buttons"></div>
 </div>
-
-
-<!-- EPISODES -->
 
 <div class="section">
-
-  <h2>
-    📺 Episodes
-  </h2>
-
-  <div
-    id="episodeNav"
-    class="episode-nav"
-  >
-
-    <div class="message">
-      Episodes load ho rahe hain...
-    </div>
-
-  </div>
-
+  <h2>📺 Episodes</h2>
+  <div id="episodeNav"><div class="message">Episodes load ho rahe hain...</div></div>
 </div>
-
-
 </div>
-
 
 <script>
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+const params = new URLSearchParams(location.search);
+const animeId = params.get("id");
+const episodeNumber = params.get("episode");
 
-// =================================
-// SUPABASE
-// =================================
-
-const SUPABASE_URL =
-"https://gmacsiymybvfcxydvkla.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-
-// =================================
-// URL PARAMETERS
-// =================================
-
-const params =
-new URLSearchParams(
-  window.location.search
-);
-
-const animeId =
-params.get("id");
-
-const episodeNumber =
-params.get("episode");
-
-
-// =================================
-// ELEMENTS
-// =================================
-
-const videoContainer =
-document.getElementById(
-  "videoContainer"
-);
-
-const episodeTitle =
-document.getElementById(
-  "episodeTitle"
-);
-
-const episodeMeta =
-document.getElementById(
-  "episodeMeta"
-);
-
-const episodeNav =
-document.getElementById(
-  "episodeNav"
-);
-
-const viewInfo =
-document.getElementById(
-  "viewInfo"
-);
-
-const qualitySection =
-document.getElementById(
-  "qualitySection"
-);
-
-const qualityButtons =
-document.getElementById(
-  "qualityButtons"
-);
-
-const currentQuality =
-document.getElementById(
-  "currentQuality"
-);
-
-const linkButtons =
-document.getElementById(
-  "linkButtons"
-);
-
-
-// =================================
-// VARIABLES
-// =================================
+const videoContainer = document.getElementById("videoContainer");
+const episodeTitle = document.getElementById("episodeTitle");
+const episodeMeta = document.getElementById("episodeMeta");
+const episodeNav = document.getElementById("episodeNav");
+const viewInfo = document.getElementById("viewInfo");
+const qualitySection = document.getElementById("qualitySection");
+const qualityButtons = document.getElementById("qualityButtons");
+const currentQuality = document.getElementById("currentQuality");
+const linkButtons = document.getElementById("linkButtons");
 
 let qualityLinks = [];
-
 let selectedQuality = null;
 
-
-// =================================
-// ESCAPE HTML
-// =================================
-
-function escapeHtml(value){
-
-  return String(value || "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;")
     .replace(/'/g,"&#039;");
-
 }
 
-
-// =================================
-// SAFE URL
-// =================================
-
-function safeUrl(url){
-
-  if(!url){
+function safeUrl(value) {
+  if (!value) return "";
+  try {
+    const parsed = new URL(value);
+    return ["http:","https:"].includes(parsed.protocol) ? parsed.href : "";
+  } catch {
     return "";
   }
-
-  try{
-
-    const parsed =
-      new URL(url);
-
-    if(
-      parsed.protocol === "http:" ||
-      parsed.protocol === "https:"
-    ){
-
-      return parsed.href;
-
-    }
-
-  }catch(error){
-
-    console.error(
-      "Invalid URL:",
-      error
-    );
-
-  }
-
-  return "";
-
 }
 
+async function recordAnimeView() {
+  if (!animeId) return;
+  try {
+    const { data:{user}, error:userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) return;
 
-// =================================
-// VIEW
-// =================================
+    const { error } = await supabaseClient.from("anime_views").insert({
+      anime_id: animeId,
+      user_id: user.id
+    });
 
-async function recordAnimeView(){
-
-  if(!animeId){
-    return;
-  }
-
-  try{
-
-    const {
-      data:{
-        user
-      }
-    } =
-      await supabaseClient
-        .auth
-        .getUser();
-
-    if(!user){
-      return;
+    if (error?.code === "23505") {
+      viewInfo.textContent = "👁️ Already viewed";
+    } else if (!error) {
+      viewInfo.textContent = "👁️ View counted";
+    } else {
+      console.error("View save failed:", error);
     }
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .from("anime_views")
-        .insert({
-
-          anime_id:
-            animeId,
-
-          user_id:
-            user.id
-
-        });
-
-    if(error){
-
-      if(
-        error.code === "23505"
-      ){
-
-        viewInfo.textContent =
-          "👁️ Already viewed";
-
-        return;
-
-      }
-
-      console.error(
-        "View save failed:",
-        error
-      );
-
-      return;
-
-    }
-
-    viewInfo.textContent =
-      "👁️ View counted";
-
+  } catch (error) {
+    console.error("View tracking error:", error);
   }
-
-  catch(error){
-
-    console.error(
-      "View tracking error:",
-      error
-    );
-
-  }
-
 }
 
-
-// =================================
-// LOAD EPISODE
-// =================================
-
-async function loadEpisode(){
-
-  if(
-    !animeId ||
-    !episodeNumber
-  ){
-
-    videoContainer.innerHTML =
-      `
-      <div class="message error">
-        ❌ Anime ID ya Episode number missing hai.
-      </div>
-      `;
-
-    episodeTitle.textContent =
-      "Episode unavailable";
-
+async function loadEpisode() {
+  if (!animeId || !episodeNumber || !Number.isInteger(Number(episodeNumber))) {
+    showError("Anime ID ya Episode number missing hai.");
+    episodeTitle.textContent = "Episode unavailable";
     return;
-
   }
 
+  const { data, error } = await supabaseClient.from("episodes")
+    .select("*")
+    .eq("anime_id", animeId)
+    .eq("episode_number", Number(episodeNumber))
+    .maybeSingle();
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("episodes")
-      .select("*")
-      .eq(
-        "anime_id",
-        animeId
-      )
-      .eq(
-        "episode_number",
-        Number(episodeNumber)
-      )
-      .maybeSingle();
-
-
-  if(error){
-
-    videoContainer.innerHTML =
-      `
-      <div class="message error">
-        ❌ Episode load failed:
-        ${escapeHtml(error.message)}
-      </div>
-      `;
-
+  if (error) {
+    showError("Episode load failed: " + error.message);
     return;
-
   }
-
-
-  if(!data){
-
-    videoContainer.innerHTML =
-      `
-      <div class="message error">
-        ❌ Ye episode nahi mila.
-      </div>
-      `;
-
+  if (!data) {
+    showError("Ye episode nahi mila.");
     return;
-
   }
 
+  episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
+  episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
+  document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
 
-  episodeTitle.textContent =
-    data.episode_title ||
-    "Episode " +
-    data.episode_number;
+  await loadQualityLinks(data.anime_title);
 
-
-  episodeMeta.textContent =
-    (
-      data.anime_title ||
-      animeId
-    ) +
-    " • Episode " +
-    data.episode_number;
-
-
-  document.title =
-    (
-      data.anime_title ||
-      "Anime"
-    ) +
-    " - Episode " +
-    data.episode_number;
-
-
-  // QUALITY LINKS
-
-  await loadQualityLinks(
-    data.anime_title
-  );
-
-
-  /*
-    Agar quality links nahi mile
-    to purana video_url chalega.
-  */
-
-  if(
-    qualityLinks.length === 0
-  ){
-
-    loadVideo(
-      data.video_url
-    );
-
+  if (qualityLinks.length === 0) {
+    // Purane episodes ke liye fallback.
+    loadVideo(data.video_url);
   }
-
-
   recordAnimeView();
-
 }
 
+function showError(message) {
+  videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
+}
 
-// =================================
-// LOAD QUALITY LINKS
-// =================================
-
-async function loadQualityLinks(
-  animeTitle
-){
-
+async function loadQualityLinks(animeTitle) {
   qualityLinks = [];
+  qualitySection.style.display = "none";
+  qualityButtons.innerHTML = "";
+  linkButtons.innerHTML = "";
+  currentQuality.textContent = "";
 
-  qualitySection.style.display =
-    "none";
+  if (!animeTitle || !episodeNumber) return;
 
-  qualityButtons.innerHTML =
-    "";
+  const { data, error } = await supabaseClient.from("episode_links")
+    .select("*")
+    .eq("anime_name", animeTitle)
+    .eq("episode_number", Number(episodeNumber));
 
-  linkButtons.innerHTML =
-    "";
-
-  currentQuality.textContent =
-    "";
-
-
-  if(
-    !animeTitle ||
-    !episodeNumber
-  ){
-
+  if (error) {
+    console.error("episode_links error:", error);
     return;
+  }
+  if (!data?.length) return;
 
+  const order = {"1080p":1,"720p":2,"480p":3};
+  qualityLinks = data.sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
+  qualitySection.style.display = "block";
+
+  qualityLinks.forEach(link => {
+    const button = document.createElement("button");
+    button.className = "quality-btn";
+    button.textContent = link.quality;
+    button.onclick = () => selectQuality(link.quality);
+    qualityButtons.appendChild(button);
+  });
+
+  selectQuality(qualityLinks[0].quality);
+}
+
+function selectQuality(quality) {
+  const selected = qualityLinks.find(item => item.quality === quality);
+  if (!selected) return;
+  selectedQuality = selected;
+
+  document.querySelectorAll(".quality-btn").forEach(button => {
+    button.classList.toggle("active", button.textContent === quality);
+  });
+
+  currentQuality.textContent = "Selected Quality: " + quality;
+
+  // IMPORTANT: Player always uses the ORIGINAL stream_url.
+  const streamUrl = safeUrl(selected.stream_url);
+  const downloadUrl = safeUrl(selected.download_url);
+
+  if (streamUrl) {
+    loadVideo(streamUrl);
+  } else {
+    videoContainer.innerHTML = '<div class="message">▶ ' +
+      escapeHtml(quality) + ' ka Stream Link available nahi hai.</div>';
   }
 
+  linkButtons.innerHTML = "";
 
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("episode_links")
-      .select("*")
-      .eq(
-        "anime_name",
-        animeTitle
-      )
-      .eq(
-        "episode_number",
-        Number(episodeNumber)
-      );
-
-
-  if(error){
-
-    console.error(
-      "episode_links error:",
-      error
-    );
-
-    return;
-
+  if (streamUrl) {
+    const streamButton = document.createElement("a");
+    streamButton.className = "stream-btn";
+    streamButton.href = streamUrl;
+    streamButton.target = "_blank";
+    streamButton.rel = "noopener noreferrer";
+    streamButton.textContent = "▶ Stream " + quality;
+    linkButtons.appendChild(streamButton);
   }
 
-
-  if(
-    !data ||
-    data.length === 0
-  ){
-
-    return;
-
+  // IMPORTANT: Only the Download button uses the saved download_url.
+  if (downloadUrl) {
+    const downloadButton = document.createElement("a");
+    downloadButton.className = "download-btn";
+    downloadButton.href = downloadUrl;
+    downloadButton.target = "_blank";
+    downloadButton.rel = "noopener noreferrer";
+    downloadButton.textContent = "⬇ Download " + quality;
+    linkButtons.appendChild(downloadButton);
   }
 
+  if (!streamUrl && !downloadUrl) {
+    linkButtons.innerHTML = '<div class="message">Is quality ke links available nahi hain.</div>';
+  }
+}
 
-  const order = {
+function loadVideo(url) {
+  const safe = safeUrl(url);
+  if (!safe) {
+    showError("Video URL available nahi hai.");
+    return;
+  }
 
-    "1080p":1,
-    "720p":2,
-    "480p":3
+  const path = new URL(safe).pathname.toLowerCase();
+  const isVideoFile = /\.(mp4|webm|ogg|m3u8)$/.test(path);
 
-  };
+  videoContainer.innerHTML = "";
 
+  if (isVideoFile && !path.endsWith(".m3u8")) {
+    const video = document.createElement("video");
+    video.controls = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    video.src = safe;
+    video.addEventListener("error", () => {
+      showError("Video play nahi ho saka. Hosting server ne embedding block ki ho sakti hai.");
+    });
+    videoContainer.appendChild(video);
+    return;
+  }
 
-  qualityLinks =
-    data.sort(
-      (a,b) => {
+  const iframe = document.createElement("iframe");
+  iframe.src = safe;
+  iframe.allowFullscreen = true;
+  iframe.referrerPolicy = "strict-origin-when-cross-origin";
+  iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+  videoContainer.appendChild(iframe);
+}
 
-        return (
-          (order[a.quality] || 99) -
-          (order[b.quality] || 99)
-        );
+async function loadEpisodeList() {
+  if (!animeId) return;
 
-      }
-    );
+  const { data, error } = await supabaseClient.from("episodes")
+    .select("episode_number,episode_title")
+    .eq("anime_id", animeId)
+    .order("episode_number", {ascending:true});
 
+  if (error) {
+    episodeNav.innerHTML = '<div class="message error">Episodes load failed.</div>';
+    return;
+  }
+  if (!data?.length) {
+    episodeNav.innerHTML = '<div class="message">Abhi koi episode available nahi hai.</div>';
+    return;
+  }
 
-  qualitySection.style.display =
-    "block";
-
-
-  qualityLinks.forEach(
-    link => {
-
-      const button =
-        document.createElement(
-          "button"
-        );
-
-      button.className =
-        "quality-btn";
-
-      button.textContent =
-        link.quality;
-
-      button.onclick =
-        function(){
-
-          selectQuality(
-            link.quality
-          );
-
-        };
-
-      qualityButtons.appendChild(
-        button
-      );
-
+  episodeNav.innerHTML = "";
+  data.forEach(episode => {
+    const link = document.createElement("a");
+    link.href = "watch.html?id=" + encodeURIComponent(animeId) +
+      "&episode=" + encodeURIComponent(episode.episode_number);
+    link.textContent = "Episode " + episode.episode_number;
+    if (Number(episode.episode_number) === Number(episodeNumber)) {
+      link.classList.add("active");
     }
-  );
-
-
-  // Highest available quality
-
-  selectQuality(
-    qualityLinks[0].quality
-  );
-
+    episodeNav.appendChild(link);
+  });
 }
-
-
-// =================================
-// CHANGE QUALITY
-// =================================
-
-function selectQuality(
-  quality
-){
-
-  const selected =
-    qualityLinks.find(
-      item =>
-        item.quality === quality
-    );
-
-
-  if(!selected){
-    return;
-  }
-
-
-  selectedQuality =
-    selected;
-
-
-  // ACTIVE BUTTON
-
-  document
-    .querySelectorAll(
-      ".quality-btn"
-    )
-    .forEach(
-      button => {
-
-        if(
-          button.textContent ===
-          quality
-        ){
-
-          button.classList.add(
-            "active"
-          );
-
-        }else{
-
-          button.classList.remove(
-            "active"
-          );
-
-        }
-
-      }
-    );
-
-
-  currentQuality.textContent =
-    "Selected Quality: " +
-    quality;
-
-
-  // STREAM
-
-  if(
-    selected.stream_url
-  ){
-
-    loadVideo(
-      selected.stream_url
-    );
-
-  }else{
-
-    videoContainer.innerHTML =
-      `
-      <div class="message">
-        ▶ ${escapeHtml(quality)}
-        ka Stream Link available nahi hai.
-      </div>
-      `;
-
-  }
-
-
-  // BUTTONS
-
-  linkButtons.innerHTML =
-    "";
-
-
-  const streamUrl =
-    safeUrl(
-      selected.stream_url
-    );
-
-
-  const downloadUrl =
-    safeUrl(
-      selected.download_url
-    );
-
-
-  // STREAM BUTTON
-
-  if(streamUrl){
-
-    const streamButton =
-      document.createElement(
-        "a"
-      );
-
-    streamButton.className =
-      "stream-btn";
-
-    streamButton.href =
-      streamUrl;
-
-    streamButton.target =
-      "_blank";
-
-    streamButton.rel =
-      "noopener noreferrer";
-
-    streamButton.textContent =
-      "▶ Stream " +
-      quality;
-
-    linkButtons.appendChild(
-      streamButton
-    );
-
-  }
-
-
-  // DOWNLOAD BUTTON
-
-  if(downloadUrl){
-
-    const downloadButton =
-      document.createElement(
-        "a"
-      );
-
-    downloadButton.className =
-      "download-btn";
-
-    downloadButton.href =
-      downloadUrl;
-
-    downloadButton.target =
-      "_blank";
-
-    downloadButton.rel =
-      "noopener noreferrer";
-
-    downloadButton.setAttribute(
-      "download",
-      ""
-    );
-
-    downloadButton.textContent =
-      "⬇ Download " +
-      quality;
-
-    linkButtons.appendChild(
-      downloadButton
-    );
-
-  }
-
-
-  if(
-    !streamUrl &&
-    !downloadUrl
-  ){
-
-    linkButtons.innerHTML =
-      `
-      <div class="message">
-        Is quality ke links available nahi hain.
-      </div>
-      `;
-
-  }
-
-}
-
-
-// =================================
-// LOAD VIDEO
-// =================================
-
-function loadVideo(url){
-
-  const safe =
-    safeUrl(url);
-
-
-  if(!safe){
-
-    videoContainer.innerHTML =
-      `
-      <div class="message error">
-        ❌ Video URL available nahi hai.
-      </div>
-      `;
-
-    return;
-
-  }
-
-
-  const lowerUrl =
-    safe.toLowerCase();
-
-
-  const isVideoFile =
-    lowerUrl.includes(".mp4") ||
-    lowerUrl.includes(".webm") ||
-    lowerUrl.includes(".ogg") ||
-    lowerUrl.includes(".m3u8");
-
-
-  if(isVideoFile){
-
-    const video =
-      document.createElement(
-        "video"
-      );
-
-
-    video.controls =
-      true;
-
-    video.playsInline =
-      true;
-
-    video.preload =
-      "metadata";
-
-    video.src =
-      safe;
-
-
-    video.addEventListener(
-      "error",
-      function(){
-
-        videoContainer.innerHTML =
-          `
-          <div class="message error">
-            ❌ Video play nahi ho saka.
-          </div>
-          `;
-
-      }
-    );
-
-
-    videoContainer.innerHTML =
-      "";
-
-    videoContainer.appendChild(
-      video
-    );
-
-    return;
-
-  }
-
-
-  // IFRAME
-
-  const iframe =
-    document.createElement(
-      "iframe"
-    );
-
-
-  iframe.src =
-    safe;
-
-  iframe.allowFullscreen =
-    true;
-
-  iframe.setAttribute(
-    "allow",
-    "autoplay; fullscreen; picture-in-picture"
-  );
-
-
-  videoContainer.innerHTML =
-    "";
-
-  videoContainer.appendChild(
-    iframe
-  );
-
-}
-
-
-// =================================
-// EPISODE LIST
-// =================================
-
-async function loadEpisodeList(){
-
-  if(!animeId){
-    return;
-  }
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("episodes")
-      .select(
-        "episode_number,episode_title"
-      )
-      .eq(
-        "anime_id",
-        animeId
-      )
-      .order(
-        "episode_number",
-        {
-          ascending:true
-        }
-      );
-
-
-  if(error){
-
-    episodeNav.innerHTML =
-      `
-      <div class="message error">
-        ❌ Episodes load failed.
-      </div>
-      `;
-
-    return;
-
-  }
-
-
-  if(
-    !data ||
-    data.length === 0
-  ){
-
-    episodeNav.innerHTML =
-      `
-      <div class="message">
-        Abhi koi episode available nahi hai.
-      </div>
-      `;
-
-    return;
-
-  }
-
-
-  episodeNav.innerHTML =
-    "";
-
-
-  data.forEach(
-    episode => {
-
-      const link =
-        document.createElement(
-          "a"
-        );
-
-
-      link.href =
-        "watch.html?id=" +
-        encodeURIComponent(animeId) +
-        "&episode=" +
-        encodeURIComponent(
-          episode.episode_number
-        );
-
-
-      link.textContent =
-        "Episode " +
-        episode.episode_number;
-
-
-      if(
-        Number(
-          episode.episode_number
-        ) ===
-        Number(
-          episodeNumber
-        )
-      ){
-
-        link.classList.add(
-          "active"
-        );
-
-      }
-
-
-      episodeNav.appendChild(
-        link
-      );
-
-    }
-  );
-
-}
-
-
-// =================================
-// START
-// =================================
 
 loadEpisode();
-
 loadEpisodeList();
-
 </script>
-
 </body>
 </html>
