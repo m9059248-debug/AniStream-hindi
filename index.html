@@ -32,6 +32,15 @@ header{position:sticky;top:0;z-index:1000;background:rgba(9,9,15,.94);border-bot
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:9px;padding:12px 17px;font-weight:800;font-size:13px;cursor:pointer}
 .btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
 .btn-secondary{background:#242431;color:white;border:1px solid #383849}
+.hero-content{transition:opacity .28s ease,transform .28s ease}
+.hero-content.hero-changing{opacity:.18;transform:translateY(7px)}
+.hero-controls{position:absolute;z-index:2;right:max(22px,calc((100vw - 1236px)/2));bottom:22px;display:flex;align-items:center;gap:8px}
+.hero-arrow{width:32px;height:32px;border-radius:50%;border:1px solid #ffffff55;background:#101018bb;color:#fff;cursor:pointer;font-size:17px}
+.hero-dots{display:flex;align-items:center;gap:7px}
+.hero-dot{width:7px;height:7px;border:0;border-radius:99px;background:#ffffff70;cursor:pointer;transition:width .2s,background .2s}
+.hero-dot.active{width:23px;background:#fff}
+@media(max-width:720px){.hero-controls{right:16px;bottom:14px}.hero-arrow{width:29px;height:29px}.hero-content{padding-bottom:65px}}
+@media(prefers-reduced-motion:reduce){.hero-content{transition:none}.hero-dot{transition:none}}
 .container{max-width:1280px;margin:auto;padding:28px 22px 90px}
 .search-row{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin-bottom:14px}
 .search-row input,.search-row select{width:100%;background:var(--panel);border:1px solid var(--line);color:white;padding:14px 15px;border-radius:10px;outline:none}
@@ -95,7 +104,7 @@ footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;colo
   </div>
 </header>
 
-<section id="home" class="hero">
+<section id="home" class="hero" aria-roledescription="carousel">
   <div class="hero-content">
     <span class="hero-badge">✦ ANIMEHINDIZONE</span>
     <h1 id="heroTitle">Your Anime World.<br><span>In Hindi.</span></h1>
@@ -105,6 +114,11 @@ footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;colo
       <a id="heroWatch" href="#allAnime" class="btn btn-primary">▶ Explore Anime</a>
       <a href="#latest" class="btn btn-secondary">✦ Latest Episodes</a>
     </div>
+  </div>
+  <div class="hero-controls" aria-label="Featured anime controls">
+    <button type="button" class="hero-arrow" id="heroPrev" aria-label="Previous anime">‹</button>
+    <div class="hero-dots" id="heroDots" aria-label="Choose featured anime"></div>
+    <button type="button" class="hero-arrow" id="heroNext" aria-label="Next anime">›</button>
   </div>
 </section>
 
@@ -255,15 +269,54 @@ async function loadSchedule(){
   if(!data?.length){const m=document.createElement("div");m.className="message";m.textContent="📅 No upcoming schedule has been added yet.";el.appendChild(m);return}
   data.forEach(item=>{const div=document.createElement("div");div.className="schedule-item";const info=document.createElement("div");const name=document.createElement("div");name.className="schedule-name";name.textContent=item.anime_title||"Anime";const ep=document.createElement("div");ep.className="schedule-episode";ep.textContent="Episode "+(item.episode_number??"")+(item.episode_title?" · "+item.episode_title:"");info.append(name,ep);const time=document.createElement("div");time.className="schedule-time";const date=item.release_at?new Date(item.release_at):null;time.textContent=date&&!Number.isNaN(date.getTime())?date.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"Time unavailable";div.append(info,time);el.appendChild(div)})
 }
-function updateHero(){
-  const featured=[...animeList].sort((a,b)=>Number(Boolean(b.banner_url))-Number(Boolean(a.banner_url))||Number(viewCounts[getAnimeId(b)]||0)-Number(viewCounts[getAnimeId(a)]||0))[0];
-  if(!featured)return;
-  $("heroTitle").innerHTML=escapeHtml(featured.title||"AnimeHindiZone")+"<br><span>Watch in Hindi</span>";
-  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Discover anime, explore new series and keep up with the latest episodes — all in one place.";
-  $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));$("heroWatch").textContent="▶ View Anime";
-  const meta=$("heroMeta");meta.replaceChildren();[featured.language||"Hindi",featured.genre||"Anime",featured.status||"Available"].forEach(t=>{const s=document.createElement("span");s.textContent=t;meta.appendChild(s)});
-  if(featured.banner_url){const safe=String(featured.banner_url);if(/^https?:\/\//i.test(safe)){$("home").style.backgroundImage="linear-gradient(90deg,rgba(8,8,14,.97) 0%,rgba(8,8,14,.78) 52%,rgba(8,8,14,.3) 100%),url('"+safe.replace(/['"\\]/g,"")+"')";$("home").classList.add("has-image")}}
+let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
+function safeImageUrl(value){
+  try { const url=new URL(String(value||""),window.location.href); return /^https?:$/.test(url.protocol)?url.href:""; }
+  catch { return ""; }
 }
+function renderHero(index, animate=true){
+  if(!heroItems.length)return;
+  heroIndex=(index+heroItems.length)%heroItems.length;
+  const featured=heroItems[heroIndex], content=document.querySelector(".hero-content"), hero=$("home");
+  if(animate){content.classList.add("hero-changing");setTimeout(()=>content.classList.remove("hero-changing"),280)}
+  $("heroTitle").textContent="";
+  const title=document.createTextNode((featured.title||"AnimeHindiZone")+" ");
+  const br=document.createElement("br"), span=document.createElement("span");
+  span.textContent="Watch in Hindi";
+  $("heroTitle").append(title,br,span);
+  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\\s*\\/?\\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Discover anime, explore new series and keep up with the latest episodes — all in one place.";
+  $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
+  $("heroWatch").textContent="▶ View Anime";
+  const meta=$("heroMeta");meta.replaceChildren();
+  [featured.language||"Hindi",featured.genre||"Anime",featured.status||"Available"].forEach(t=>{const s=document.createElement("span");s.textContent=t;meta.appendChild(s)});
+  const banner=safeImageUrl(featured.banner_url||featured.thumbnail_url);
+  hero.style.backgroundImage=banner
+    ? "linear-gradient(90deg,rgba(8,8,14,.97) 0%,rgba(8,8,14,.78) 52%,rgba(8,8,14,.30) 100%),url("+JSON.stringify(banner)+")"
+    : "";
+  hero.classList.toggle("has-image",Boolean(banner));
+  $("heroDots").querySelectorAll(".hero-dot").forEach((dot,i)=>{dot.classList.toggle("active",i===heroIndex);dot.setAttribute("aria-current",i===heroIndex?"true":"false")});
+}
+function updateHero(){
+  heroItems=[...animeList].sort((a,b)=>
+    Number(Boolean(b.banner_url))-Number(Boolean(a.banner_url)) ||
+    Number(viewCounts[getAnimeId(b)]||0)-Number(viewCounts[getAnimeId(a)]||0) ||
+    new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()
+  ).slice(0,8);
+  const dots=$("heroDots");dots.replaceChildren();
+  heroItems.forEach((anime,i)=>{const dot=document.createElement("button");dot.type="button";dot.className="hero-dot"+(i===0?" active":"");dot.setAttribute("aria-label","Show "+(anime.title||"anime"));dot.addEventListener("click",()=>{renderHero(i);restartHeroTimer()});dots.appendChild(dot)});
+  if(!heroItems.length)return;
+  renderHero(0,false);restartHeroTimer();
+}
+function restartHeroTimer(){
+  clearInterval(heroTimer);
+  if(heroItems.length>1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches)heroTimer=setInterval(()=>renderHero(heroIndex+1),5500);
+}
+$("heroPrev").addEventListener("click",()=>{renderHero(heroIndex-1);restartHeroTimer()});
+$("heroNext").addEventListener("click",()=>{renderHero(heroIndex+1);restartHeroTimer()});
+$("home").addEventListener("touchstart",e=>{heroTouchStartX=e.changedTouches[0].clientX},{passive:true});
+$("home").addEventListener("touchend",e=>{if(heroTouchStartX===null)return;const dx=e.changedTouches[0].clientX-heroTouchStartX;heroTouchStartX=null;if(Math.abs(dx)>45){renderHero(heroIndex+(dx<0?1:-1));restartHeroTimer()}},{passive:true});
+$("home").addEventListener("mouseenter",()=>clearInterval(heroTimer));
+$("home").addEventListener("mouseleave",restartHeroTimer);
 searchInput.addEventListener("input",renderAll);
 genreSelect.addEventListener("change",()=>setGenre(genreSelect.value));
 document.querySelectorAll(".bottom-nav a").forEach(a=>a.addEventListener("click",()=>{document.querySelectorAll(".bottom-nav a").forEach(x=>x.classList.remove("active"));a.classList.add("active")}));
