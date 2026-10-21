@@ -254,15 +254,27 @@ function renderAll(){
   const myAnime=animeList.filter(a=>myListIds.has(getAnimeId(a)));renderGrid($("myListGrid"),myAnime,"Your My List is empty. Press ＋ on an anime to save it.");
 }
 async function loadLatestEpisodes(){
-  const grid=$("latestGrid");grid.innerHTML='<div class="message">Loading latest episodes…</div>';
+  const grid=$("latestGrid");grid.innerHTML='<div class="message">Loading ongoing anime episodes…</div>';
   let data=null,error=null;
-  ({data,error}=await supabaseClient.from("episodes").select("*").order("created_at",{ascending:false}).limit(60));
-  if(error){console.warn("Episodes created_at query failed; trying id order:",error.message);({data,error}=await supabaseClient.from("episodes").select("*").order("id",{ascending:false}).limit(60))}
+  ({data,error}=await supabaseClient.from("episodes").select("*").order("created_at",{ascending:false}).limit(100));
+  if(error){console.warn("Episodes created_at query failed; trying id order:",error.message);({data,error}=await supabaseClient.from("episodes").select("*").order("id",{ascending:false}).limit(100))}
   if(error){console.warn("Latest episodes unavailable:",error.message);renderGrid(grid,[], "Latest episodes could not load. Check the episodes table SELECT policy.");return}
-  const animeByDbId=new Map(animeList.map(a=>[String(a.id),a])),seen=new Set(),items=[];
-  (data||[]).forEach(ep=>{const anime=animeByDbId.get(String(ep.anime_id));if(!anime)return;const key=String(ep.id||ep.anime_id+"-"+ep.episode_number);if(seen.has(key))return;seen.add(key);items.push({anime,label:"▶ Episode "+(ep.episode_number??"")+(ep.episode_title?" · "+ep.episode_title:"")})});
+  // Only show episodes belonging to anime whose admin-panel status is exactly Ongoing.
+  // Changing an anime status to Completed/Upcoming automatically removes it from this row.
+  const animeByDbId=new Map(animeList
+    .filter(a=>String(a.status||"").trim().toLowerCase()==="ongoing")
+    .map(a=>[String(a.id),a]));
+  const seen=new Set(),items=[];
+  (data||[]).forEach(ep=>{
+    const anime=animeByDbId.get(String(ep.anime_id));
+    if(!anime)return;
+    const key=String(ep.id||ep.anime_id+"-"+ep.episode_number);
+    if(seen.has(key))return;
+    seen.add(key);
+    items.push({anime,label:"▶ Episode "+(ep.episode_number??"")+(ep.episode_title?" · "+ep.episode_title:"")});
+  });
   grid.replaceChildren();
-  if(!items.length){const m=document.createElement("div");m.className="message";m.textContent="No episodes found yet. Add an episode from Admin after adding/selecting an anime.";grid.appendChild(m);return}
+  if(!items.length){const m=document.createElement("div");m.className="message";m.textContent="No episodes for ongoing anime yet. Set an anime to Ongoing in Admin and add its episodes.";grid.appendChild(m);return}
   items.slice(0,6).forEach(item=>grid.appendChild(createAnimeCard(item.anime,item.label)))
 }
 let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
