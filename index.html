@@ -1,773 +1,280 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#08080d">
-<title>AnimeHindiZone - Watch Anime in Hindi</title>
+<meta name="theme-color" content="#09090f">
+<meta name="description" content="Discover anime, latest episodes, trending series and anime schedules on AnimeHindiZone.">
+<title>AnimeHindiZone — Watch Anime in Hindi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <style>
+:root{--bg:#09090f;--panel:#13131d;--panel2:#191925;--line:#292938;--text:#f7f7fb;--muted:#a4a4b5;--accent:#ff3575;--accent2:#ff6395}
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:Arial,Helvetica,sans-serif;background:#08080d;color:#fff;min-height:100vh}
-a{color:inherit}
-header{position:sticky;top:0;z-index:1000;background:rgba(10,10,15,.96);border-bottom:1px solid #24242e;backdrop-filter:blur(12px)}
-.nav{max-width:1250px;margin:auto;min-height:62px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;gap:15px}
-.logo{color:#ff3575;text-decoration:none;font-size:20px;font-weight:800;white-space:nowrap}
-.nav-links{display:flex;align-items:center;gap:15px}
-.nav-links a{text-decoration:none;color:#aaa;font-size:13px}
-.nav-links a:hover{color:#fff}
-.admin-btn{color:#fff!important;border:1px solid #393944;padding:8px 12px;border-radius:8px;background:transparent}
-.hero{min-height:430px;display:flex;align-items:center;background:radial-gradient(circle at 80% 30%,rgba(255,35,105,.20),transparent 35%),radial-gradient(circle at 20% 80%,rgba(89,30,100,.18),transparent 35%),linear-gradient(135deg,#101018,#09090e 65%,#160a12);border-bottom:1px solid #1e1e27}
-.hero-content{max-width:1250px;width:100%;margin:auto;padding:70px 20px}
-.hero-badge{display:inline-block;background:#ff3575;color:white;font-size:10px;font-weight:bold;padding:7px 10px;border-radius:5px;margin-bottom:18px}
-.hero h1{font-size:54px;line-height:1.03;max-width:650px;margin-bottom:18px}
-.hero h1 span{color:#ff3575}
-.hero p{color:#aaa;max-width:620px;line-height:1.7;font-size:14px}
-.hero-buttons{display:flex;gap:10px;margin-top:25px;flex-wrap:wrap}
-.hero-btn{text-decoration:none;padding:12px 18px;border-radius:7px;font-size:13px;font-weight:bold}
-.hero-primary{background:#ff3575;color:#fff}
-.hero-secondary{background:#24242e;color:#fff}
-.container{max-width:1250px;margin:auto;padding:25px 20px 90px}
-.search-box{margin-bottom:15px}
-.search-box input{width:100%;background:#14141d;border:1px solid #292936;color:#fff;padding:15px 17px;border-radius:9px;outline:none}
-.search-box input:focus{border-color:#ff3575}
-.search-box input::placeholder{color:#777}
-.genre-list{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:28px}
-.genre-list::-webkit-scrollbar{height:3px}
-.genre-chip{flex:none;background:#15151e;color:#aaa;border:1px solid #292936;padding:8px 14px;border-radius:20px;font-size:11px;cursor:pointer}
-.genre-chip.active{background:#ff3575;color:#fff;border-color:#ff3575}
-.telegram-banner{background:linear-gradient(100deg,#178ac0,#207eb3);border-radius:12px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:35px}
-.telegram-left{display:flex;align-items:center;gap:13px}
-.telegram-icon{font-size:27px}
-.telegram-banner h3{font-size:14px;margin-bottom:4px}
-.telegram-banner p{font-size:11px;color:#d9f2ff}
-.join-btn{background:#fff;color:#1679aa;text-decoration:none;padding:9px 15px;border-radius:7px;font-weight:bold;font-size:11px}
-.section{margin-bottom:40px;scroll-margin-top:80px}
-.section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:17px}
-.section-title h2{font-size:20px}
-.section-title h2 span{color:#ff3575}
+html{scroll-behavior:smooth;scroll-padding-top:85px}
+body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+a{color:inherit;text-decoration:none}button,input,select{font:inherit}
+header{position:sticky;top:0;z-index:1000;background:rgba(9,9,15,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(16px)}
+.nav{max-width:1280px;margin:auto;min-height:68px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.logo{font-size:21px;font-weight:900;white-space:nowrap;letter-spacing:-.6px}.logo b{color:var(--accent)}
+.nav-links{display:flex;align-items:center;gap:20px}.nav-links a{font-size:13px;color:var(--muted);transition:.2s}.nav-links a:hover{color:white}
+.nav-links .admin-btn{border:1px solid #3b3b4c;padding:9px 13px;border-radius:9px;color:#fff}
+.hero{position:relative;min-height:440px;display:flex;align-items:center;overflow:hidden;border-bottom:1px solid var(--line);background:radial-gradient(ellipse at 80% 40%,rgba(255,53,117,.24),transparent 38%),radial-gradient(ellipse at 20% 90%,rgba(104,50,180,.2),transparent 42%),linear-gradient(115deg,#17101d,#0b0b12 60%,#180b14)}
+.hero.has-image{background-position:center;background-size:cover}
+.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(8,8,14,.97) 0%,rgba(8,8,14,.8) 48%,rgba(8,8,14,.25) 100%)}
+.hero-content{position:relative;z-index:1;max-width:1280px;width:100%;margin:auto;padding:66px 22px}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(255,53,117,.16);border:1px solid rgba(255,53,117,.38);color:#ff8fb2;font-size:11px;font-weight:800;letter-spacing:1.4px;padding:8px 11px;border-radius:7px;margin-bottom:20px}
+.hero h1{font-size:clamp(36px,5.5vw,66px);line-height:1.04;letter-spacing:-2px;max-width:720px;margin-bottom:18px}
+.hero h1 span{color:var(--accent)}
+.hero p{color:#c0bdca;max-width:590px;line-height:1.75;font-size:15px}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;color:#d1cfda;font-size:12px}
+.hero-meta span{background:rgba(20,20,30,.7);border:1px solid rgba(255,255,255,.12);padding:7px 10px;border-radius:6px}
+.hero-buttons{display:flex;gap:11px;margin-top:26px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:9px;padding:12px 17px;font-weight:800;font-size:13px;cursor:pointer}
+.btn-primary{background:var(--accent);color:white}.btn-primary:hover{background:var(--accent2)}
+.btn-secondary{background:#242431;color:white;border:1px solid #383849}
+.container{max-width:1280px;margin:auto;padding:28px 22px 90px}
+.search-row{display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:10px;margin-bottom:14px}
+.search-row input,.search-row select{width:100%;background:var(--panel);border:1px solid var(--line);color:white;padding:14px 15px;border-radius:10px;outline:none}
+.search-row input:focus,.search-row select:focus{border-color:var(--accent)}
+.search-row input::placeholder{color:#777789}
+.genre-list{display:flex;gap:8px;overflow-x:auto;padding:2px 0 20px;scrollbar-width:thin}
+.genre-chip{flex:none;background:var(--panel);color:var(--muted);border:1px solid var(--line);padding:8px 13px;border-radius:22px;font-size:11px;cursor:pointer}
+.genre-chip.active,.genre-chip:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+.telegram-banner{background:linear-gradient(105deg,#147eaf,#1c91bd);border-radius:13px;padding:17px 19px;display:flex;align-items:center;justify-content:space-between;gap:15px;margin:4px 0 36px}
+.telegram-left{display:flex;align-items:center;gap:13px}.telegram-icon{font-size:28px}.telegram-banner h3{font-size:14px;margin-bottom:4px}.telegram-banner p{font-size:11px;color:#d9f3ff}
+.join-btn{background:#fff;color:#1679aa;padding:10px 15px;border-radius:8px;font-weight:900;font-size:11px;white-space:nowrap}
+.section{margin-bottom:42px;scroll-margin-top:84px}
+.section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:17px}
+.section-title h2{font-size:clamp(18px,2.2vw,22px);letter-spacing:-.4px}.section-title h2 span{color:var(--accent)}
+.section-title p{color:#858596;font-size:11px;margin-top:5px}
+.see-all{color:var(--accent2);font-size:12px;font-weight:800;white-space:nowrap}
 .anime-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:15px}
-.anime-card{background:#13131b;border:1px solid #262630;border-radius:10px;overflow:hidden;min-width:0;transition:.2s}
-.anime-card:hover{transform:translateY(-4px);border-color:#ff3575;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.poster-wrap{position:relative;aspect-ratio:2/3;background:#20202a;overflow:hidden}
-.poster-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-.status{position:absolute;top:8px;left:8px;background:#ff3575;color:#fff;font-size:8px;padding:5px 7px;border-radius:4px;font-weight:bold}
-.view-badge{position:absolute;right:7px;bottom:7px;background:rgba(0,0,0,.75);padding:5px 7px;border-radius:5px;font-size:9px;color:#ddd}
-.card-body{padding:10px}
-.card-title{font-size:12px;font-weight:bold;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
-.card-meta{color:#777;font-size:9px;min-height:25px;line-height:1.4}
-.card-actions{display:flex;gap:5px;margin-top:9px;align-items:stretch}
-.watch-btn{flex:1;min-width:0;background:#ff3575;color:#fff;text-decoration:none;text-align:center;padding:8px 4px;border-radius:6px;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center}
-.list-btn,.like-btn{background:#272731;color:#fff;border:1px solid #393944;padding:6px 7px;border-radius:6px;cursor:pointer;font-size:10px;white-space:nowrap}
-.like-btn.liked{color:#ff3575;border-color:#ff3575;background:rgba(255,53,117,.12)}
-.like-btn:disabled{opacity:.6;cursor:wait}
+.anime-card{background:var(--panel);border:1px solid #242432;border-radius:11px;overflow:hidden;min-width:0;transition:transform .2s,border-color .2s,box-shadow .2s}
+.anime-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 30px #0006}
+.poster-wrap{position:relative;aspect-ratio:2/3;background:#20202b;overflow:hidden}
+.poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .35s}
+.anime-card:hover .poster-wrap img{transform:scale(1.04)}
+.status{position:absolute;top:8px;left:8px;background:var(--accent);color:white;font-size:9px;padding:5px 7px;border-radius:5px;font-weight:900;max-width:85%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.view-badge{position:absolute;right:7px;bottom:7px;background:#05050bd9;padding:5px 7px;border-radius:5px;font-size:9px;color:#eee}
+.card-body{padding:11px}.card-title{font-size:12px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:7px}
+.card-meta{color:#8c8c9e;font-size:10px;min-height:25px;line-height:1.5;overflow:hidden}
+.card-actions{display:flex;gap:5px;margin-top:10px;align-items:stretch}
+.watch-btn{flex:1;min-width:0;background:var(--accent);color:#fff;text-align:center;padding:9px 5px;border-radius:7px;font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center}
+.list-btn,.like-btn{background:#272735;color:#fff;border:1px solid #3a3a4a;padding:7px 8px;border-radius:7px;cursor:pointer;font-size:10px;white-space:nowrap}
+.like-btn.liked{color:#ff6a9b;border-color:var(--accent);background:#ff35751a}.like-btn:disabled{opacity:.6}
+.episode-label{font-size:10px;color:#ff8fb2;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.message{background:#12121b;border:1px solid var(--line);border-radius:10px;padding:27px;text-align:center;color:#999;grid-column:1/-1;overflow-wrap:anywhere;font-size:13px}
 .schedule-list{display:flex;flex-direction:column;gap:9px}
-.schedule-item{background:#13131b;border:1px solid #292936;border-radius:9px;padding:13px;display:flex;align-items:center;justify-content:space-between;gap:15px}
-.schedule-name{font-weight:bold;font-size:13px}
-.schedule-episode{color:#888;font-size:11px;margin-top:4px}
-.schedule-time{color:#ff3575;font-size:11px;white-space:nowrap}
-.message{background:#12121a;border:1px solid #292936;border-radius:10px;padding:30px;text-align:center;color:#888;grid-column:1/-1;overflow-wrap:anywhere}
-footer{border-top:1px solid #24242e;padding:25px 20px;text-align:center;color:#666;font-size:11px}
-.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%) translateY(20px);background:#20202a;border:1px solid #383844;color:#fff;padding:11px 16px;border-radius:8px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:5000;max-width:90%;text-align:center}
+.schedule-item{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:15px}
+.schedule-name{font-weight:800;font-size:13px}.schedule-episode{color:#9292a2;font-size:11px;margin-top:5px}.schedule-time{color:#ff6a9b;font-size:11px;white-space:nowrap}
+footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;color:#777789;font-size:11px}
+.toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%) translateY(20px);background:#20202c;border:1px solid #383849;color:#fff;padding:11px 16px;border-radius:9px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:5000;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .bottom-nav{display:none}
-@media(max-width:1050px){.anime-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media(max-width:750px){
-.nav{min-height:58px;padding:0 14px}.logo{font-size:17px}.nav-links{gap:5px}
-.nav-links a{display:none}.nav-links .admin-btn{display:block;padding:6px 8px;font-size:9px}
-.hero{min-height:360px}.hero-content{padding:55px 18px}.hero h1{font-size:39px}.hero p{font-size:12px}
-.container{padding:20px 12px 90px}.anime-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.telegram-banner{padding:14px}.telegram-banner p{display:none}.join-btn{padding:8px 10px}
-.schedule-item{align-items:flex-start;flex-direction:column;gap:6px}.schedule-time{white-space:normal}
-.bottom-nav{position:fixed;left:0;right:0;bottom:0;min-height:64px;background:rgba(13,13,19,.98);border-top:1px solid #292936;display:flex;align-items:center;justify-content:space-around;z-index:3000;padding-bottom:env(safe-area-inset-bottom)}
-.bottom-nav a{text-decoration:none;color:#777;font-size:9px;text-align:center}
-.bottom-nav a.active{color:#ff3575}.bottom-nav span{display:block;font-size:17px;margin-bottom:3px}
+@media(max-width:1050px){.anime-grid{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{min-height:400px}}
+@media(max-width:720px){
+.nav{min-height:60px;padding:0 14px}.logo{font-size:17px}.nav-links{gap:7px}.nav-links a{display:none}.nav-links .admin-btn{display:block;padding:7px 9px;font-size:10px}
+.hero{min-height:385px}.hero-content{padding:48px 17px}.hero h1{letter-spacing:-1.2px}.hero p{font-size:13px}
+.container{padding:20px 12px 90px}.search-row{grid-template-columns:1fr}.anime-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.telegram-banner{padding:14px}.telegram-banner p{display:none}.join-btn{padding:9px 11px}
+.schedule-item{align-items:flex-start;flex-direction:column;gap:7px}.schedule-time{white-space:normal}
+.bottom-nav{position:fixed;left:0;right:0;bottom:0;min-height:64px;background:rgba(12,12,19,.98);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;z-index:3000;padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav a{text-decoration:none;color:#777789;font-size:9px;text-align:center}.bottom-nav a.active{color:var(--accent)}.bottom-nav span{display:block;font-size:17px;margin-bottom:3px}
 }
-@media(max-width:380px){
-.card-actions{gap:3px}
-.watch-btn{font-size:8px}
-.list-btn,.like-btn{padding:6px 5px;font-size:9px}
-}
+@media(max-width:380px){.card-actions{gap:3px}.watch-btn{font-size:9px}.list-btn,.like-btn{padding:6px;font-size:9px}}
 </style>
 </head>
-
 <body>
 <header>
   <div class="nav">
-    <a href="index.html" class="logo">🔥 AnimeHindiZone</a>
+    <a href="index.html" class="logo">🔥 AnimeHindi<b>Zone</b></a>
     <nav class="nav-links">
-      <a href="#home">Home</a>
-      <a href="#latest">Latest</a>
-      <a href="#top">Popular</a>
-      <a href="#schedule">Schedule</a>
-      <a href="#mylist">My List</a>
-      <a href="admin.html" class="admin-btn">Admin</a>
+      <a href="#home">Home</a><a href="#latest">Latest Episodes</a><a href="#trending">Trending</a><a href="#schedule">Schedule</a><a href="#mylist">My List</a>
+      <a href="admin.html" class="admin-btn">⚙ Admin</a>
     </nav>
   </div>
 </header>
 
 <section id="home" class="hero">
   <div class="hero-content">
-    <span class="hero-badge">ANIMEHINDIZONE</span>
-    <h1>Watch Anime <span>in Hindi</span></h1>
-    <p>Watch the latest anime, discover new series, check upcoming episodes and keep your favourite anime in your personal list.</p>
+    <span class="hero-badge">✦ ANIMEHINDIZONE</span>
+    <h1 id="heroTitle">Your Anime World.<br><span>In Hindi.</span></h1>
+    <p id="heroDescription">Discover anime, explore new series and keep up with the latest episodes — all in one place.</p>
+    <div id="heroMeta" class="hero-meta"><span>Hindi Anime</span><span>New Episodes</span><span>Anime Discovery</span></div>
     <div class="hero-buttons">
-      <a href="#allAnime" class="hero-btn hero-primary">▶ Explore Anime</a>
-      <a href="#schedule" class="hero-btn hero-secondary">📅 Schedule</a>
+      <a id="heroWatch" href="#allAnime" class="btn btn-primary">▶ Explore Anime</a>
+      <a href="#latest" class="btn btn-secondary">✦ Latest Episodes</a>
     </div>
   </div>
 </section>
 
 <main class="container">
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="🔍 Search anime..." autocomplete="off">
+  <div class="search-row">
+    <input type="search" id="searchInput" placeholder="🔍 Search anime by name, genre or language..." autocomplete="off">
+    <select id="genreSelect" aria-label="Filter by genre"><option value="all">All genres</option></select>
   </div>
-
-  <div id="genreList" class="genre-list">
-    <button class="genre-chip active" data-genre="all">All</button>
-  </div>
+  <div id="genreList" class="genre-list"><button class="genre-chip active" data-genre="all">All</button></div>
 
   <div class="telegram-banner">
-    <div class="telegram-left">
-      <div class="telegram-icon">✈️</div>
-      <div>
-        <h3>Join AnimeHindiZone Telegram</h3>
-        <p>New anime &amp; episode updates directly on Telegram.</p>
-      </div>
-    </div>
-    <a href="https://t.me/Anime_hindizone" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN</a>
+    <div class="telegram-left"><div class="telegram-icon">✈️</div><div><h3>Join AnimeHindiZone Telegram</h3><p>Get anime and episode updates on Telegram.</p></div></div>
+    <a href="https://t.me/Anime_hindizone" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN CHANNEL ↗</a>
   </div>
 
-  <section id="allAnime" class="section">
-    <div class="section-title"><h2>🎬 All Anime</h2></div>
-    <div id="allAnimeGrid" class="anime-grid">
-      <div class="message">Anime load ho rahe hain...</div>
-    </div>
-  </section>
-
-  <section id="top" class="section">
-    <div class="section-title"><h2>🔥 Trending Now</h2></div>
-    <div id="topGrid" class="anime-grid">
-      <div class="message">Trending anime load ho rahe hain...</div>
-    </div>
-  </section>
-
   <section id="latest" class="section">
-    <div class="section-title"><h2>🆕 Latest Episodes</h2></div>
-    <div id="latestGrid" class="anime-grid">
-      <div class="message">Anime load ho rahe hain...</div>
-    </div>
+    <div class="section-title"><div><h2>🎬 <span>Latest Episodes</span></h2><p>Recently published episodes from your admin panel</p></div><a class="see-all" href="#allAnime">Browse anime ↓</a></div>
+    <div id="latestGrid" class="anime-grid"><div class="message">Latest episodes are loading…</div></div>
+  </section>
+
+  <section id="trending" class="section">
+    <div class="section-title"><div><h2>🔥 Trending <span>Now</span></h2><p>Sorted by available views, then likes</p></div></div>
+    <div id="topGrid" class="anime-grid"><div class="message">Trending anime are loading…</div></div>
   </section>
 
   <section id="recent" class="section">
-    <div class="section-title"><h2>✨ Recently Added</h2></div>
-    <div id="recentGrid" class="anime-grid">
-      <div class="message">Loading...</div>
-    </div>
+    <div class="section-title"><div><h2>✨ Recently <span>Added</span></h2><p>Newest anime entries from the library</p></div></div>
+    <div id="recentGrid" class="anime-grid"><div class="message">Recently added anime are loading…</div></div>
+  </section>
+
+  <section id="allAnime" class="section">
+    <div class="section-title"><div><h2>📚 All <span>Anime</span></h2><p>Search and filter the complete anime library</p></div></div>
+    <div id="allAnimeGrid" class="anime-grid"><div class="message">Anime are loading…</div></div>
   </section>
 
   <section id="mylist" class="section">
-    <div class="section-title"><h2>❤️ My List</h2></div>
-    <div id="myListGrid" class="anime-grid">
-      <div class="message">My List load ho rahi hai...</div>
-    </div>
+    <div class="section-title"><div><h2>❤️ My <span>List</span></h2><p>Saved in this browser on this device</p></div></div>
+    <div id="myListGrid" class="anime-grid"><div class="message">Your list is loading…</div></div>
   </section>
 
   <section id="schedule" class="section">
-    <div class="section-title"><h2>📅 Anime Schedule</h2></div>
-    <div id="scheduleList" class="schedule-list">
-      <div class="message">Schedule load ho raha hai...</div>
-    </div>
+    <div class="section-title"><div><h2>📅 Anime <span>Schedule</span></h2><p>Upcoming releases added from the admin panel</p></div></div>
+    <div id="scheduleList" class="schedule-list"><div class="message">Schedule is loading…</div></div>
   </section>
 </main>
 
-<footer>© 2026 AnimeHindiZone</footer>
-
+<footer>© 2026 AnimeHindiZone · Anime discovery in one place</footer>
 <nav class="bottom-nav">
-  <a href="#home" class="active"><span>⌂</span>Home</a>
-  <a href="#allAnime"><span>🎬</span>Anime</a>
-  <a href="#top"><span>🔥</span>Top</a>
-  <a href="#schedule"><span>📅</span>Schedule</a>
-  <a href="#mylist"><span>❤️</span>My List</a>
-  <a href="admin.html"><span>⚙️</span>Admin</a>
+  <a href="#home" class="active"><span>⌂</span>Home</a><a href="#allAnime"><span>🎬</span>Anime</a><a href="#trending"><span>🔥</span>Trending</a><a href="#latest"><span>🆕</span>Latest</a><a href="#mylist"><span>❤️</span>My List</a><a href="admin.html"><span>⚙️</span>Admin</a>
 </nav>
-
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
 <script>
 "use strict";
-
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set(), myListIds=new Set();
+let selectedGenre="all", toastTimer=null;
+const $=id=>document.getElementById(id);
+const searchInput=$("searchInput"), genreSelect=$("genreSelect"), genreList=$("genreList"), toast=$("toast");
 
-let animeList = [];
-let viewCounts = {};
-let animeLikeCounts = {};
-let likedAnimeIds = new Set();
-let likeBusyIds = new Set();
-let myListIds = new Set();
-let selectedGenre = "all";
-let toastTimer = null;
-
-const searchInput = document.getElementById("searchInput");
-const allAnimeGrid = document.getElementById("allAnimeGrid");
-const topGrid = document.getElementById("topGrid");
-const latestGrid = document.getElementById("latestGrid");
-const recentGrid = document.getElementById("recentGrid");
-const myListGrid = document.getElementById("myListGrid");
-const scheduleList = document.getElementById("scheduleList");
-const genreList = document.getElementById("genreList");
-const toast = document.getElementById("toast");
-
-function showToast(message) {
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
-}
-
-function escapeHtml(value) {
-  return String(value ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function getAnimeId(anime) {
-  return String(anime.anime_id || anime.id || "");
-}
-
-/* Anonymous browser identifier. This is a convenience, not verified identity. */
-function getVoterId() {
-  const key = "animehindizone_voter_id";
-  try {
-    let id = localStorage.getItem(key);
-    if (!id) {
-      id = "voter_" + (
-        window.crypto?.randomUUID?.() ||
-        Date.now() + "_" + Math.random().toString(36).slice(2)
-      );
-      localStorage.setItem(key, id);
-    }
-    return id;
-  } catch (error) {
-    console.error("Could not save voter ID:", error);
-    return "voter_" + Math.random().toString(36).slice(2) +
-      Date.now().toString(36);
-  }
-}
-
-/* Load all anime records. */
-async function loadAnime() {
-  allAnimeGrid.innerHTML =
-    '<div class="message">Anime load ho rahe hain...</div>';
-
-  const { data, error } = await supabaseClient
-    .from("anime")
-    .select("*")
-    .order("id", { ascending: false });
-
-  if (error) {
-    console.error("Anime load error:", error);
-    const errorHtml =
-      '<div class="message">Anime load nahi ho sake. Supabase anime table ki SELECT policy check karo.</div>';
-    allAnimeGrid.innerHTML = errorHtml;
-    topGrid.innerHTML = errorHtml;
-    latestGrid.innerHTML = errorHtml;
-    recentGrid.innerHTML = errorHtml;
-    return;
-  }
-
-  animeList = Array.isArray(data) ? data : [];
+function showToast(message){toast.textContent=message;toast.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove("show"),2400)}
+function escapeHtml(value){return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+function getAnimeId(anime){return String(anime.anime_id||anime.id||"")}
+function getVoterId(){const key="animehindizone_voter_id";try{let id=localStorage.getItem(key);if(!id){id="voter_"+(window.crypto?.randomUUID?.()||Date.now()+"_"+Math.random().toString(36).slice(2));localStorage.setItem(key,id)}return id}catch{return "voter_"+Date.now()+"_"+Math.random().toString(36).slice(2)}}
+function loadMyList(){try{myListIds=new Set(JSON.parse(localStorage.getItem("animehindizone_my_list")||"[]").map(String))}catch{myListIds=new Set()}}
+function saveMyList(){try{localStorage.setItem("animehindizone_my_list",JSON.stringify([...myListIds]))}catch{showToast("My List could not be saved.")}}
+function toggleMyList(id){id=String(id);if(myListIds.has(id)){myListIds.delete(id);showToast("Removed from My List")}else{myListIds.add(id);showToast("❤️ Added to My List")}saveMyList();renderAll()}
+async function loadAnime(){
+  $("allAnimeGrid").innerHTML='<div class="message">Anime are loading…</div>';
+  const {data,error}=await supabaseClient.from("anime").select("*").order("id",{ascending:false});
+  if(error){console.error("Anime load error:",error);const msg="Could not load anime. Check the Supabase anime table and its SELECT policy.";["allAnimeGrid","topGrid","latestGrid","recentGrid","myListGrid"].forEach(id=>$(id).innerHTML='<div class="message">'+escapeHtml(msg)+'</div>');return}
+  animeList=Array.isArray(data)?data:[];
   buildGenres();
   renderAll();
 }
-
-/* View count feature retained from the existing homepage. */
-async function loadViewCounts() {
-  try {
-    const { data, error } = await supabaseClient.rpc("get_anime_view_counts");
-
-    if (error) {
-      console.warn("View counts unavailable:", error.message);
-      viewCounts = {};
-      return;
-    }
-
-    viewCounts = {};
-    (data || []).forEach(item => {
-      viewCounts[String(item.anime_id)] = Number(item.view_count || 0);
-    });
-  } catch (error) {
-    console.warn("View counts unavailable:", error);
-    viewCounts = {};
-  }
+async function loadViewCounts(){try{const {data,error}=await supabaseClient.rpc("get_anime_view_counts");if(error)throw error;viewCounts={};(data||[]).forEach(x=>viewCounts[String(x.anime_id)]=Number(x.view_count||0))}catch(e){console.warn("View counts unavailable:",e.message||e);viewCounts={}}}
+async function loadAnimeLikes(){
+  const counts={},mine=new Set(),pageSize=1000;let offset=0;const voter=getVoterId();
+  try{while(true){const {data,error}=await supabaseClient.from("anime_likes").select("anime_id,voter_id").range(offset,offset+pageSize-1);if(error)throw error;const rows=data||[];rows.forEach(row=>{const id=String(row.anime_id);counts[id]=(counts[id]||0)+1;if(row.voter_id===voter)mine.add(id)});if(rows.length<pageSize)break;offset+=pageSize}animeLikeCounts=counts;likedAnimeIds=mine;renderAll()}
+  catch(e){console.warn("Likes unavailable:",e.message||e);animeLikeCounts={};likedAnimeIds=new Set()}
 }
-
-/*
- * Load likes in pages to avoid the default result limit.
- * Counts are calculated from the anime_likes table.
- */
-async function loadAnimeLikes() {
-  const voterId = getVoterId();
-  const counts = {};
-  const myLikes = new Set();
-  const pageSize = 1000;
-  let offset = 0;
-
-  try {
-    while (true) {
-      const { data, error } = await supabaseClient
-        .from("anime_likes")
-        .select("anime_id,voter_id")
-        .range(offset, offset + pageSize - 1);
-
-      if (error) throw error;
-
-      const rows = data || [];
-
-      rows.forEach(row => {
-        const id = String(row.anime_id);
-        counts[id] = (counts[id] || 0) + 1;
-
-        if (row.voter_id === voterId) {
-          myLikes.add(id);
-        }
-      });
-
-      if (rows.length < pageSize) break;
-      offset += pageSize;
-    }
-
-    animeLikeCounts = counts;
-    likedAnimeIds = myLikes;
-    renderAll();
-  } catch (error) {
-    console.error("Like loading error:", error);
-    showToast("Likes load nahi ho sake. Supabase table/policy check karo.");
-  }
+async function toggleAnimeLike(id){
+  id=String(id);if(likeBusyIds.has(id))return;const voter=getVoterId(),wasLiked=likedAnimeIds.has(id);likeBusyIds.add(id);renderAll();
+  try{if(wasLiked){const {error}=await supabaseClient.from("anime_likes").delete().eq("anime_id",id).eq("voter_id",voter);if(error)throw error;likedAnimeIds.delete(id);animeLikeCounts[id]=Math.max(0,(animeLikeCounts[id]||0)-1);showToast("Like removed")}else{const {error}=await supabaseClient.from("anime_likes").insert({anime_id:id,voter_id:voter});if(error){if(error.code==="23505"){showToast("You already liked this anime");return}throw error}likedAnimeIds.add(id);animeLikeCounts[id]=(animeLikeCounts[id]||0)+1;showToast("❤️ Anime liked")}}
+  catch(e){console.error("Like update error:",e);showToast("Like did not update. Check Supabase policies.")}finally{likeBusyIds.delete(id);renderAll()}
 }
-
-/* Load the user's personal list from this browser. */
-function loadMyList() {
-  try {
-    const saved = JSON.parse(
-      localStorage.getItem("animehindizone_my_list") || "[]"
-    );
-    myListIds = new Set(saved.map(id => String(id)));
-  } catch (error) {
-    console.warn("Could not load My List:", error);
-    myListIds = new Set();
-  }
+function buildGenres(){
+  const genres=new Set();animeList.forEach(a=>String(a.genre||"").split(",").forEach(g=>{if(g.trim())genres.add(g.trim())}));
+  genreList.replaceChildren();genreSelect.innerHTML='<option value="all">All genres</option>';
+  const addChip=(name)=>{const b=document.createElement("button");b.className="genre-chip"+(selectedGenre.toLowerCase()===name.toLowerCase()?" active":"");b.dataset.genre=name;b.textContent=name;b.addEventListener("click",()=>setGenre(name));genreList.appendChild(b)};
+  addChip("all");[...genres].sort((a,b)=>a.localeCompare(b)).slice(0,30).forEach(g=>{addChip(g);const o=document.createElement("option");o.value=g;o.textContent=g;genreSelect.appendChild(o)});
+  if(selectedGenre!=="all"&&!genres.has(selectedGenre))selectedGenre="all";
+  genreSelect.value=selectedGenre;
+  genreList.querySelectorAll(".genre-chip").forEach(b=>b.classList.toggle("active",b.dataset.genre.toLowerCase()===selectedGenre.toLowerCase()));
 }
-
-function saveMyList() {
-  try {
-    localStorage.setItem(
-      "animehindizone_my_list",
-      JSON.stringify(Array.from(myListIds))
-    );
-  } catch (error) {
-    showToast("My List save nahi ho saki.");
-  }
+function setGenre(g){selectedGenre=g;genreSelect.value=g;genreList.querySelectorAll(".genre-chip").forEach(b=>b.classList.toggle("active",b.dataset.genre.toLowerCase()===g.toLowerCase()));renderAll()}
+function getFilteredAnime(){
+  const search=String(searchInput.value||"").trim().toLowerCase();
+  return animeList.filter(a=>{const title=String(a.title||"").toLowerCase(),genre=String(a.genre||"").toLowerCase(),lang=String(a.language||"").toLowerCase(),id=getAnimeId(a).toLowerCase();const match=!search||title.includes(search)||genre.includes(search)||lang.includes(search)||id.includes(search);const genreMatch=selectedGenre==="all"||genre.split(",").some(g=>g.trim()===selectedGenre.toLowerCase());return match&&genreMatch})
 }
-
-function toggleMyList(animeId) {
-  animeId = String(animeId);
-
-  if (myListIds.has(animeId)) {
-    myListIds.delete(animeId);
-    showToast("My List se remove ho gaya");
-  } else {
-    myListIds.add(animeId);
-    showToast("❤️ My List mein add ho gaya");
-  }
-
-  saveMyList();
-  renderAll();
+function createAnimeCard(anime,extraLabel=""){
+  const id=getAnimeId(anime),title=anime.title||"Untitled Anime",poster=anime.thumbnail_url||"",genre=anime.genre||"Anime",views=viewCounts[id]||0,saved=myListIds.has(id);
+  const card=document.createElement("article");card.className="anime-card";
+  const posterWrap=document.createElement("div");posterWrap.className="poster-wrap";
+  if(poster){const img=document.createElement("img");img.src=poster;img.alt=title;img.loading="lazy";img.onerror=()=>{img.remove();const p=document.createElement("div");p.className="message";p.style.height="100%";p.textContent="Image unavailable";posterWrap.prepend(p)};posterWrap.appendChild(img)}else{const p=document.createElement("div");p.className="message";p.style.height="100%";p.textContent="No poster";posterWrap.appendChild(p)}
+  const status=document.createElement("span");status.className="status";status.textContent=anime.status||"Available";posterWrap.appendChild(status);
+  const badge=document.createElement("span");badge.className="view-badge";badge.textContent="👁 "+views;posterWrap.appendChild(badge);
+  const body=document.createElement("div");body.className="card-body";
+  const name=document.createElement("div");name.className="card-title";name.title=title;name.textContent=title;
+  const meta=document.createElement("div");meta.className="card-meta";meta.textContent=genre+(anime.language?" · "+anime.language:"");
+  body.append(name,meta);
+  if(extraLabel){const ep=document.createElement("div");ep.className="episode-label";ep.textContent=extraLabel;body.appendChild(ep)}
+  const actions=document.createElement("div");actions.className="card-actions";
+  const details=document.createElement("a");details.className="watch-btn";details.href="anime-details.html?id="+encodeURIComponent(id);details.textContent="▶ Details";
+  const listBtn=document.createElement("button");listBtn.className="list-btn";listBtn.type="button";listBtn.textContent=saved?"❤️":"＋";listBtn.title=saved?"Remove from My List":"Add to My List";listBtn.setAttribute("aria-label",listBtn.title);listBtn.addEventListener("click",()=>toggleMyList(id));
+  const likeBtn=document.createElement("button");likeBtn.className="like-btn";likeBtn.type="button";
+  const updateLike=()=>{const liked=likedAnimeIds.has(id);likeBtn.classList.toggle("liked",liked);likeBtn.textContent=(liked?"❤️ ":"🤍 ")+(animeLikeCounts[id]||0);likeBtn.disabled=likeBusyIds.has(id);likeBtn.title=liked?"Unlike anime":"Like anime"};
+  updateLike();likeBtn.addEventListener("click",()=>toggleAnimeLike(id));
+  actions.append(details,listBtn,likeBtn);body.appendChild(actions);card.append(posterWrap,body);return card
 }
-
-/* Like or unlike one anime. */
-async function toggleAnimeLike(animeId) {
-  animeId = String(animeId);
-
-  if (likeBusyIds.has(animeId)) return;
-
-  const voterId = getVoterId();
-  const wasLiked = likedAnimeIds.has(animeId);
-
-  likeBusyIds.add(animeId);
-  renderAll();
-
-  try {
-    if (wasLiked) {
-      const { error } = await supabaseClient
-        .from("anime_likes")
-        .delete()
-        .eq("anime_id", animeId)
-        .eq("voter_id", voterId);
-
-      if (error) throw error;
-
-      likedAnimeIds.delete(animeId);
-      animeLikeCounts[animeId] = Math.max(
-        0,
-        (animeLikeCounts[animeId] || 0) - 1
-      );
-
-      showToast("Like hata diya ❤️");
-    } else {
-      const { error } = await supabaseClient
-        .from("anime_likes")
-        .insert({
-          anime_id: animeId,
-          voter_id: voterId
-        });
-
-      if (error) {
-        if (error.code === "23505") {
-          showToast("Tum pehle hi like kar chuke ho.");
-          await loadAnimeLikes();
-          return;
-        }
-        throw error;
-      }
-
-      likedAnimeIds.add(animeId);
-      animeLikeCounts[animeId] =
-        (animeLikeCounts[animeId] || 0) + 1;
-
-      showToast("❤️ Anime liked!");
-    }
-  } catch (error) {
-    console.error("Like update error:", error);
-    showToast("Like update nahi hua. Supabase policies check karo.");
-    await loadAnimeLikes();
-  } finally {
-    likeBusyIds.delete(animeId);
-    renderAll();
-  }
+function renderGrid(el,list,empty){el.replaceChildren();if(!list.length){const m=document.createElement("div");m.className="message";m.textContent=empty;el.appendChild(m);return}list.forEach(a=>el.appendChild(createAnimeCard(a)))}
+function renderAll(){
+  const filtered=getFilteredAnime(),hasFilter=searchInput.value.trim()||selectedGenre!=="all";
+  renderGrid($("allAnimeGrid"),filtered,hasFilter?"No anime found for this search or genre.":"No anime have been added yet. Add anime from Admin.");
+  const trending=[...filtered].sort((a,b)=>{const av=viewCounts[getAnimeId(a)]||0,bv=viewCounts[getAnimeId(b)]||0;return bv-av||(animeLikeCounts[getAnimeId(b)]||0)-(animeLikeCounts[getAnimeId(a)]||0)}).slice(0,6);
+  renderGrid($("topGrid"),trending,"No anime available to rank yet.");
+  const recent=[...filtered].sort((a,b)=>{const ad=new Date(a.created_at||a.updated_at||0).getTime(),bd=new Date(b.created_at||b.updated_at||0).getTime();return bd-ad||String(b.id).localeCompare(String(a.id))}).slice(0,6);
+  renderGrid($("recentGrid"),recent,"No recently added anime yet.");
+  const myAnime=animeList.filter(a=>myListIds.has(getAnimeId(a)));renderGrid($("myListGrid"),myAnime,"Your My List is empty. Press ＋ on an anime to save it.");
 }
-
-/* Build genre filters from database records. */
-function buildGenres() {
-  const genres = new Set();
-
-  animeList.forEach(anime => {
-    String(anime.genre || "").split(",").forEach(genre => {
-      const clean = genre.trim();
-      if (clean) genres.add(clean);
-    });
-  });
-
-  genreList.innerHTML = "";
-
-  const allButton = document.createElement("button");
-  allButton.className = "genre-chip";
-  allButton.dataset.genre = "all";
-  allButton.textContent = "All";
-  allButton.addEventListener("click", () => setGenre("all", allButton));
-  genreList.appendChild(allButton);
-
-  Array.from(genres)
-    .sort((a, b) => a.localeCompare(b))
-    .slice(0, 20)
-    .forEach(genre => {
-      const button = document.createElement("button");
-      button.className = "genre-chip";
-      button.dataset.genre = genre;
-      button.textContent = genre;
-      button.addEventListener("click", () => setGenre(genre, button));
-      genreList.appendChild(button);
-    });
-
-  const selectedButton = Array.from(
-    genreList.querySelectorAll(".genre-chip")
-  ).find(button =>
-    button.dataset.genre.toLowerCase() === selectedGenre.toLowerCase()
-  );
-
-  if (selectedButton) {
-    selectedButton.classList.add("active");
-  } else {
-    selectedGenre = "all";
-    allButton.classList.add("active");
-  }
+async function loadLatestEpisodes(){
+  const grid=$("latestGrid");grid.innerHTML='<div class="message">Loading latest episodes…</div>';
+  let data=null,error=null;
+  ({data,error}=await supabaseClient.from("episodes").select("*").order("created_at",{ascending:false}).limit(60));
+  if(error){console.warn("Episodes created_at query failed; trying id order:",error.message);({data,error}=await supabaseClient.from("episodes").select("*").order("id",{ascending:false}).limit(60))}
+  if(error){console.warn("Latest episodes unavailable:",error.message);renderGrid(grid,[], "Latest episodes could not load. Check the episodes table SELECT policy.");return}
+  const animeByDbId=new Map(animeList.map(a=>[String(a.id),a])),seen=new Set(),items=[];
+  (data||[]).forEach(ep=>{const anime=animeByDbId.get(String(ep.anime_id));if(!anime)return;const key=String(ep.id||ep.anime_id+"-"+ep.episode_number);if(seen.has(key))return;seen.add(key);items.push({anime,label:"▶ Episode "+(ep.episode_number??"")+(ep.episode_title?" · "+ep.episode_title:"")})});
+  grid.replaceChildren();
+  if(!items.length){const m=document.createElement("div");m.className="message";m.textContent="No episodes found yet. Add an episode from Admin after adding/selecting an anime.";grid.appendChild(m);return}
+  items.slice(0,6).forEach(item=>grid.appendChild(createAnimeCard(item.anime,item.label)))
 }
-
-function setGenre(genre, button) {
-  selectedGenre = genre;
-  genreList.querySelectorAll(".genre-chip").forEach(item => {
-    item.classList.remove("active");
-  });
-  button.classList.add("active");
-  renderAll();
+async function loadSchedule(){
+  const el=$("scheduleList");const {data,error}=await supabaseClient.from("schedule").select("*").order("release_at",{ascending:true});
+  el.replaceChildren();if(error){console.error("Schedule load error:",error);const m=document.createElement("div");m.className="message";m.textContent="Schedule could not load. Check the schedule table SELECT policy.";el.appendChild(m);return}
+  if(!data?.length){const m=document.createElement("div");m.className="message";m.textContent="📅 No upcoming schedule has been added yet.";el.appendChild(m);return}
+  data.forEach(item=>{const div=document.createElement("div");div.className="schedule-item";const info=document.createElement("div");const name=document.createElement("div");name.className="schedule-name";name.textContent=item.anime_title||"Anime";const ep=document.createElement("div");ep.className="schedule-episode";ep.textContent="Episode "+(item.episode_number??"")+(item.episode_title?" · "+item.episode_title:"");info.append(name,ep);const time=document.createElement("div");time.className="schedule-time";const date=item.release_at?new Date(item.release_at):null;time.textContent=date&&!Number.isNaN(date.getTime())?date.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"Time unavailable";div.append(info,time);el.appendChild(div)})
 }
-
-function getFilteredAnime() {
-  const search = String(searchInput.value || "").trim().toLowerCase();
-
-  return animeList.filter(anime => {
-    const title = String(anime.title || "").toLowerCase();
-    const genre = String(anime.genre || "").toLowerCase();
-    const language = String(anime.language || "").toLowerCase();
-    const animeId = getAnimeId(anime).toLowerCase();
-
-    const searchMatch = !search ||
-      title.includes(search) ||
-      genre.includes(search) ||
-      language.includes(search) ||
-      animeId.includes(search);
-
-    const genreMatch = selectedGenre === "all" ||
-      genre.split(",").some(item =>
-        item.trim() === selectedGenre.toLowerCase()
-      );
-
-    return searchMatch && genreMatch;
-  });
+function updateHero(){
+  const featured=[...animeList].sort((a,b)=>Number(Boolean(b.banner_url))-Number(Boolean(a.banner_url))||Number(viewCounts[getAnimeId(b)]||0)-Number(viewCounts[getAnimeId(a)]||0))[0];
+  if(!featured)return;
+  $("heroTitle").innerHTML=escapeHtml(featured.title||"AnimeHindiZone")+"<br><span>Watch in Hindi</span>";
+  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Discover anime, explore new series and keep up with the latest episodes — all in one place.";
+  $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));$("heroWatch").textContent="▶ View Anime";
+  const meta=$("heroMeta");meta.replaceChildren();[featured.language||"Hindi",featured.genre||"Anime",featured.status||"Available"].forEach(t=>{const s=document.createElement("span");s.textContent=t;meta.appendChild(s)});
+  if(featured.banner_url){const safe=String(featured.banner_url);if(/^https?:\/\//i.test(safe)){$("home").style.backgroundImage="linear-gradient(90deg,rgba(8,8,14,.97) 0%,rgba(8,8,14,.78) 52%,rgba(8,8,14,.3) 100%),url('"+safe.replace(/['"\\]/g,"")+"')";$("home").classList.add("has-image")}}
 }
-
-/* Create an anime card with Details, My List and Like buttons. */
-function createAnimeCard(anime) {
-  const animeId = getAnimeId(anime);
-  const title = anime.title || "Untitled Anime";
-  const thumbnail = anime.thumbnail_url || "";
-  const genre = anime.genre || "Anime";
-  const status = anime.status || "Available";
-  const views = viewCounts[animeId] || 0;
-  const saved = myListIds.has(animeId);
-
-  const card = document.createElement("article");
-  card.className = "anime-card";
-
-  const poster = document.createElement("div");
-  poster.className = "poster-wrap";
-
-  if (thumbnail) {
-    const image = document.createElement("img");
-    image.src = thumbnail;
-    image.alt = title;
-    image.loading = "lazy";
-    image.onerror = () => {
-      image.remove();
-      const placeholder = document.createElement("div");
-      placeholder.className = "message";
-      placeholder.style.height = "100%";
-      placeholder.textContent = "Image unavailable";
-      poster.prepend(placeholder);
-    };
-    poster.appendChild(image);
-  } else {
-    const placeholder = document.createElement("div");
-    placeholder.className = "message";
-    placeholder.style.height = "100%";
-    placeholder.textContent = "No Image";
-    poster.appendChild(placeholder);
-  }
-
-  const statusBadge = document.createElement("span");
-  statusBadge.className = "status";
-  statusBadge.textContent = status;
-  poster.appendChild(statusBadge);
-
-  const viewBadge = document.createElement("span");
-  viewBadge.className = "view-badge";
-  viewBadge.textContent = "👁 " + views;
-  poster.appendChild(viewBadge);
-
-  const body = document.createElement("div");
-  body.className = "card-body";
-
-  const cardTitle = document.createElement("div");
-  cardTitle.className = "card-title";
-  cardTitle.title = title;
-  cardTitle.textContent = title;
-
-  const meta = document.createElement("div");
-  meta.className = "card-meta";
-  meta.textContent = genre;
-
-  const actions = document.createElement("div");
-  actions.className = "card-actions";
-
-  const details = document.createElement("a");
-  details.className = "watch-btn";
-  details.href = "anime-details.html?id=" + encodeURIComponent(animeId);
-  details.textContent = "▶ Details";
-
-  const listButton = document.createElement("button");
-  listButton.className = "list-btn";
-  listButton.type = "button";
-  listButton.title = saved ? "Remove from My List" : "Add to My List";
-  listButton.textContent = saved ? "❤️" : "＋";
-  listButton.setAttribute("aria-label", listButton.title);
-  listButton.addEventListener("click", () => toggleMyList(animeId));
-
-  const likeButton = document.createElement("button");
-  likeButton.className = "like-btn";
-  likeButton.type = "button";
-
-  function updateLikeButton() {
-    const liked = likedAnimeIds.has(animeId);
-    const count = animeLikeCounts[animeId] || 0;
-
-    likeButton.classList.toggle("liked", liked);
-    likeButton.textContent = (liked ? "❤️ " : "🤍 ") + count;
-    likeButton.title = liked ? "Unlike anime" : "Like anime";
-    likeButton.setAttribute(
-      "aria-label",
-      (liked ? "Unlike anime. " : "Like anime. ") +
-      count + " likes"
-    );
-    likeButton.disabled = likeBusyIds.has(animeId);
-  }
-
-  updateLikeButton();
-  likeButton.addEventListener("click", () => toggleAnimeLike(animeId));
-
-  actions.append(details, listButton, likeButton);
-  body.append(cardTitle, meta, actions);
-  card.append(poster, body);
-
-  return card;
+searchInput.addEventListener("input",renderAll);
+genreSelect.addEventListener("change",()=>setGenre(genreSelect.value));
+document.querySelectorAll(".bottom-nav a").forEach(a=>a.addEventListener("click",()=>{document.querySelectorAll(".bottom-nav a").forEach(x=>x.classList.remove("active"));a.classList.add("active")}));
+async function startApp(){
+  loadMyList();await loadAnime();
+  const results=await Promise.allSettled([loadViewCounts(),loadAnimeLikes()]);
+  updateHero();renderAll();await Promise.allSettled([loadLatestEpisodes(),loadSchedule()]);
+  // Re-render ranking after view/like counts have arrived.
+  renderAll();updateHero();
 }
-
-function renderGrid(element, list, emptyText) {
-  element.replaceChildren();
-
-  if (!list || list.length === 0) {
-    const message = document.createElement("div");
-    message.className = "message";
-    message.textContent = emptyText;
-    element.appendChild(message);
-    return;
-  }
-
-  list.forEach(anime => element.appendChild(createAnimeCard(anime)));
-}
-
-/* Every section uses the same anime list and Like data. */
-function renderAll() {
-  const filtered = getFilteredAnime();
-
-  renderGrid(
-    allAnimeGrid,
-    filtered,
-    searchInput.value.trim() || selectedGenre !== "all"
-      ? "Is search ya genre mein koi anime nahi mila."
-      : "Supabase anime table mein abhi koi anime nahi hai."
-  );
-
-  const top = [...filtered]
-    .sort((a, b) =>
-      (viewCounts[getAnimeId(b)] || 0) -
-      (viewCounts[getAnimeId(a)] || 0)
-    )
-    .slice(0, 6);
-
-  renderGrid(topGrid, top, "Abhi trending anime available nahi hai.");
-  renderGrid(latestGrid, filtered.slice(0, 6), "Abhi anime available nahi hai.");
-  renderGrid(recentGrid, filtered.slice(0, 6), "Abhi recently added anime nahi hai.");
-
-  const myAnime = animeList.filter(anime =>
-    myListIds.has(getAnimeId(anime))
-  );
-
-  renderGrid(myListGrid, myAnime, "❤️ Tumhari My List abhi empty hai.");
-}
-
-/* Load anime schedule. */
-async function loadSchedule() {
-  const { data, error } = await supabaseClient
-    .from("schedule")
-    .select("*")
-    .order("release_at", { ascending: true });
-
-  if (error) {
-    console.error("Schedule load error:", error);
-    scheduleList.innerHTML = "";
-    const message = document.createElement("div");
-    message.className = "message";
-    message.textContent = "Schedule load failed: " + error.message;
-    scheduleList.appendChild(message);
-    return;
-  }
-
-  scheduleList.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    const message = document.createElement("div");
-    message.className = "message";
-    message.textContent = "📅 Abhi koi upcoming schedule nahi hai.";
-    scheduleList.appendChild(message);
-    return;
-  }
-
-  data.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "schedule-item";
-
-    const info = document.createElement("div");
-
-    const name = document.createElement("div");
-    name.className = "schedule-name";
-    name.textContent = item.anime_title || "Anime";
-
-    const episode = document.createElement("div");
-    episode.className = "schedule-episode";
-    episode.textContent =
-      "Episode " + (item.episode_number ?? "") +
-      (item.episode_title ? " • " + item.episode_title : "");
-
-    info.append(name, episode);
-
-    const time = document.createElement("div");
-    time.className = "schedule-time";
-
-    const date = item.release_at ? new Date(item.release_at) : null;
-    time.textContent = date && !Number.isNaN(date.getTime())
-      ? date.toLocaleString("en-IN", {
-          dateStyle: "medium",
-          timeStyle: "short"
-        })
-      : "Time unavailable";
-
-    div.append(info, time);
-    scheduleList.appendChild(div);
-  });
-}
-
-searchInput.addEventListener("input", renderAll);
-
-async function startApp() {
-  loadMyList();
-
-  await loadAnime();
-
-  await Promise.all([
-    loadViewCounts(),
-    loadAnimeLikes()
-  ]);
-
-  renderAll();
-  await loadSchedule();
-}
-
-startApp().catch(error => {
-  console.error("Website startup error:", error);
-  allAnimeGrid.innerHTML =
-    '<div class="message">Website load karte waqt error aaya. Page refresh karke dobara try karo.</div>';
-});
+startApp().catch(error=>{console.error("Website startup error:",error);$("allAnimeGrid").innerHTML='<div class="message">Something went wrong while loading. Refresh and try again.</div>'});
 </script>
 </body>
 </html>
