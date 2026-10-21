@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#09090f">
-<meta name="description" content="Discover anime, latest episodes, trending series and anime schedules on AnimeHindiZone.">
+<meta name="description" content="Discover anime, latest episodes, trending series and recently added anime on AnimeHindiZone.">
 <title>AnimeHindiZone — Watch Anime in Hindi</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -64,6 +64,10 @@ header{position:sticky;top:0;z-index:1000;background:rgba(9,9,15,.94);border-bot
 .anime-grid::-webkit-scrollbar-thumb{background:var(--accent);border-radius:8px}
 .anime-grid>.anime-card{flex:0 0 174px;width:174px;scroll-snap-align:start}
 .anime-grid>.message{flex:0 0 100%;width:100%;min-width:100%;grid-column:auto}
+/* All Anime keeps the original full, vertically expanding grid. */
+#allAnimeGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:15px;overflow:visible;overflow-x:visible;overflow-y:visible;scroll-snap-type:none;padding:2px 2px 14px;touch-action:auto}
+#allAnimeGrid>.anime-card{width:auto;min-width:0;flex:none;scroll-snap-align:none}
+#allAnimeGrid>.message{width:auto;min-width:0;grid-column:1/-1;flex:none}
 .anime-card{background:var(--panel);border:1px solid #242432;border-radius:11px;overflow:hidden;min-width:0;transition:transform .2s,border-color .2s,box-shadow .2s}
 .anime-card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 12px 30px #0006}
 .poster-wrap{position:relative;aspect-ratio:2/3;background:#20202b;overflow:hidden}
@@ -79,9 +83,6 @@ header{position:sticky;top:0;z-index:1000;background:rgba(9,9,15,.94);border-bot
 .like-btn.liked{color:#ff6a9b;border-color:var(--accent);background:#ff35751a}.like-btn:disabled{opacity:.6}
 .episode-label{font-size:10px;color:#ff8fb2;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .message{background:#12121b;border:1px solid var(--line);border-radius:10px;padding:27px;text-align:center;color:#999;grid-column:1/-1;overflow-wrap:anywhere;font-size:13px}
-.schedule-list{display:flex;flex-direction:column;gap:9px}
-.schedule-item{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;align-items:center;justify-content:space-between;gap:15px}
-.schedule-name{font-weight:800;font-size:13px}.schedule-episode{color:#9292a2;font-size:11px;margin-top:5px}.schedule-time{color:#ff6a9b;font-size:11px;white-space:nowrap}
 footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;color:#777789;font-size:11px}
 .toast{position:fixed;left:50%;bottom:85px;transform:translateX(-50%) translateY(20px);background:#20202c;border:1px solid #383849;color:#fff;padding:11px 16px;border-radius:9px;font-size:12px;opacity:0;pointer-events:none;transition:.25s;z-index:5000;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -90,9 +91,8 @@ footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;colo
 @media(max-width:720px){
 .nav{min-height:60px;padding:0 14px}.logo{font-size:17px}.nav-links{gap:7px}.nav-links a{display:none}.nav-links .admin-btn{display:block;padding:7px 9px;font-size:10px}
 .hero{min-height:385px}.hero-content{padding:48px 17px}.hero h1{letter-spacing:-1.2px}.hero p{font-size:13px}
-.container{padding:20px 12px 90px}.search-row{grid-template-columns:1fr}.anime-grid{gap:12px;padding-bottom:12px}.anime-grid>.anime-card{flex-basis:145px;width:145px}
+.container{padding:20px 12px 90px}.search-row{grid-template-columns:1fr}.anime-grid{gap:12px;padding-bottom:12px}.anime-grid>.anime-card{flex-basis:145px;width:145px}#allAnimeGrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}#allAnimeGrid>.anime-card{width:auto;flex:none}
 .telegram-banner{padding:14px}.telegram-banner p{display:none}.join-btn{padding:9px 11px}
-.schedule-item{align-items:flex-start;flex-direction:column;gap:7px}.schedule-time{white-space:normal}
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;min-height:64px;background:rgba(12,12,19,.98);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-around;z-index:3000;padding-bottom:env(safe-area-inset-bottom)}
 .bottom-nav a{text-decoration:none;color:#777789;font-size:9px;text-align:center}.bottom-nav a.active{color:var(--accent)}.bottom-nav span{display:block;font-size:17px;margin-bottom:3px}
 }
@@ -104,7 +104,7 @@ footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;colo
   <div class="nav">
     <a href="index.html" class="logo">🔥 AnimeHindi<b>Zone</b></a>
     <nav class="nav-links">
-      <a href="#home">Home</a><a href="#latest">Latest Episodes</a><a href="#trending">Trending</a><a href="#schedule">Schedule</a><a href="#mylist">My List</a>
+      <a href="#home">Home</a><a href="#latest">Latest Episodes</a><a href="#trending">Trending</a><a href="#mylist">My List</a>
       <a href="admin.html" class="admin-btn">⚙ Admin</a>
     </nav>
   </div>
@@ -165,10 +165,6 @@ footer{border-top:1px solid var(--line);padding:26px 20px;text-align:center;colo
     <div id="myListGrid" class="anime-grid"><div class="message">Your list is loading…</div></div>
   </section>
 
-  <section id="schedule" class="section">
-    <div class="section-title"><div><h2>📅 Anime <span>Schedule</span></h2><p>Upcoming releases added from the admin panel</p></div></div>
-    <div id="scheduleList" class="schedule-list"><div class="message">Schedule is loading…</div></div>
-  </section>
 </main>
 
 <footer>© 2026 AnimeHindiZone · Anime discovery in one place</footer>
@@ -269,12 +265,6 @@ async function loadLatestEpisodes(){
   if(!items.length){const m=document.createElement("div");m.className="message";m.textContent="No episodes found yet. Add an episode from Admin after adding/selecting an anime.";grid.appendChild(m);return}
   items.slice(0,6).forEach(item=>grid.appendChild(createAnimeCard(item.anime,item.label)))
 }
-async function loadSchedule(){
-  const el=$("scheduleList");const {data,error}=await supabaseClient.from("schedule").select("*").order("release_at",{ascending:true});
-  el.replaceChildren();if(error){console.error("Schedule load error:",error);const m=document.createElement("div");m.className="message";m.textContent="Schedule could not load. Check the schedule table SELECT policy.";el.appendChild(m);return}
-  if(!data?.length){const m=document.createElement("div");m.className="message";m.textContent="📅 No upcoming schedule has been added yet.";el.appendChild(m);return}
-  data.forEach(item=>{const div=document.createElement("div");div.className="schedule-item";const info=document.createElement("div");const name=document.createElement("div");name.className="schedule-name";name.textContent=item.anime_title||"Anime";const ep=document.createElement("div");ep.className="schedule-episode";ep.textContent="Episode "+(item.episode_number??"")+(item.episode_title?" · "+item.episode_title:"");info.append(name,ep);const time=document.createElement("div");time.className="schedule-time";const date=item.release_at?new Date(item.release_at):null;time.textContent=date&&!Number.isNaN(date.getTime())?date.toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"}):"Time unavailable";div.append(info,time);el.appendChild(div)})
-}
 let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
 function safeImageUrl(value){
   try { const url=new URL(String(value||""),window.location.href); return /^https?:$/.test(url.protocol)?url.href:""; }
@@ -329,7 +319,7 @@ document.querySelectorAll(".bottom-nav a").forEach(a=>a.addEventListener("click"
 async function startApp(){
   loadMyList();await loadAnime();
   const results=await Promise.allSettled([loadViewCounts(),loadAnimeLikes()]);
-  updateHero();renderAll();await Promise.allSettled([loadLatestEpisodes(),loadSchedule()]);
+  updateHero();renderAll();await Promise.allSettled([loadLatestEpisodes()]);
   // Re-render ranking after view/like counts have arrived.
   renderAll();updateHero();
 }
