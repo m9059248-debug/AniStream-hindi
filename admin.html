@@ -19,9 +19,10 @@ input:focus,textarea:focus,select:focus{border-color:#ff1744}
 textarea{min-height:100px;resize:vertical}  
 button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:bold}  
 .primary{background:#ff1744;color:#fff}.primary:hover{background:#e9143d}  
-.secondary{background:#33333f;color:#fff}  
+.secondary{background:#33333f;color:#fff}.secondary:hover{background:#444452}  
 .green{background:#00a86b;color:#fff}.green:hover{background:#00c77d}  
-.delete-btn{background:#d50000;color:#fff;margin-top:10px}  
+.delete-btn{background:#d50000;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
+.edit-btn{background:#00a86b;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
 .search-btn{width:100%;margin-top:5px}  
 .message{padding:12px;margin-top:10px;border-radius:8px;overflow-wrap:anywhere}  
 .message.success{background:#123b20;color:#6dff91}.message.error{background:#40131b;color:#ff7d91}.message.info{background:#222231;color:#ddd}  
@@ -32,7 +33,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .small{color:#999;font-size:13px}  
 .status{display:inline-block;margin-top:5px;padding:4px 8px;background:#252530;border-radius:5px;font-size:12px}  
 .type-badge{display:inline-block;margin-top:5px;margin-left:5px;padding:4px 8px;background:#ff174426;border:1px solid #ff174466;color:#ff759f;border-radius:5px;font-size:12px}
-.library-actions{display:flex;flex-direction:column;align-items:flex-end}  
+.library-actions{display:flex;gap:6px;align-items:center}  
 .search-result{background:#0e0e15;border:1px solid #292936;border-radius:10px;padding:12px;margin-top:12px;display:flex;gap:12px;align-items:center}  
 .search-result img{width:80px;height:110px;object-fit:cover;border-radius:8px;background:#222}  
 .search-info{flex:1;min-width:0}.search-info h3{margin-bottom:7px}.search-info p{color:#aaa;font-size:13px;line-height:1.4}  
@@ -61,7 +62,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .container{padding:12px}.box{padding:15px}header h1{font-size:19px;margin-top:8px}  
 .search-result{align-items:flex-start;flex-wrap:wrap}.search-result img{width:65px;height:90px}  
 .search-info{min-width:calc(100% - 80px)}.search-result button{width:100%}  
-.anime-item{align-items:flex-start}.library-actions{align-items:stretch}.quality-actions button{width:100%}  
+.anime-item{align-items:flex-start}.library-actions{flex-direction:column;align-items:stretch}.quality-actions button{width:100%}  
 }  
 </style>  
 </head>  
@@ -124,7 +125,59 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
     <div id="animeLibrary"><div class="empty">Anime load ho rahe hain...</div></div>  
   </div>    
 
-  <div id="animeDetails" class="box" style="display:none;"><h2>🎬 Selected Anime</h2><div id="selectedAnimeInfo"></div></div>    
+  <!-- SELECTED ANIME + EDIT DETAILS BOX -->
+  <div id="animeDetails" class="box" style="display:none;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+      <h2>🎬 Selected Anime</h2>
+      <button class="primary" id="toggleEditBtn" onclick="toggleEditMode()" style="background:#00a86b;">✏️ Edit Anime Details</button>
+    </div>
+    
+    <div id="selectedAnimeInfo"></div>
+
+    <!-- INLINE EDIT FORM -->
+    <div id="editAnimeForm" style="display:none;margin-top:18px;border-top:1px solid #292936;padding-top:16px;">
+      <h3 style="color:#00a86b;margin-bottom:12px;">✏️ Edit Anime Details</h3>
+      
+      <label class="small">Anime Title</label>
+      <input id="editTitle" placeholder="Anime Title">
+      
+      <label class="small">Type / Format</label>
+      <select id="editType" onchange="handleEditTypeChange()">
+        <option value="Series">📺 Anime Series</option>
+        <option value="Movie">🎬 Anime Movie</option>
+      </select>
+      
+      <label class="small">Season (Series ke liye 'Season 1', Movie ke liye 'Movie')</label>
+      <input id="editSeason" placeholder="Season">
+      
+      <label class="small">Status</label>
+      <select id="editStatus">
+        <option value="Ongoing">Ongoing</option>
+        <option value="Completed">Completed</option>
+      </select>
+      
+      <label class="small">Language</label>
+      <input id="editLanguage" placeholder="Language">
+      
+      <label class="small">Genre</label>
+      <input id="editGenre" placeholder="Genre e.g. Action, Fantasy">
+      
+      <label class="small">Thumbnail / Poster URL</label>
+      <input id="editThumbnail" placeholder="Thumbnail URL">
+      
+      <label class="small">Banner URL</label>
+      <input id="editBanner" placeholder="Banner URL">
+      
+      <label class="small">Description</label>
+      <textarea id="editDescription" placeholder="Anime Description"></textarea>
+      
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="primary" onclick="saveAnimeDetails()" style="flex:1;background:#00a86b;">💾 Save Changes</button>
+        <button class="secondary" onclick="toggleEditMode()" style="flex:1;">❌ Cancel</button>
+      </div>
+      <div id="editAnimeMessage"></div>
+    </div>
+  </div>    
 
   <div id="episodeForm" class="box" style="display:none;">  
     <h2>➕ Add Episode / Movie Link</h2>  
@@ -217,6 +270,17 @@ function handleTypeChange(){
   if(type === "Movie"){
     seasonInput.value = "Movie";
     document.getElementById("status").value = "Completed";
+  } else {
+    if(seasonInput.value === "Movie") seasonInput.value = "Season 1";
+  }
+}
+
+function handleEditTypeChange(){
+  const type = document.getElementById("editType").value;
+  const seasonInput = document.getElementById("editSeason");
+  if(type === "Movie"){
+    seasonInput.value = "Movie";
+    document.getElementById("editStatus").value = "Completed";
   } else {
     if(seasonInput.value === "Movie") seasonInput.value = "Season 1";
   }
@@ -343,7 +407,7 @@ function createSearchResult(anime,container){
   info.className = "search-info";  
   const title = document.createElement("h3");
   title.textContent = getAnimeTitle(anime);
-  info.appendChild(title);
+  info.appendChild(title);  
   
   const isMov = String(anime.format).toUpperCase() === "MOVIE";
   const details = document.createElement("p");
@@ -475,12 +539,27 @@ function renderAnimeLibrary(list){
     
     const actions = document.createElement("div");
     actions.className = "library-actions";  
+
+    // EDIT BUTTON
+    const editBtn = document.createElement("button");
+    editBtn.className = "edit-btn";
+    editBtn.textContent = "✏️ Edit";
+    editBtn.onclick = event => {
+      event.stopPropagation();
+      selectAnimeFromDatabase(anime);
+      openEditModeDirectly();
+    };
+
+    // DELETE BUTTON
     const deleteButton = document.createElement("button");
     deleteButton.className = "delete-btn";
     deleteButton.textContent = "🗑️ Delete";  
-    deleteButton.onclick = event => { event.stopPropagation(); deleteAnime(anime.anime_id, anime.title); };  
+    deleteButton.onclick = event => { 
+      event.stopPropagation(); 
+      deleteAnime(anime.anime_id, anime.title); 
+    };  
     
-    actions.appendChild(deleteButton);
+    actions.append(editBtn, deleteButton);
     item.append(image, info, actions);
     library.appendChild(item);  
   });  
@@ -500,6 +579,13 @@ async function deleteAnime(animeId,title){
 
 function hideSelectedSections(){
   ["animeDetails","episodeForm","episodeList","scheduleForm","scheduleList"].forEach(id => document.getElementById(id).style.display="none");
+  const editForm = document.getElementById("editAnimeForm");
+  if(editForm) editForm.style.display = "none";
+  const toggleBtn = document.getElementById("toggleEditBtn");
+  if(toggleBtn){
+    toggleBtn.textContent = "✏️ Edit Anime Details";
+    toggleBtn.style.background = "#00a86b";
+  }
 }  
 
 function selectAnimeFromDatabase(anime){  
@@ -524,11 +610,127 @@ function showSelectedAnime(){
   const info = document.getElementById("selectedAnimeInfo");  
   info.innerHTML = "<h3>"+escapeHtml(selectedAnime.title)+" <span class='type-badge'>"+(isMov ? "🎬 Movie" : "📺 Series")+"</span></h3><p class='small'>Anime ID: "+escapeHtml(selectedAnime.id)+"</p>"+  
     "<p style='margin-top:10px;white-space:pre-wrap'>"+escapeHtml(selectedAnime.description)+"</p>"+  
-    "<p style='margin-top:10px'><b>Season / Format:</b> "+escapeHtml(selectedAnime.season)+"</p>"+  
+    "<p style='margin-top:10px'><b>Format / Season:</b> "+escapeHtml(selectedAnime.season)+"</p>"+  
+    "<p style='margin-top:5px'><b>Genre:</b> "+escapeHtml(selectedAnime.genres.join(", "))+"</p>"+  
+    "<p style='margin-top:5px'><b>Language:</b> "+escapeHtml(selectedAnime.language)+"</p>"+  
     "<p style='margin-top:5px'><b>Status:</b> "+escapeHtml(selectedAnime.status)+"</p>";  
   displayEpisodes();
   displaySchedules();  
+
+  // If edit mode was already open, reload current anime into edit inputs
+  const editForm = document.getElementById("editAnimeForm");
+  if(editForm.style.display === "block"){
+    populateEditInputs();
+  }
 }  
+
+function populateEditInputs(){
+  if(!selectedAnime) return;
+  document.getElementById("editTitle").value = selectedAnime.title || "";
+  const isMov = isMovieRecord(selectedAnime);
+  document.getElementById("editType").value = isMov ? "Movie" : "Series";
+  document.getElementById("editSeason").value = selectedAnime.season || (isMov ? "Movie" : "Season 1");
+  document.getElementById("editStatus").value = selectedAnime.status || "Ongoing";
+  document.getElementById("editLanguage").value = selectedAnime.language || "Hindi";
+  document.getElementById("editGenre").value = Array.isArray(selectedAnime.genres) ? selectedAnime.genres.join(", ") : "";
+  document.getElementById("editThumbnail").value = selectedAnime.thumbnail || "";
+  document.getElementById("editBanner").value = selectedAnime.banner || "";
+  document.getElementById("editDescription").value = selectedAnime.description || "";
+  document.getElementById("editAnimeMessage").innerHTML = "";
+}
+
+function openEditModeDirectly(){
+  const form = document.getElementById("editAnimeForm");
+  const btn = document.getElementById("toggleEditBtn");
+  form.style.display = "block";
+  btn.textContent = "✖ Close Edit";
+  btn.style.background = "#33333f";
+  populateEditInputs();
+  form.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function toggleEditMode(){
+  const form = document.getElementById("editAnimeForm");
+  const btn = document.getElementById("toggleEditBtn");
+  if(form.style.display === "none" || !form.style.display){
+    form.style.display = "block";
+    btn.textContent = "✖ Close Edit";
+    btn.style.background = "#33333f";
+    populateEditInputs();
+    form.scrollIntoView({behavior:"smooth", block:"start"});
+  } else {
+    form.style.display = "none";
+    btn.textContent = "✏️ Edit Anime Details";
+    btn.style.background = "#00a86b";
+  }
+}
+
+async function saveAnimeDetails(){
+  if(!selectedAnime) return;
+  const message = document.getElementById("editAnimeMessage");
+  const title = document.getElementById("editTitle").value.trim();
+  const type = document.getElementById("editType").value;
+  let season = document.getElementById("editSeason").value.trim();
+  const status = document.getElementById("editStatus").value;
+  const language = document.getElementById("editLanguage").value.trim();
+  const genre = document.getElementById("editGenre").value.trim();
+  const thumbnail_url = document.getElementById("editThumbnail").value.trim();
+  const banner_url = document.getElementById("editBanner").value.trim();
+  const description = document.getElementById("editDescription").value.trim();
+
+  if(!title){
+    setMessage(message, "error", "❌ Anime Title required hai.");
+    return;
+  }
+  if(type === "Movie" && !season.toLowerCase().includes("movie")){
+    season = "Movie";
+  }
+
+  setMessage(message, "info", "Details update ho rahi hain...");
+
+  const updateData = {
+    title,
+    thumbnail_url,
+    banner_url,
+    description,
+    genre,
+    season,
+    language,
+    status
+  };
+
+  let query = supabaseClient.from("anime").update(updateData);
+  if(selectedAnime.databaseId){
+    query = query.eq("id", selectedAnime.databaseId);
+  } else {
+    query = query.eq("anime_id", selectedAnime.id);
+  }
+
+  const {error} = await query;
+  if(error){
+    setMessage(message, "error", "❌ Update failed: " + error.message);
+    return;
+  }
+
+  // Local object update
+  selectedAnime.title = title;
+  selectedAnime.thumbnail = thumbnail_url;
+  selectedAnime.banner = banner_url;
+  selectedAnime.description = description;
+  selectedAnime.genres = genre ? genre.split(",").map(g => g.trim()) : [];
+  selectedAnime.season = season;
+  selectedAnime.language = language;
+  selectedAnime.status = status;
+
+  setMessage(message, "success", "✅ Anime details successfully update ho gayi!");
+  
+  showSelectedAnime();
+  await loadAnimeLibrary();
+
+  setTimeout(() => {
+    toggleEditMode();
+  }, 1200);
+}
 
 function getQualityInputs(){  
   return ["480","720","1080"].map(q => ({
