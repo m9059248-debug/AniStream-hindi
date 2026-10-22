@@ -80,7 +80,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 <div class="container">  
   <div class="box">  
     <h2>🔎 Search Anime</h2>  
-    <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Naruto">  
+    <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto">  
     <button class="primary search-btn" onclick="searchAnime()">🔎 Search Anime</button>  
     <div id="searchMessage"></div><div id="searchResults"></div>  
   </div>    
@@ -88,7 +88,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
   <div class="box">  
     <h2>➕ Add New Anime</h2>  
     <p class="small">Pehle upar se anime search karke Add karo. Ya manually details bhar sakte ho.</p>  
-    <input id="animeId" placeholder="Anime ID e.g. blacktorch">  
+    <input id="animeId" placeholder="Anime ID e.g. that-time-i-got-reincarnated-as-a-slime">  
     <input id="animeTitle" placeholder="Anime Name">  
     <input id="thumbnail" placeholder="Thumbnail URL">  
     <input id="banner" placeholder="Banner URL">  
@@ -154,15 +154,18 @@ async function loginAdmin(){
   if(error){setMessage(message,"error","❌ Login failed: "+error.message);return;}  
   showAdminPanel();  
 }  
+
 function showAdminPanel(){  
   document.getElementById("loginScreen").style.display="none";  
   document.getElementById("adminPanel").classList.remove("hidden");  
   loadAnimeLibrary();  
 }  
+
 async function logoutAdmin(){await supabaseClient.auth.signOut();location.reload();}  
 function setMessage(el,type,text){el.className="message "+type;el.textContent=text;}  
 
 function getAnimeTitle(anime){
+  if(!anime) return "Unknown Anime";
   if(typeof anime.title === "string") return anime.title;
   return anime.title?.english || anime.title?.romaji || anime.title?.native || "Unknown Anime";
 }  
@@ -190,11 +193,47 @@ function createAnimeId(title){
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }  
 
-/* Search API 1: AniList GraphQL */
+/* 1. Primary: Kitsu API (Runs directly in browser on Indian ISPs without block) */
+async function fetchFromKitsu(query) {
+  const url = "https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 7000);
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error("Kitsu HTTP " + res.status);
+    const json = await res.json();
+    const list = json.data || [];
+    return list.map(item => {
+      const a = item.attributes || {};
+      const title = a.canonicalTitle || a.titles?.en || a.titles?.en_jp || "Unknown Anime";
+      const poster = a.posterImage?.large || a.posterImage?.original || a.posterImage?.medium || "";
+      const banner = a.coverImage?.large || a.coverImage?.original || poster;
+      return {
+        id: item.id,
+        title: { english: title, romaji: title, native: a.titles?.ja_jp || "" },
+        coverImage: { large: poster, extraLarge: poster },
+        bannerImage: banner,
+        description: a.synopsis || "",
+        genres: [],
+        season: "",
+        seasonYear: a.startDate ? a.startDate.slice(0, 4) : "",
+        status: a.status === "finished" ? "FINISHED" : "Ongoing",
+        format: a.subtype ? a.subtype.toUpperCase() : "TV",
+        episodes: a.episodeCount || "N/A"
+      };
+    });
+  } catch (err) {
+    clearTimeout(timer);
+    throw err;
+  }
+}
+
+/* 2. Fallback: AniList GraphQL */
 async function fetchFromAniList(query) {
   const queryBody = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME) { id title { romaji english native } coverImage { large extraLarge } bannerImage description(asHtml: false) genres season seasonYear status format episodes startDate { year } } } }`;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 4000);
+  const timer = setTimeout(() => controller.abort(), 7000);
   try {
     const res = await fetch("https://graphql.anilist.co", {
       method: "POST",
@@ -213,72 +252,74 @@ async function fetchFromAniList(query) {
   }
 }
 
-/* Search API 2: Jikan API (MyAnimeList - Fallback if AniList is blocked) */
-async function fetchFromJikan(query) {
-  const res = await fetch("https://api.jikan.moe/v4/anime?q=" + encodeURIComponent(query) + "&limit=10");
-  if (!res.ok) throw new Error("Jikan HTTP " + res.status);
+/* 3. Fallback: CORS Proxy bypass */
+async function fetchViaProxy(query) {
+  const target = encodeURIComponent("https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10");
+  const res = await fetch("https://api.allorigins.win/raw?url=" + target);
+  if (!res.ok) throw new Error("Proxy response failed");
   const json = await res.json();
   const list = json.data || [];
-  return list.map(item => ({
-    id: item.mal_id,
-    title: {
-      english: item.title_english || item.title,
-      romaji: item.title,
-      native: item.title_japanese || ""
-    },
-    coverImage: {
-      large: item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || "",
-      extraLarge: item.images?.webp?.large_image_url || item.images?.jpg?.large_image_url || ""
-    },
-    bannerImage: item.images?.jpg?.large_image_url || "",
-    description: item.synopsis || "",
-    genres: (item.genres || []).map(g => g.name),
-    season: item.season ? item.season.toUpperCase() : "",
-    seasonYear: item.year || item.aired?.prop?.from?.year || "",
-    status: item.status === "Finished Airing" ? "FINISHED" : (item.status === "Currently Airing" ? "RELEASING" : "Ongoing"),
-    format: item.type || "TV",
-    episodes: item.episodes || "N/A"
-  }));
+  return list.map(item => {
+    const a = item.attributes || {};
+    const title = a.canonicalTitle || a.titles?.en || "Unknown Anime";
+    const poster = a.posterImage?.large || a.posterImage?.original || "";
+    return {
+      id: item.id,
+      title: { english: title, romaji: title, native: "" },
+      coverImage: { large: poster, extraLarge: poster },
+      bannerImage: a.coverImage?.large || poster,
+      description: a.synopsis || "",
+      genres: [],
+      season: "",
+      seasonYear: a.startDate ? a.startDate.slice(0, 4) : "",
+      status: a.status === "finished" ? "FINISHED" : "Ongoing",
+      format: a.subtype ? a.subtype.toUpperCase() : "TV",
+      episodes: a.episodeCount || "N/A"
+    };
+  });
 }
 
-async function searchAnime(){  
+async function searchAnime() {  
   const query = document.getElementById("animeSearchInput").value.trim();  
   const results = document.getElementById("searchResults");
   const message = document.getElementById("searchMessage");  
   
   if(!query){
-    setMessage(message,"error","❌ Anime name enter karo.");
-    results.innerHTML="";
+    setMessage(message, "error", "❌ Anime name enter karo.");
+    results.innerHTML = "";
     return;
   }  
   
-  setMessage(message,"info","🔎 Anime search ho raha hai...");
-  results.innerHTML="";  
+  setMessage(message, "info", "🔎 Searching anime...");
+  results.innerHTML = "";  
   
   let animeList = [];
   try {
-    // Try AniList first
-    animeList = await fetchFromAniList(query);
+    animeList = await fetchFromKitsu(query);
   } catch (err1) {
-    console.warn("AniList unavailable or blocked, switching to Jikan API...", err1);
+    console.warn("Kitsu failed, trying AniList...", err1);
     try {
-      // Fallback to Jikan API
-      animeList = await fetchFromJikan(query);
+      animeList = await fetchFromAniList(query);
     } catch (err2) {
-      console.error("Both anime search providers failed:", err1, err2);
-      setMessage(message,"error","❌ Search failed: Network/API connection issue. Check your connection.");
-      return;
+      console.warn("AniList failed, trying Proxy...", err2);
+      try {
+        animeList = await fetchViaProxy(query);
+      } catch (err3) {
+        console.error("All search methods failed", err1, err2, err3);
+        setMessage(message, "error", "❌ Search failed: Network/API connection issue. Check your connection.");
+        return;
+      }
     }
   }
 
-  if(!animeList.length){
-    setMessage(message,"error","❌ Anime nahi mila.");
+  if(!animeList || !animeList.length){
+    setMessage(message, "error", "❌ Anime nahi mila. Spelling check karke dobara search karo.");
     return;
   }  
 
-  setMessage(message,"success","✅ "+animeList.length+" anime result mile.");  
+  setMessage(message, "success", "✅ " + animeList.length + " anime result mile.");  
   animeList.forEach(anime => createSearchResult(anime, results));  
-}  
+}
 
 function createSearchResult(anime,container){  
   const item = document.createElement("div");
@@ -298,7 +339,7 @@ function createSearchResult(anime,container){
   
   const genre = document.createElement("p");
   genre.style.marginTop = "5px";
-  genre.textContent = "Genre: " + (Array.isArray(anime.genres) ? anime.genres.join(", ") : "N/A");  
+  genre.textContent = "Genre: " + (Array.isArray(anime.genres) && anime.genres.length ? anime.genres.join(", ") : "N/A");  
   
   const episodes = document.createElement("p");
   episodes.style.marginTop = "5px";
@@ -326,7 +367,7 @@ function fillAnimeForm(anime){
   document.getElementById("thumbnail").value = thumbnail;  
   document.getElementById("banner").value = anime.bannerImage || thumbnail;  
   document.getElementById("description").value = cleanDescription(anime.description || "");  
-  document.getElementById("genre").value = Array.isArray(anime.genres) ? anime.genres.join(", ") : "";  
+  document.getElementById("genre").value = Array.isArray(anime.genres) && anime.genres.length ? anime.genres.join(", ") : "";  
   document.getElementById("season").value = season;  
   document.getElementById("language").value = "Hindi";  
   document.getElementById("status").value = formatAnimeStatus(anime.status) === "Completed" ? "Completed" : "Ongoing";  
@@ -716,3 +757,4 @@ supabaseClient.auth.onAuthStateChange((event,session) => { if(session) showAdmin
 </script>  
 </body>  
 </html>
+
