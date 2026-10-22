@@ -98,36 +98,6 @@ iframe{
 
 .meta{color:#aaa;font-size:14px}
 
-.audio-badge-box{
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  background:rgba(255, 23, 68, 0.12);
-  border:1px solid rgba(255, 23, 68, 0.35);
-  color:#ff759f;
-  padding:6px 12px;
-  border-radius:6px;
-  font-size:12px;
-  font-weight:bold;
-  margin-top:10px;
-}
-
-.audio-guide{
-  color:#8e92a4;
-  font-size:12px;
-  margin-top:8px;
-  line-height:1.4;
-}
-
-.message{
-  text-align:center;
-  padding:30px 15px;
-  color:#aaa;
-  overflow-wrap:anywhere;
-}
-
-.error{color:#ff6b81}
-
 .view-info{
   margin-top:10px;
   color:#888;
@@ -142,17 +112,24 @@ iframe{
   font-size:18px;
 }
 
-.quality-buttons,.link-buttons{
+.sub-title{
+  color:#ff1744;
+  font-size:18px;
+  margin-top:18px;
+  margin-bottom:12px;
+}
+
+.quality-buttons,.lang-buttons,.link-buttons{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
 
-.quality-btn{
+.quality-btn,.lang-btn{
   background:#22222c;
   color:#fff;
   border:1px solid #363642;
-  padding:10px 18px;
+  padding:10px 16px;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
@@ -160,7 +137,8 @@ iframe{
   transition:all .2s;
 }
 
-.quality-btn:hover,.quality-btn.active{
+.quality-btn:hover,.quality-btn.active,
+.lang-btn:hover,.lang-btn.active{
   background:#ff1744;
   border-color:#ff1744;
 }
@@ -168,7 +146,7 @@ iframe{
 .current-status{
   color:#aaa;
   font-size:13px;
-  margin-top:12px;
+  margin-top:14px;
 }
 
 .link-buttons{margin-top:15px}
@@ -187,6 +165,15 @@ iframe{
 .download-btn{background:#00a86b}
 .stream-btn:hover{background:#e9143d}
 .download-btn:hover{background:#00c77d}
+
+.message{
+  text-align:center;
+  padding:30px 15px;
+  color:#aaa;
+  overflow-wrap:anywhere;
+}
+
+.error{color:#ff6b81}
 
 /* Episode buttons */
 #episodeNav .episode-nav{
@@ -229,15 +216,21 @@ iframe{
 
   .nav a{margin-left:8px}
 
+  .lang-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+
   .quality-buttons{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
   }
 
-  .quality-btn{
+  .quality-btn,.lang-btn{
     width:100%;
-    padding:10px 5px;
+    padding:9px 4px;
     font-size:12px;
     text-align:center;
   }
@@ -290,20 +283,26 @@ iframe{
     <div class="info">
       <h1 id="episodeTitle">Loading...</h1>
       <div id="episodeMeta" class="meta"></div>
-      
-      <div class="audio-badge-box">
-        🎧 Multi-Audio: Hindi • Japanese • English
-      </div>
-      <p class="audio-guide">💡 <b>Audio kaise change karein:</b> Video player ke screen par bane Settings (⚙️) ya Audio Track icon par click karke Hindi, Japanese ya English select karein.</p>
-      
       <div id="viewInfo" class="view-info"></div>
     </div>
   </div>
 
-  <!-- QUALITY CONTROLS -->
-  <div id="qualitySection" class="quality-section" style="display:none">
-    <h2>🎥 Video Quality</h2>
+  <!-- CONTROL PANEL: AUDIO LANGUAGE & VIDEO QUALITY -->
+  <div id="controlsSection" class="quality-section">
+    <!-- 1. AUDIO LANGUAGE BUTTONS -->
+    <h2>🌐 Audio Language</h2>
+    <div id="languageButtons" class="lang-buttons">
+      <button type="button" class="lang-btn active" data-lang="Hindi" onclick="switchLanguage('Hindi')">🇮🇳 Hindi</button>
+      <button type="button" class="lang-btn" data-lang="English" onclick="switchLanguage('English')">🇬🇧 English</button>
+      <button type="button" class="lang-btn" data-lang="Japanese" onclick="switchLanguage('Japanese')">🇯🇵 Japanese</button>
+      <button type="button" class="lang-btn" data-lang="Tamil" onclick="switchLanguage('Tamil')">🇮🇳 Tamil</button>
+      <button type="button" class="lang-btn" data-lang="Telugu" onclick="switchLanguage('Telugu')">🇮🇳 Telugu</button>
+    </div>
+
+    <!-- 2. VIDEO QUALITY BUTTONS -->
+    <h2 class="sub-title">🎥 Video Quality</h2>
     <div id="qualityButtons" class="quality-buttons"></div>
+    
     <div id="currentStatus" class="current-status"></div>
     <div id="linkButtons" class="link-buttons"></div>
   </div>
@@ -330,13 +329,14 @@ const episodeTitle = document.getElementById("episodeTitle");
 const episodeMeta = document.getElementById("episodeMeta");
 const episodeNav = document.getElementById("episodeNav");
 const viewInfo = document.getElementById("viewInfo");
-const qualitySection = document.getElementById("qualitySection");
 const qualityButtons = document.getElementById("qualityButtons");
 const currentStatus = document.getElementById("currentStatus");
 const linkButtons = document.getElementById("linkButtons");
 
 let qualityLinks = [];
-let selectedQuality = null;
+let selectedQuality = "720p";
+let selectedLanguage = "Hindi";
+let fallbackVideoUrl = "";
 
 function escapeHtml(value){
   return String(value ?? "")
@@ -365,7 +365,7 @@ async function recordAnimeView(){
 
     const {error} = await supabaseClient
       .from("anime_views")
-      .insert({ anime_id:animeId, user_id:user.id });
+      .insert({ anime_id: animeId, user_id: user.id });
 
     if(error?.code === "23505"){
       viewInfo.textContent = "👁️ Already viewed";
@@ -409,8 +409,9 @@ async function loadEpisode(){
   episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
   episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
   document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
+  fallbackVideoUrl = data.video_url || "";
 
-  await loadQualityLinks(data.anime_title, data.video_url);
+  await loadQualityLinks(data.anime_title);
   recordAnimeView();
 }
 
@@ -418,14 +419,10 @@ function showError(message){
   videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
 }
 
-async function loadQualityLinks(animeTitle, defaultVideoUrl){
+async function loadQualityLinks(animeTitle){
   qualityLinks = [];
-  selectedQuality = null;
-
-  qualitySection.style.display = "none";
   qualityButtons.innerHTML = "";
   linkButtons.innerHTML = "";
-  currentStatus.textContent = "";
 
   if(!animeTitle || !episodeNumber) return;
 
@@ -440,15 +437,11 @@ async function loadQualityLinks(animeTitle, defaultVideoUrl){
   }
 
   const order = { "1080p": 1, "720p": 2, "480p": 3 };
-
   if(data && data.length > 0){
     qualityLinks = data.sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
   }
 
-  // Agar episode_links table mein data mila
   if(qualityLinks.length > 0){
-    qualitySection.style.display = "block";
-
     qualityLinks.forEach(link => {
       const button = document.createElement("button");
       button.className = "quality-btn";
@@ -458,27 +451,50 @@ async function loadQualityLinks(animeTitle, defaultVideoUrl){
       qualityButtons.appendChild(button);
     });
 
-    selectQuality(qualityLinks[0].quality);
-  } 
-  // Fallback agar sirf purana video_url available ho
-  else if(defaultVideoUrl){
-    loadVideo(defaultVideoUrl);
+    const hasTarget = qualityLinks.find(l => l.quality === selectedQuality);
+    const chosen = hasTarget ? selectedQuality : qualityLinks[0].quality;
+    selectQuality(chosen);
+  } else if(fallbackVideoUrl){
+    loadVideo(fallbackVideoUrl);
+    updateStatusDisplay();
   } else {
     showError("Is episode ka koi video link nahi mila.");
   }
 }
 
+function switchLanguage(lang){
+  selectedLanguage = lang;
+  
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.lang === lang);
+  });
+
+  updateStatusDisplay();
+
+  const videoElem = videoContainer.querySelector("video");
+  if(videoElem && videoElem.audioTracks && videoElem.audioTracks.length > 0){
+    for(let i = 0; i < videoElem.audioTracks.length; i++){
+      const tr = videoElem.audioTracks[i];
+      const name = (tr.label || tr.language || "").toLowerCase();
+      if(name.includes(lang.toLowerCase())){
+        tr.enabled = true;
+      } else {
+        tr.enabled = false;
+      }
+    }
+  }
+}
+
 function selectQuality(quality){
+  selectedQuality = quality;
   const selected = qualityLinks.find(item => item.quality === quality);
   if(!selected) return;
-
-  selectedQuality = selected;
 
   document.querySelectorAll(".quality-btn").forEach(button => {
     button.classList.toggle("active", button.textContent === quality);
   });
 
-  currentStatus.textContent = "Selected Quality: " + quality;
+  updateStatusDisplay();
 
   const streamUrl = safeUrl(selected.stream_url);
   const downloadUrl = safeUrl(selected.download_url);
@@ -510,6 +526,10 @@ function selectQuality(quality){
     downloadButton.textContent = "⬇ Download (" + quality + ")";
     linkButtons.appendChild(downloadButton);
   }
+}
+
+function updateStatusDisplay(){
+  currentStatus.innerHTML = "<b>Audio:</b> " + escapeHtml(selectedLanguage) + " • <b>Quality:</b> " + escapeHtml(selectedQuality) + " <span style='color:#777;'>(Multi-Audio Stream)</span>";
 }
 
 function loadVideo(url){
