@@ -55,6 +55,7 @@ header{
   color:#ff1744;
   text-decoration:none;
   margin-bottom:15px;
+  font-weight:bold;
 }
 
 .video-box,.quality-section,.section{
@@ -97,6 +98,27 @@ iframe{
 
 .meta{color:#aaa;font-size:14px}
 
+.audio-badge-box{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(255, 23, 68, 0.12);
+  border:1px solid rgba(255, 23, 68, 0.35);
+  color:#ff759f;
+  padding:6px 12px;
+  border-radius:6px;
+  font-size:12px;
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.audio-guide{
+  color:#8e92a4;
+  font-size:12px;
+  margin-top:8px;
+  line-height:1.4;
+}
+
 .message{
   text-align:center;
   padding:30px 15px;
@@ -107,7 +129,7 @@ iframe{
 .error{color:#ff6b81}
 
 .view-info{
-  margin-top:12px;
+  margin-top:10px;
   color:#888;
   font-size:13px;
 }
@@ -120,24 +142,17 @@ iframe{
   font-size:18px;
 }
 
-.sub-title{
-  color:#ff1744;
-  font-size:18px;
-  margin-top:18px;
-  margin-bottom:12px;
-}
-
-.quality-buttons,.lang-buttons,.link-buttons{
+.quality-buttons,.link-buttons{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
 
-.quality-btn,.lang-btn{
+.quality-btn{
   background:#22222c;
   color:#fff;
   border:1px solid #363642;
-  padding:10px 16px;
+  padding:10px 18px;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
@@ -145,8 +160,7 @@ iframe{
   transition:all .2s;
 }
 
-.quality-btn:hover,.quality-btn.active,
-.lang-btn:hover,.lang-btn.active{
+.quality-btn:hover,.quality-btn.active{
   background:#ff1744;
   border-color:#ff1744;
 }
@@ -215,21 +229,15 @@ iframe{
 
   .nav a{margin-left:8px}
 
-  .lang-buttons{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-  }
-
   .quality-buttons{
     display:grid;
     grid-template-columns:repeat(3,1fr);
     gap:8px;
   }
 
-  .quality-btn,.lang-btn{
+  .quality-btn{
     width:100%;
-    padding:9px 4px;
+    padding:10px 5px;
     font-size:12px;
     text-align:center;
   }
@@ -282,26 +290,20 @@ iframe{
     <div class="info">
       <h1 id="episodeTitle">Loading...</h1>
       <div id="episodeMeta" class="meta"></div>
+      
+      <div class="audio-badge-box">
+        🎧 Multi-Audio: Hindi • Japanese • English
+      </div>
+      <p class="audio-guide">💡 <b>Audio kaise change karein:</b> Video player ke screen par bane Settings (⚙️) ya Audio Track icon par click karke Hindi, Japanese ya English select karein.</p>
+      
       <div id="viewInfo" class="view-info"></div>
     </div>
   </div>
 
-  <!-- CONTROLS SECTION: LANGUAGE & QUALITY -->
-  <div id="controlsSection" class="quality-section">
-    <!-- 1. LANGUAGE BUTTONS -->
-    <h2>🌐 Audio Language</h2>
-    <div id="languageButtons" class="lang-buttons">
-      <button type="button" class="lang-btn active" onclick="switchLanguage('Hindi')">🇮🇳 Hindi</button>
-      <button type="button" class="lang-btn" onclick="switchLanguage('English')">🇬🇧 English</button>
-      <button type="button" class="lang-btn" onclick="switchLanguage('Japanese')">🇯🇵 Japanese</button>
-      <button type="button" class="lang-btn" onclick="switchLanguage('Tamil')">🇮🇳 Tamil</button>
-      <button type="button" class="lang-btn" onclick="switchLanguage('Telugu')">🇮🇳 Telugu</button>
-    </div>
-
-    <!-- 2. QUALITY BUTTONS -->
-    <h2 class="sub-title">🎥 Video Quality</h2>
+  <!-- QUALITY CONTROLS -->
+  <div id="qualitySection" class="quality-section" style="display:none">
+    <h2>🎥 Video Quality</h2>
     <div id="qualityButtons" class="quality-buttons"></div>
-    
     <div id="currentStatus" class="current-status"></div>
     <div id="linkButtons" class="link-buttons"></div>
   </div>
@@ -328,15 +330,13 @@ const episodeTitle = document.getElementById("episodeTitle");
 const episodeMeta = document.getElementById("episodeMeta");
 const episodeNav = document.getElementById("episodeNav");
 const viewInfo = document.getElementById("viewInfo");
+const qualitySection = document.getElementById("qualitySection");
 const qualityButtons = document.getElementById("qualityButtons");
 const currentStatus = document.getElementById("currentStatus");
 const linkButtons = document.getElementById("linkButtons");
 
-let allEpisodeLinks = [];
-let filteredLinks = [];
-let selectedLanguage = "Hindi";
-let selectedQuality = "720p";
-let fallbackVideoUrl = "";
+let qualityLinks = [];
+let selectedQuality = null;
 
 function escapeHtml(value){
   return String(value ?? "")
@@ -365,7 +365,7 @@ async function recordAnimeView(){
 
     const {error} = await supabaseClient
       .from("anime_views")
-      .insert({ anime_id: animeId, user_id: user.id });
+      .insert({ anime_id:animeId, user_id:user.id });
 
     if(error?.code === "23505"){
       viewInfo.textContent = "👁️ Already viewed";
@@ -409,9 +409,8 @@ async function loadEpisode(){
   episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
   episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
   document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
-  fallbackVideoUrl = data.video_url || "";
 
-  await fetchAllLinks(data.anime_title);
+  await loadQualityLinks(data.anime_title, data.video_url);
   recordAnimeView();
 }
 
@@ -419,8 +418,15 @@ function showError(message){
   videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
 }
 
-async function fetchAllLinks(animeTitle){
-  allEpisodeLinks = [];
+async function loadQualityLinks(animeTitle, defaultVideoUrl){
+  qualityLinks = [];
+  selectedQuality = null;
+
+  qualitySection.style.display = "none";
+  qualityButtons.innerHTML = "";
+  linkButtons.innerHTML = "";
+  currentStatus.textContent = "";
+
   if(!animeTitle || !episodeNumber) return;
 
   const {data, error} = await supabaseClient
@@ -431,40 +437,19 @@ async function fetchAllLinks(animeTitle){
 
   if(error){
     console.error("episode_links error:", error);
-  } else {
-    allEpisodeLinks = data || [];
   }
-
-  renderLanguageAndQuality();
-}
-
-function switchLanguage(lang){
-  selectedLanguage = lang;
-  document.querySelectorAll(".lang-btn").forEach(btn => {
-    btn.classList.toggle("active", btn.textContent.includes(lang));
-  });
-  renderLanguageAndQuality();
-}
-
-function renderLanguageAndQuality(){
-  qualityButtons.innerHTML = "";
-  linkButtons.innerHTML = "";
-  currentStatus.textContent = "";
 
   const order = { "1080p": 1, "720p": 2, "480p": 3 };
 
-  // Filter links by language if language field exists, otherwise default fallback to Hindi
-  filteredLinks = allEpisodeLinks.filter(item => {
-    if(item.language){
-      return item.language.toLowerCase() === selectedLanguage.toLowerCase();
-    }
-    // Agar link me language explicitly set nahi hai, toh Hindi ke liye show karein
-    return selectedLanguage === "Hindi";
-  }).sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
+  if(data && data.length > 0){
+    qualityLinks = data.sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
+  }
 
-  // Agar current language me links available hain
-  if(filteredLinks.length > 0){
-    filteredLinks.forEach(link => {
+  // Agar episode_links table mein data mila
+  if(qualityLinks.length > 0){
+    qualitySection.style.display = "block";
+
+    qualityLinks.forEach(link => {
       const button = document.createElement("button");
       button.className = "quality-btn";
       button.textContent = link.quality;
@@ -473,32 +458,27 @@ function renderLanguageAndQuality(){
       qualityButtons.appendChild(button);
     });
 
-    const hasTargetQuality = filteredLinks.find(l => l.quality === selectedQuality);
-    const chosenQuality = hasTargetQuality ? selectedQuality : filteredLinks[0].quality;
-    selectQuality(chosenQuality);
+    selectQuality(qualityLinks[0].quality);
   } 
-  // Agar specific language ke links available nahi hain
-  else {
-    if(selectedLanguage === "Hindi" && fallbackVideoUrl){
-      loadVideo(fallbackVideoUrl);
-      currentStatus.textContent = "Language: Hindi • Default Stream Link Loaded";
-    } else {
-      videoContainer.innerHTML = '<div class="message">⚠️ ' + escapeHtml(selectedLanguage) + ' audio mein is episode ka link available nahi hai. Kripya dusri language sunein.</div>';
-      currentStatus.textContent = "Language: " + selectedLanguage + " (Links unavailable)";
-    }
+  // Fallback agar sirf purana video_url available ho
+  else if(defaultVideoUrl){
+    loadVideo(defaultVideoUrl);
+  } else {
+    showError("Is episode ka koi video link nahi mila.");
   }
 }
 
 function selectQuality(quality){
-  selectedQuality = quality;
-  const selected = filteredLinks.find(item => item.quality === quality);
+  const selected = qualityLinks.find(item => item.quality === quality);
   if(!selected) return;
+
+  selectedQuality = selected;
 
   document.querySelectorAll(".quality-btn").forEach(button => {
     button.classList.toggle("active", button.textContent === quality);
   });
 
-  currentStatus.textContent = "Language: " + selectedLanguage + " • Quality: " + quality;
+  currentStatus.textContent = "Selected Quality: " + quality;
 
   const streamUrl = safeUrl(selected.stream_url);
   const downloadUrl = safeUrl(selected.download_url);
@@ -517,7 +497,7 @@ function selectQuality(quality){
     streamButton.href = streamUrl;
     streamButton.target = "_blank";
     streamButton.rel = "noopener noreferrer";
-    streamButton.textContent = "▶ Stream " + quality;
+    streamButton.textContent = "▶ Open Stream (" + quality + ")";
     linkButtons.appendChild(streamButton);
   }
 
@@ -527,7 +507,7 @@ function selectQuality(quality){
     downloadButton.href = downloadUrl;
     downloadButton.target = "_blank";
     downloadButton.rel = "noopener noreferrer";
-    downloadButton.textContent = "⬇ Download " + quality;
+    downloadButton.textContent = "⬇ Download (" + quality + ")";
     linkButtons.appendChild(downloadButton);
   }
 }
