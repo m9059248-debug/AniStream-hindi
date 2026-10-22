@@ -3,7 +3,7 @@
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>AnimeHindiZone Admin</title>  
+<title>AniStream Admin</title>  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
 <style>  
 *{box-sizing:border-box;margin:0;padding:0}  
@@ -44,7 +44,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .episode-item a{color:#ff1744;word-break:break-all}  
 .quality-box{background:#111119;border:1px solid #30303d;border-radius:10px;padding:15px;margin-top:12px}  
 .quality-title{color:#ff1744;font-size:18px;font-weight:bold;margin-bottom:8px}  
-.quality-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}  
+.quality-actions{display:flex;gap:8px;flex-wrap:margin-top:8px}  
 .link-box{margin-top:12px;padding:10px;background:#0b0b10;border-radius:8px;border:1px solid #24242f}  
 .link-label{font-size:12px;color:#999;margin-bottom:4px}  
 .link-text{color:#ddd;word-break:break-all;font-size:13px}  
@@ -81,7 +81,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 <header>  
   <a href="index.html" class="home-btn">🏠 Home</a>  
   <button class="logout" onclick="logoutAdmin()">Logout</button>  
-  <h1>🔥 AnimeHindiZone Admin</h1>  
+  <h1>🔥 AniStream Admin</h1>  
 </header>  
 <div class="container">  
   <div class="box">  
@@ -444,7 +444,7 @@ function fillAnimeForm(anime){
     if(anime.seasonYear) season += (season ? " " : "") + anime.seasonYear;  
     document.getElementById("season").value = season || "Season 1";
     document.getElementById("status").value = formatAnimeStatus(anime.status) === "Completed" ? "Completed" : "Ongoing";  
-  }
+  }  
   
   document.getElementById("language").value = "Hindi";  
   document.getElementById("animeTitle").scrollIntoView({behavior:"smooth", block:"center"});  
@@ -617,7 +617,6 @@ function showSelectedAnime(){
   displayEpisodes();
   displaySchedules();  
 
-  // If edit mode was already open, reload current anime into edit inputs
   const editForm = document.getElementById("editAnimeForm");
   if(editForm.style.display === "block"){
     populateEditInputs();
@@ -712,7 +711,6 @@ async function saveAnimeDetails(){
     return;
   }
 
-  // Local object update
   selectedAnime.title = title;
   selectedAnime.thumbnail = thumbnail_url;
   selectedAnime.banner = banner_url;
