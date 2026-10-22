@@ -88,7 +88,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
   <div class="box">  
     <h2>➕ Add New Anime</h2>  
     <p class="small">Pehle upar se anime search karke Add karo. Ya manually details bhar sakte ho.</p>  
-    <input id="animeId" placeholder="Anime ID e.g. that-time-i-got-reincarnated-as-a-slime">  
+    <input id="animeId" placeholder="Anime ID e.g. the-apothecary-diaries">  
     <input id="animeTitle" placeholder="Anime Name">  
     <input id="thumbnail" placeholder="Thumbnail URL">  
     <input id="banner" placeholder="Banner URL">  
@@ -193,7 +193,7 @@ function createAnimeId(title){
   return title.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
 }  
 
-/* 1. Primary: Kitsu API (Runs directly in browser on Indian ISPs without block) */
+/* 1. Kitsu API (Prioritizing English Names) */
 async function fetchFromKitsu(query) {
   const url = "https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10";
   const controller = new AbortController();
@@ -206,12 +206,14 @@ async function fetchFromKitsu(query) {
     const list = json.data || [];
     return list.map(item => {
       const a = item.attributes || {};
-      const title = a.canonicalTitle || a.titles?.en || a.titles?.en_jp || "Unknown Anime";
+      // English Title ko first priority di gayi hai:
+      const englishTitle = a.titles?.en || a.titles?.en_us || a.canonicalTitle || a.titles?.en_jp || "Unknown Anime";
+      const romajiTitle = a.canonicalTitle || a.titles?.en_jp || "";
       const poster = a.posterImage?.large || a.posterImage?.original || a.posterImage?.medium || "";
       const banner = a.coverImage?.large || a.coverImage?.original || poster;
       return {
         id: item.id,
-        title: { english: title, romaji: title, native: a.titles?.ja_jp || "" },
+        title: { english: englishTitle, romaji: romajiTitle, native: a.titles?.ja_jp || "" },
         coverImage: { large: poster, extraLarge: poster },
         bannerImage: banner,
         description: a.synopsis || "",
@@ -229,9 +231,9 @@ async function fetchFromKitsu(query) {
   }
 }
 
-/* 2. Fallback: AniList GraphQL */
+/* 2. Fallback: AniList GraphQL (English First) */
 async function fetchFromAniList(query) {
-  const queryBody = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME) { id title { romaji english native } coverImage { large extraLarge } bannerImage description(asHtml: false) genres season seasonYear status format episodes startDate { year } } } }`;
+  const queryBody = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME) { id title { english romaji native } coverImage { large extraLarge } bannerImage description(asHtml: false) genres season seasonYear status format episodes startDate { year } } } }`;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 7000);
   try {
@@ -245,14 +247,22 @@ async function fetchFromAniList(query) {
     if (!res.ok) throw new Error("AniList HTTP " + res.status);
     const json = await res.json();
     if (json.errors?.length) throw new Error(json.errors[0].message);
-    return json.data?.Page?.media || [];
+    const media = json.data?.Page?.media || [];
+    return media.map(item => ({
+      ...item,
+      title: {
+        english: item.title?.english || item.title?.romaji || item.title?.native,
+        romaji: item.title?.romaji || "",
+        native: item.title?.native || ""
+      }
+    }));
   } catch (err) {
     clearTimeout(timer);
     throw err;
   }
 }
 
-/* 3. Fallback: CORS Proxy bypass */
+/* 3. Fallback: Proxy */
 async function fetchViaProxy(query) {
   const target = encodeURIComponent("https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10");
   const res = await fetch("https://api.allorigins.win/raw?url=" + target);
@@ -261,11 +271,11 @@ async function fetchViaProxy(query) {
   const list = json.data || [];
   return list.map(item => {
     const a = item.attributes || {};
-    const title = a.canonicalTitle || a.titles?.en || "Unknown Anime";
+    const englishTitle = a.titles?.en || a.titles?.en_us || a.canonicalTitle || "Unknown Anime";
     const poster = a.posterImage?.large || a.posterImage?.original || "";
     return {
       id: item.id,
-      title: { english: title, romaji: title, native: "" },
+      title: { english: englishTitle, romaji: a.canonicalTitle || "", native: "" },
       coverImage: { large: poster, extraLarge: poster },
       bannerImage: a.coverImage?.large || poster,
       description: a.synopsis || "",
@@ -297,23 +307,20 @@ async function searchAnime() {
   try {
     animeList = await fetchFromKitsu(query);
   } catch (err1) {
-    console.warn("Kitsu failed, trying AniList...", err1);
     try {
       animeList = await fetchFromAniList(query);
     } catch (err2) {
-      console.warn("AniList failed, trying Proxy...", err2);
       try {
         animeList = await fetchViaProxy(query);
       } catch (err3) {
-        console.error("All search methods failed", err1, err2, err3);
-        setMessage(message, "error", "❌ Search failed: Network/API connection issue. Check your connection.");
+        setMessage(message, "error", "❌ Search failed: Network error.");
         return;
       }
     }
   }
 
   if(!animeList || !animeList.length){
-    setMessage(message, "error", "❌ Anime nahi mila. Spelling check karke dobara search karo.");
+    setMessage(message, "error", "❌ Anime nahi mila. Spelling check karein.");
     return;
   }  
 
@@ -332,20 +339,28 @@ function createSearchResult(anime,container){
   const info = document.createElement("div");
   info.className = "search-info";  
   const title = document.createElement("h3");
-  title.textContent = getAnimeTitle(anime);  
+  title.textContent = getAnimeTitle(anime);
+  
+  // Agar Japanese/Romaji title alag ho toh use bracket mein dikhana
+  if(anime.title?.romaji && anime.title.romaji !== anime.title.english){
+    const sub = document.createElement("p");
+    sub.className = "small";
+    sub.style.marginBottom = "5px";
+    sub.textContent = "JP: " + anime.title.romaji;
+    info.appendChild(title);
+    info.appendChild(sub);
+  } else {
+    info.appendChild(title);
+  }
   
   const details = document.createElement("p");
   details.textContent = (anime.format||"Unknown")+" • "+(anime.seasonYear||anime.startDate?.year||"N/A")+" • "+formatAnimeStatus(anime.status);  
   
-  const genre = document.createElement("p");
-  genre.style.marginTop = "5px";
-  genre.textContent = "Genre: " + (Array.isArray(anime.genres) && anime.genres.length ? anime.genres.join(", ") : "N/A");  
-  
   const episodes = document.createElement("p");
-  episodes.style.marginTop = "5px";
+  episodes.style.marginTop = "3px";
   episodes.textContent = "Episodes: " + (anime.episodes || "N/A");  
   
-  info.append(title, details, genre, episodes);  
+  info.append(details, episodes);  
   
   const button = document.createElement("button");
   button.className = "add-search-btn";
@@ -757,4 +772,3 @@ supabaseClient.auth.onAuthStateChange((event,session) => { if(session) showAdmin
 </script>  
 </body>  
 </html>
-
