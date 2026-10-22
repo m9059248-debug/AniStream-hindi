@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Anime Details - AnimeHindiZone</title>
+<title>Anime Details - AniStream</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -40,10 +40,14 @@ header{
 }
 
 .logo{
-  color:#ff1744;
+  color:#fff;
   font-size:22px;
   font-weight:bold;
   text-decoration:none;
+}
+
+.logo b{
+  color:#ff1744;
 }
 
 .nav a{
@@ -374,7 +378,7 @@ header{
       href="index.html"
       class="logo"
     >
-      🔥 AnimeHindiZone
+      🔥 Ani<b>Stream</b>
     </a>
 
     <div>
@@ -631,7 +635,7 @@ function updateShareLinks(){
       document.title ||
       "Anime"
     ) +
-    " on AnimeHindiZone";
+    " on AniStream";
 
 
   whatsappShare.href =
@@ -667,10 +671,10 @@ async function shareAnime(){
 
   const shareTitle =
     document.title ||
-    "AnimeHindiZone";
+    "AniStream";
 
   const shareText =
-    "Watch this anime on AnimeHindiZone";
+    "Watch this anime on AniStream";
 
 
   if(
@@ -949,7 +953,7 @@ function renderAnime(anime){
       anime.title ||
       "Anime"
     ) +
-    " - AnimeHindiZone";
+    " - AniStream";
 
 
   animeContainer.innerHTML =
