@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090d">
-<meta name="description" content="Discover anime, latest episodes, trending series and recently added anime in Hindi.">
-<title>AnimeHindiZone — Stream & Discover Anime in Hindi</title>
+<meta name="description" content="Watch Ongoing and Complete Anime in Hindi on AnimeHindiZone.">
+<title>AnimeHindiZone — Watch Anime in Hindi</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -49,7 +49,7 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(8, 9, 13, 0.85);
+  background: rgba(8, 9, 13, 0.88);
   border-bottom: 1px solid var(--line);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -110,7 +110,7 @@ header {
 /* HERO SECTION */
 .hero {
   position: relative;
-  min-height: 480px;
+  min-height: 460px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -158,9 +158,9 @@ header {
   margin-bottom: 18px;
 }
 .hero h1 {
-  font-size: clamp(32px, 5vw, 58px);
+  font-size: clamp(32px, 5vw, 56px);
   font-weight: 900;
-  line-height: 1.08;
+  line-height: 1.1;
   letter-spacing: -1.5px;
   max-width: 760px;
   margin-bottom: 16px;
@@ -195,7 +195,7 @@ header {
 .hero-buttons {
   display: flex;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 26px;
   flex-wrap: wrap;
 }
 .btn {
@@ -254,15 +254,8 @@ header {
   justify-content: center;
   transition: all 0.2s ease;
 }
-.hero-arrow:hover {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-.hero-dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+.hero-arrow:hover { background: var(--accent); border-color: var(--accent); }
+.hero-dots { display: flex; align-items: center; gap: 6px; }
 .hero-dot {
   width: 8px;
   height: 8px;
@@ -272,16 +265,13 @@ header {
   cursor: pointer;
   transition: all 0.25s ease;
 }
-.hero-dot.active {
-  width: 24px;
-  background: var(--accent);
-}
+.hero-dot.active { width: 24px; background: var(--accent); }
 
 /* MAIN CONTENT */
 .container {
   max-width: 1320px;
   margin: auto;
-  padding: 36px 24px 100px;
+  padding: 36px 24px 90px;
 }
 
 /* SEARCH & GENRE BAR */
@@ -344,14 +334,10 @@ header {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 40px;
+  margin-bottom: 38px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
-.telegram-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
+.telegram-left { display: flex; align-items: center; gap: 16px; }
 .telegram-icon {
   width: 44px;
   height: 44px;
@@ -379,7 +365,7 @@ header {
 
 /* SECTIONS */
 .section {
-  margin-bottom: 48px;
+  margin-bottom: 46px;
   scroll-margin-top: 84px;
 }
 .section-title {
@@ -408,7 +394,7 @@ header {
 }
 .see-all:hover { opacity: 0.8; }
 
-/* ANIME GRIDS */
+/* ONGOING HORIZONTAL ROW */
 .anime-grid {
   display: flex;
   flex-flow: row nowrap;
@@ -427,6 +413,7 @@ header {
 .anime-grid > .anime-card { flex: 0 0 185px; width: 185px; scroll-snap-align: start; }
 .anime-grid > .message { flex: 0 0 100%; width: 100%; min-width: 100%; }
 
+/* ALL ANIME EXPANDED GRID */
 #allAnimeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -476,8 +463,8 @@ header {
   position: absolute;
   top: 10px;
   left: 10px;
-  background: rgba(16, 18, 26, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(16, 18, 26, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
   color: #fff;
   font-size: 10px;
@@ -485,6 +472,11 @@ header {
   padding: 4px 8px;
   border-radius: var(--radius-sm);
   z-index: 1;
+}
+.status.ongoing {
+  background: rgba(0, 168, 107, 0.85);
+  border-color: rgba(0, 255, 160, 0.3);
+  color: #fff;
 }
 .view-badge {
   position: absolute;
@@ -522,15 +514,6 @@ header {
   height: 28px;
   overflow: hidden;
 }
-.episode-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: #ff759f;
-  margin-top: 6px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 .card-actions {
   display: flex;
   gap: 6px;
@@ -558,20 +541,18 @@ header {
   border-color: var(--accent);
   color: #fff;
 }
-.list-btn, .like-btn {
+.like-btn {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   border: 1px solid var(--line);
-  padding: 7px 9px;
+  padding: 7px 11px;
   border-radius: var(--radius-sm);
   cursor: pointer;
   font-size: 11px;
   font-weight: 600;
   transition: all 0.2s ease;
 }
-.list-btn:hover, .like-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
+.like-btn:hover { background: rgba(255, 255, 255, 0.1); }
 .like-btn.liked {
   color: var(--accent);
   border-color: var(--accent);
@@ -599,7 +580,7 @@ footer {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 90px;
+  bottom: 85px;
   transform: translateX(-50%) translateY(20px);
   background: rgba(22, 25, 37, 0.95);
   border: 1px solid var(--line-strong);
@@ -683,9 +664,8 @@ footer {
     </a>
     <nav class="nav-links">
       <a href="#home">Home</a>
-      <a href="#latest">Latest Episodes</a>
-      <a href="#trending">Trending</a>
-      <a href="#mylist">My List</a>
+      <a href="#ongoing">⚡ Ongoing Anime</a>
+      <a href="#allAnime">📚 All Anime</a>
       <a href="admin.html" class="admin-btn">⚙ Admin Panel</a>
     </nav>
   </div>
@@ -693,13 +673,13 @@ footer {
 
 <section id="home" class="hero" aria-roledescription="carousel">
   <div class="hero-content">
-    <span class="hero-badge">✦ PREMIUM ANIME STREAMING</span>
+    <span class="hero-badge">✦ ANIME STREAMING IN HINDI</span>
     <h1 id="heroTitle">Your Anime Universe.<br><span>In Hindi.</span></h1>
-    <p id="heroDescription">Discover anime, explore new series and keep up with the latest episodes — all in one place.</p>
-    <div id="heroMeta" class="hero-meta"><span>Hindi Anime</span><span>New Episodes</span><span>Full HD</span></div>
+    <p id="heroDescription">Discover ongoing anime, explore series and watch your favorite episodes in Hindi dub.</p>
+    <div id="heroMeta" class="hero-meta"><span>Hindi Anime</span><span>Ongoing Series</span><span>Full HD</span></div>
     <div class="hero-buttons">
-      <a id="heroWatch" href="#allAnime" class="btn btn-primary">▶ Explore Anime</a>
-      <a href="#latest" class="btn btn-secondary">✦ Latest Episodes</a>
+      <a id="heroWatch" href="#ongoing" class="btn btn-primary">⚡ Ongoing Anime</a>
+      <a href="#allAnime" class="btn btn-secondary">📚 Browse Catalog</a>
     </div>
   </div>
   <div class="hero-controls" aria-label="Featured anime controls">
@@ -727,40 +707,21 @@ footer {
     <a href="https://t.me/Anime_hindizone" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN TELEGRAM ↗</a>
   </div>
 
-  <section id="latest" class="section">
+  <!-- ONGOING ANIME ONLY -->
+  <section id="ongoing" class="section">
     <div class="section-title">
-      <div><h2>🎬 <span>Latest Episodes</span></h2><p>Recently updated episodes from the database</p></div>
-      <a class="see-all" href="#allAnime">Browse all ↓</a>
+      <div><h2>⚡ <span>Ongoing Anime</span></h2><p>Currently airing series updated from admin panel</p></div>
+      <a class="see-all" href="#allAnime">View all anime ↓</a>
     </div>
-    <div id="latestGrid" class="anime-grid"><div class="message">Latest episodes are loading…</div></div>
+    <div id="ongoingGrid" class="anime-grid"><div class="message">Ongoing anime load ho rahe hain…</div></div>
   </section>
 
-  <section id="trending" class="section">
-    <div class="section-title">
-      <div><h2>🔥 Trending <span>Now</span></h2><p>Ranked by community views & likes</p></div>
-    </div>
-    <div id="topGrid" class="anime-grid"><div class="message">Trending anime are loading…</div></div>
-  </section>
-
-  <section id="recent" class="section">
-    <div class="section-title">
-      <div><h2>✨ Recently <span>Added</span></h2><p>Fresh additions to our anime catalog</p></div>
-    </div>
-    <div id="recentGrid" class="anime-grid"><div class="message">Recently added anime are loading…</div></div>
-  </section>
-
+  <!-- ALL ANIME CATALOG -->
   <section id="allAnime" class="section">
     <div class="section-title">
-      <div><h2>📚 All <span>Anime Catalog</span></h2><p>Filter and browse through the entire library</p></div>
+      <div><h2>📚 All <span>Anime Catalog</span></h2><p>Search and filter through the complete database</p></div>
     </div>
-    <div id="allAnimeGrid" class="anime-grid"><div class="message">Anime are loading…</div></div>
-  </section>
-
-  <section id="mylist" class="section">
-    <div class="section-title">
-      <div><h2>❤️ My <span>Watchlist</span></h2><p>Saved in this browser on your device</p></div>
-    </div>
-    <div id="myListGrid" class="anime-grid"><div class="message">Your list is loading…</div></div>
+    <div id="allAnimeGrid" class="anime-grid"><div class="message">Anime load ho rahe hain…</div></div>
   </section>
 </main>
 
@@ -768,10 +729,8 @@ footer {
 
 <nav class="bottom-nav">
   <a href="#home" class="active"><span>⌂</span>Home</a>
-  <a href="#allAnime"><span>🎬</span>Anime</a>
-  <a href="#trending"><span>🔥</span>Trends</a>
-  <a href="#latest"><span>🆕</span>Latest</a>
-  <a href="#mylist"><span>❤️</span>Saved</a>
+  <a href="#ongoing"><span>⚡</span>Ongoing</a>
+  <a href="#allAnime"><span>🎬</span>All Anime</a>
   <a href="admin.html"><span>⚙️</span>Admin</a>
 </nav>
 
@@ -783,7 +742,7 @@ const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set(), myListIds=new Set();
+let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set();
 let selectedGenre="all", toastTimer=null;
 const $=id=>document.getElementById(id);
 const searchInput=$("searchInput"), genreSelect=$("genreSelect"), genreList=$("genreList"), toast=$("toast");
@@ -813,34 +772,15 @@ function getVoterId(){
   }
 }
 
-function loadMyList(){
-  try{ myListIds=new Set(JSON.parse(localStorage.getItem("animehindizone_my_list")||"[]").map(String)); }
-  catch{ myListIds=new Set(); }
-}
-function saveMyList(){
-  try{ localStorage.setItem("animehindizone_my_list",JSON.stringify([...myListIds])); }
-  catch{ showToast("My List could not be saved."); }
-}
-function toggleMyList(id){
-  id=String(id);
-  if(myListIds.has(id)){
-    myListIds.delete(id);
-    showToast("Removed from My List");
-  }else{
-    myListIds.add(id);
-    showToast("❤️ Added to My List");
-  }
-  saveMyList();
-  renderAll();
-}
-
 async function loadAnime(){
-  $("allAnimeGrid").innerHTML='<div class="message">Anime are loading…</div>';
+  $("allAnimeGrid").innerHTML='<div class="message">Anime load ho rahe hain…</div>';
+  $("ongoingGrid").innerHTML='<div class="message">Ongoing anime load ho rahe hain…</div>';
   const {data,error}=await supabaseClient.from("anime").select("*").order("id",{ascending:false});
   if(error){
     console.error("Anime load error:",error);
-    const msg="Could not load anime. Check Supabase connection.";
-    ["allAnimeGrid","topGrid","latestGrid","recentGrid","myListGrid"].forEach(id=>$(id).innerHTML='<div class="message">'+escapeHtml(msg)+'</div>');
+    const msg="Anime load nahi ho sake. Supabase check karo.";
+    $("allAnimeGrid").innerHTML='<div class="message">'+escapeHtml(msg)+'</div>';
+    $("ongoingGrid").innerHTML='<div class="message">'+escapeHtml(msg)+'</div>';
     return;
   }
   animeList=Array.isArray(data)?data:[];
@@ -961,8 +901,9 @@ function getFilteredAnime(){
   });
 }
 
-function createAnimeCard(anime,extraLabel=""){
-  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", genre=anime.genre||"Anime", views=viewCounts[id]||0, saved=myListIds.has(id);
+function createAnimeCard(anime){
+  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", genre=anime.genre||"Anime", views=viewCounts[id]||0;
+  const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   const card=document.createElement("article");
   card.className="anime-card";
   
@@ -980,7 +921,7 @@ function createAnimeCard(anime,extraLabel=""){
   }
   
   const status=document.createElement("span");
-  status.className="status";
+  status.className="status" + (isOngoing ? " ongoing" : "");
   status.textContent=anime.status||"Available";
   posterWrap.appendChild(status);
   
@@ -1001,27 +942,12 @@ function createAnimeCard(anime,extraLabel=""){
   meta.textContent=genre+(anime.language?" · "+anime.language:"");
   body.append(name,meta);
   
-  if(extraLabel){
-    const ep=document.createElement("div");
-    ep.className="episode-label";
-    ep.textContent=extraLabel;
-    body.appendChild(ep);
-  }
-  
   const actions=document.createElement("div");
   actions.className="card-actions";
   const details=document.createElement("a");
   details.className="watch-btn";
   details.href="anime-details.html?id="+encodeURIComponent(id);
   details.textContent="▶ Details";
-  
-  const listBtn=document.createElement("button");
-  listBtn.className="list-btn";
-  listBtn.type="button";
-  listBtn.textContent=saved?"❤️":"＋";
-  listBtn.title=saved?"Remove from My List":"Add to My List";
-  listBtn.setAttribute("aria-label",listBtn.title);
-  listBtn.addEventListener("click",()=>toggleMyList(id));
   
   const likeBtn=document.createElement("button");
   likeBtn.className="like-btn";
@@ -1036,7 +962,7 @@ function createAnimeCard(anime,extraLabel=""){
   updateLike();
   likeBtn.addEventListener("click",()=>toggleAnimeLike(id));
   
-  actions.append(details,listBtn,likeBtn);
+  actions.append(details,likeBtn);
   body.appendChild(actions);
   card.append(posterWrap,body);
   return card;
@@ -1056,54 +982,13 @@ function renderGrid(el,list,empty){
 
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
-  renderGrid($("allAnimeGrid"),filtered,hasFilter?"No anime found for this search or genre.":"No anime added yet.");
-  const trending=[...filtered].sort((a,b)=>{
-    const av=viewCounts[getAnimeId(a)]||0,bv=viewCounts[getAnimeId(b)]||0;
-    return bv-av||(animeLikeCounts[getAnimeId(b)]||0)-(animeLikeCounts[getAnimeId(a)]||0);
-  }).slice(0,6);
-  renderGrid($("topGrid"),trending,"No anime available to rank yet.");
   
-  const recent=[...filtered].sort((a,b)=>{
-    const ad=new Date(a.created_at||a.updated_at||0).getTime(),bd=new Date(b.created_at||b.updated_at||0).getTime();
-    return bd-ad||String(b.id).localeCompare(String(a.id));
-  }).slice(0,6);
-  renderGrid($("recentGrid"),recent,"No recently added anime yet.");
+  // 1. Strict Ongoing Filter: Admin panel me 'Ongoing' status set hone par hi yahan aayega
+  const ongoingList = filtered.filter(a => String(a.status || "").trim().toLowerCase() === "ongoing");
+  renderGrid($("ongoingGrid"), ongoingList, hasFilter ? "Is filter ke liye koi Ongoing anime nahi mila." : "Abhi koi Ongoing anime available nahi hai. Admin panel se add karo.");
   
-  const myAnime=animeList.filter(a=>myListIds.has(getAnimeId(a)));
-  renderGrid($("myListGrid"),myAnime,"Your list is empty. Click ＋ on an anime to add it.");
-}
-
-async function loadLatestEpisodes(){
-  const grid=$("latestGrid");
-  grid.innerHTML='<div class="message">Loading ongoing episodes…</div>';
-  let data=null, error=null;
-  ({data,error}=await supabaseClient.from("episodes").select("*").order("created_at",{ascending:false}).limit(100));
-  if(error){
-    ({data,error}=await supabaseClient.from("episodes").select("*").order("id",{ascending:false}).limit(100));
-  }
-  if(error){
-    renderGrid(grid,[],"Latest episodes could not load.");
-    return;
-  }
-  const animeByDbId=new Map(animeList.filter(a=>String(a.status||"").trim().toLowerCase()==="ongoing").map(a=>[String(a.id),a]));
-  const seen=new Set(), items=[];
-  (data||[]).forEach(ep=>{
-    const anime=animeByDbId.get(String(ep.anime_id));
-    if(!anime)return;
-    const key=String(ep.id||ep.anime_id+"-"+ep.episode_number);
-    if(seen.has(key))return;
-    seen.add(key);
-    items.push({anime,label:"▶ Episode "+(ep.episode_number??"")+(ep.episode_title?" · "+ep.episode_title:"")});
-  });
-  grid.replaceChildren();
-  if(!items.length){
-    const m=document.createElement("div");
-    m.className="message";
-    m.textContent="No episodes for ongoing anime yet.";
-    grid.appendChild(m);
-    return;
-  }
-  items.slice(0,6).forEach(item=>grid.appendChild(createAnimeCard(item.anime,item.label)));
+  // 2. All Anime (Ongoing + Completed dono)
+  renderGrid($("allAnimeGrid"), filtered, hasFilter ? "Is search ke liye koi anime nahi mila." : "Database mein koi anime nahi mila.");
 }
 
 let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
@@ -1127,9 +1012,9 @@ function renderHero(index, animate=true){
   const br=document.createElement("br"), span=document.createElement("span");
   span.textContent="Watch in Hindi";
   $("heroTitle").append(title,br,span);
-  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Discover anime, explore new series and keep up with latest releases.";
+  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Discover ongoing anime, explore new series and stream in Hindi dub.";
   $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
-  $("heroWatch").textContent="▶ Stream Anime";
+  $("heroWatch").textContent="▶ View Details";
   
   const meta=$("heroMeta");
   meta.replaceChildren();
@@ -1190,14 +1075,10 @@ document.querySelectorAll(".bottom-nav a").forEach(a=>a.addEventListener("click"
 }));
 
 async function startApp(){
-  loadMyList();
   await loadAnime();
   await Promise.allSettled([loadViewCounts(),loadAnimeLikes()]);
   updateHero();
   renderAll();
-  await Promise.allSettled([loadLatestEpisodes()]);
-  renderAll();
-  updateHero();
 }
 startApp().catch(error=>{
   console.error("App error:",error);
