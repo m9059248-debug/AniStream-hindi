@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -117,31 +116,42 @@ iframe{
 
 .quality-section h2,.section h2{
   color:#ff1744;
-  margin-bottom:15px;
+  margin-bottom:12px;
+  font-size:18px;
 }
 
-.quality-buttons,.link-buttons{
+.sub-title{
+  color:#ff1744;
+  font-size:18px;
+  margin-top:18px;
+  margin-bottom:12px;
+}
+
+.quality-buttons,.lang-buttons,.link-buttons{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
 
-.quality-btn{
+.quality-btn,.lang-btn{
   background:#22222c;
   color:#fff;
   border:1px solid #363642;
-  padding:10px 18px;
+  padding:10px 16px;
   border-radius:8px;
   cursor:pointer;
   font-weight:bold;
+  font-size:13px;
+  transition:all .2s;
 }
 
-.quality-btn:hover,.quality-btn.active{
+.quality-btn:hover,.quality-btn.active,
+.lang-btn:hover,.lang-btn.active{
   background:#ff1744;
   border-color:#ff1744;
 }
 
-.current-quality{
+.current-status{
   color:#aaa;
   font-size:13px;
   margin-top:12px;
@@ -205,14 +215,23 @@ iframe{
 
   .nav a{margin-left:8px}
 
+  .lang-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+
   .quality-buttons{
     display:grid;
     grid-template-columns:repeat(3,1fr);
+    gap:8px;
   }
 
-  .quality-btn{
+  .quality-btn,.lang-btn{
     width:100%;
-    padding:10px 5px;
+    padding:9px 4px;
+    font-size:12px;
+    text-align:center;
   }
 
   .link-buttons{
@@ -267,10 +286,23 @@ iframe{
     </div>
   </div>
 
-  <div id="qualitySection" class="quality-section" style="display:none">
-    <h2>🎥 Quality</h2>
+  <!-- CONTROLS SECTION: LANGUAGE & QUALITY -->
+  <div id="controlsSection" class="quality-section">
+    <!-- 1. LANGUAGE BUTTONS -->
+    <h2>🌐 Audio Language</h2>
+    <div id="languageButtons" class="lang-buttons">
+      <button type="button" class="lang-btn active" onclick="switchLanguage('Hindi')">🇮🇳 Hindi</button>
+      <button type="button" class="lang-btn" onclick="switchLanguage('English')">🇬🇧 English</button>
+      <button type="button" class="lang-btn" onclick="switchLanguage('Japanese')">🇯🇵 Japanese</button>
+      <button type="button" class="lang-btn" onclick="switchLanguage('Tamil')">🇮🇳 Tamil</button>
+      <button type="button" class="lang-btn" onclick="switchLanguage('Telugu')">🇮🇳 Telugu</button>
+    </div>
+
+    <!-- 2. QUALITY BUTTONS -->
+    <h2 class="sub-title">🎥 Video Quality</h2>
     <div id="qualityButtons" class="quality-buttons"></div>
-    <div id="currentQuality" class="current-quality"></div>
+    
+    <div id="currentStatus" class="current-status"></div>
     <div id="linkButtons" class="link-buttons"></div>
   </div>
 
@@ -283,16 +315,9 @@ iframe{
 </div>
 
 <script>
-const SUPABASE_URL =
-  "https://gmacsiymybvfcxydvkla.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
@@ -303,13 +328,15 @@ const episodeTitle = document.getElementById("episodeTitle");
 const episodeMeta = document.getElementById("episodeMeta");
 const episodeNav = document.getElementById("episodeNav");
 const viewInfo = document.getElementById("viewInfo");
-const qualitySection = document.getElementById("qualitySection");
 const qualityButtons = document.getElementById("qualityButtons");
-const currentQuality = document.getElementById("currentQuality");
+const currentStatus = document.getElementById("currentStatus");
 const linkButtons = document.getElementById("linkButtons");
 
-let qualityLinks = [];
-let selectedQuality = null;
+let allEpisodeLinks = [];
+let filteredLinks = [];
+let selectedLanguage = "Hindi";
+let selectedQuality = "720p";
+let fallbackVideoUrl = "";
 
 function escapeHtml(value){
   return String(value ?? "")
@@ -322,13 +349,9 @@ function escapeHtml(value){
 
 function safeUrl(value){
   if(!value) return "";
-
   try{
     const parsed = new URL(value);
-
-    return ["http:","https:"].includes(parsed.protocol)
-      ? parsed.href
-      : "";
+    return ["http:","https:"].includes(parsed.protocol) ? parsed.href : "";
   }catch{
     return "";
   }
@@ -336,31 +359,21 @@ function safeUrl(value){
 
 async function recordAnimeView(){
   if(!animeId) return;
-
   try{
-    const {
-      data:{user},
-      error:userError
-    } = await supabaseClient.auth.getUser();
-
+    const { data:{user}, error:userError } = await supabaseClient.auth.getUser();
     if(userError || !user) return;
 
     const {error} = await supabaseClient
       .from("anime_views")
-      .insert({
-        anime_id:animeId,
-        user_id:user.id
-      });
+      .insert({ anime_id: animeId, user_id: user.id });
 
     if(error?.code === "23505"){
       viewInfo.textContent = "👁️ Already viewed";
     }else if(!error){
       viewInfo.textContent = "👁️ View counted";
-    }else{
-      console.error("View save failed:",error);
     }
   }catch(error){
-    console.error("View tracking error:",error);
+    console.error("View tracking error:", error);
   }
 }
 
@@ -376,11 +389,11 @@ async function loadEpisode(){
     return;
   }
 
-  const {data,error} = await supabaseClient
+  const {data, error} = await supabaseClient
     .from("episodes")
     .select("*")
-    .eq("anime_id",animeId)
-    .eq("episode_number",Number(episodeNumber))
+    .eq("anime_id", animeId)
+    .eq("episode_number", Number(episodeNumber))
     .maybeSingle();
 
   if(error){
@@ -393,114 +406,107 @@ async function loadEpisode(){
     return;
   }
 
-  episodeTitle.textContent =
-    data.episode_title || "Episode " + data.episode_number;
+  episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
+  episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
+  document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
+  fallbackVideoUrl = data.video_url || "";
 
-  episodeMeta.textContent =
-    (data.anime_title || animeId) +
-    " • Episode " + data.episode_number;
-
-  document.title =
-    (data.anime_title || "Anime") +
-    " - Episode " + data.episode_number;
-
-  await loadQualityLinks(data.anime_title);
-
-  if(qualityLinks.length === 0){
-    // Purane episodes ke liye fallback.
-    loadVideo(data.video_url);
-  }
-
+  await fetchAllLinks(data.anime_title);
   recordAnimeView();
 }
 
 function showError(message){
-  videoContainer.innerHTML =
-    '<div class="message error">' +
-    escapeHtml(message) +
-    '</div>';
+  videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
 }
 
-async function loadQualityLinks(animeTitle){
-  qualityLinks = [];
-  selectedQuality = null;
-
-  qualitySection.style.display = "none";
-  qualityButtons.innerHTML = "";
-  linkButtons.innerHTML = "";
-  currentQuality.textContent = "";
-
+async function fetchAllLinks(animeTitle){
+  allEpisodeLinks = [];
   if(!animeTitle || !episodeNumber) return;
 
-  const {data,error} = await supabaseClient
+  const {data, error} = await supabaseClient
     .from("episode_links")
     .select("*")
-    .eq("anime_name",animeTitle)
-    .eq("episode_number",Number(episodeNumber));
+    .eq("anime_name", animeTitle)
+    .eq("episode_number", Number(episodeNumber));
 
   if(error){
-    console.error("episode_links error:",error);
-    return;
+    console.error("episode_links error:", error);
+  } else {
+    allEpisodeLinks = data || [];
   }
 
-  if(!data?.length) return;
+  renderLanguageAndQuality();
+}
 
-  const order = {
-    "1080p":1,
-    "720p":2,
-    "480p":3
-  };
-
-  qualityLinks = data.sort(
-    (a,b) => (order[a.quality] || 99) -
-             (order[b.quality] || 99)
-  );
-
-  qualitySection.style.display = "block";
-
-  qualityLinks.forEach(link => {
-    const button = document.createElement("button");
-    button.className = "quality-btn";
-    button.textContent = link.quality;
-    button.type = "button";
-    button.onclick = () => selectQuality(link.quality);
-    qualityButtons.appendChild(button);
+function switchLanguage(lang){
+  selectedLanguage = lang;
+  document.querySelectorAll(".lang-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.textContent.includes(lang));
   });
+  renderLanguageAndQuality();
+}
 
-  selectQuality(qualityLinks[0].quality);
+function renderLanguageAndQuality(){
+  qualityButtons.innerHTML = "";
+  linkButtons.innerHTML = "";
+  currentStatus.textContent = "";
+
+  const order = { "1080p": 1, "720p": 2, "480p": 3 };
+
+  // Filter links by language if language field exists, otherwise default fallback to Hindi
+  filteredLinks = allEpisodeLinks.filter(item => {
+    if(item.language){
+      return item.language.toLowerCase() === selectedLanguage.toLowerCase();
+    }
+    // Agar link me language explicitly set nahi hai, toh Hindi ke liye show karein
+    return selectedLanguage === "Hindi";
+  }).sort((a,b) => (order[a.quality] || 99) - (order[b.quality] || 99));
+
+  // Agar current language me links available hain
+  if(filteredLinks.length > 0){
+    filteredLinks.forEach(link => {
+      const button = document.createElement("button");
+      button.className = "quality-btn";
+      button.textContent = link.quality;
+      button.type = "button";
+      button.onclick = () => selectQuality(link.quality);
+      qualityButtons.appendChild(button);
+    });
+
+    const hasTargetQuality = filteredLinks.find(l => l.quality === selectedQuality);
+    const chosenQuality = hasTargetQuality ? selectedQuality : filteredLinks[0].quality;
+    selectQuality(chosenQuality);
+  } 
+  // Agar specific language ke links available nahi hain
+  else {
+    if(selectedLanguage === "Hindi" && fallbackVideoUrl){
+      loadVideo(fallbackVideoUrl);
+      currentStatus.textContent = "Language: Hindi • Default Stream Link Loaded";
+    } else {
+      videoContainer.innerHTML = '<div class="message">⚠️ ' + escapeHtml(selectedLanguage) + ' audio mein is episode ka link available nahi hai. Kripya dusri language sunein.</div>';
+      currentStatus.textContent = "Language: " + selectedLanguage + " (Links unavailable)";
+    }
+  }
 }
 
 function selectQuality(quality){
-  const selected = qualityLinks.find(
-    item => item.quality === quality
-  );
-
+  selectedQuality = quality;
+  const selected = filteredLinks.find(item => item.quality === quality);
   if(!selected) return;
 
-  selectedQuality = selected;
-
   document.querySelectorAll(".quality-btn").forEach(button => {
-    button.classList.toggle(
-      "active",
-      button.textContent === quality
-    );
+    button.classList.toggle("active", button.textContent === quality);
   });
 
-  currentQuality.textContent = "Selected Quality: " + quality;
+  currentStatus.textContent = "Language: " + selectedLanguage + " • Quality: " + quality;
 
-  // Player uses the saved stream_url.
   const streamUrl = safeUrl(selected.stream_url);
-
-  // Download button uses download_url only.
   const downloadUrl = safeUrl(selected.download_url);
 
   if(streamUrl){
     loadVideo(streamUrl);
-  }else{
-    videoContainer.innerHTML =
-      '<div class="message">▶ ' +
-      escapeHtml(quality) +
-      ' ka Stream Link available nahi hai.</div>';
+  } else {
+    videoContainer.innerHTML = '<div class="message">▶ ' + escapeHtml(quality) + ' ka Stream Link available nahi hai.</div>';
   }
 
   linkButtons.innerHTML = "";
@@ -524,16 +530,10 @@ function selectQuality(quality){
     downloadButton.textContent = "⬇ Download " + quality;
     linkButtons.appendChild(downloadButton);
   }
-
-  if(!streamUrl && !downloadUrl){
-    linkButtons.innerHTML =
-      '<div class="message">Is quality ke links available nahi hain.</div>';
-  }
 }
 
 function loadVideo(url){
   const safe = safeUrl(url);
-
   if(!safe){
     showError("Video URL available nahi hai.");
     return;
@@ -550,13 +550,9 @@ function loadVideo(url){
     video.playsInline = true;
     video.preload = "metadata";
     video.src = safe;
-
-    video.addEventListener("error",() => {
-      showError(
-        "Video play nahi ho saka. Video URL ya hosting settings check karo."
-      );
+    video.addEventListener("error", () => {
+      showError("Video play nahi ho saka. Video hosting settings check karein.");
     });
-
     videoContainer.appendChild(video);
     return;
   }
@@ -565,65 +561,46 @@ function loadVideo(url){
   iframe.src = safe;
   iframe.allowFullscreen = true;
   iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.setAttribute(
-    "allow",
-    "autoplay; fullscreen; picture-in-picture"
-  );
-
+  iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
   videoContainer.appendChild(iframe);
 }
 
 async function loadEpisodeList(){
   if(!animeId){
-    episodeNav.innerHTML =
-      '<div class="message error">Anime ID nahi mili.</div>';
+    episodeNav.innerHTML = '<div class="message error">Anime ID nahi mili.</div>';
     return;
   }
 
-  const {data,error} = await supabaseClient
+  const {data, error} = await supabaseClient
     .from("episodes")
     .select("episode_number,episode_title")
-    .eq("anime_id",animeId)
-    .order("episode_number",{ascending:true});
+    .eq("anime_id", animeId)
+    .order("episode_number", {ascending:true});
 
   if(error){
-    console.error("Episode list error:",error);
-
-    episodeNav.innerHTML =
-      '<div class="message error">Episodes load failed.</div>';
+    console.error("Episode list error:", error);
+    episodeNav.innerHTML = '<div class="message error">Episodes load failed.</div>';
     return;
   }
 
   if(!data?.length){
-    episodeNav.innerHTML =
-      '<div class="message">Abhi koi episode available nahi hai.</div>';
+    episodeNav.innerHTML = '<div class="message">Abhi koi episode available nahi hai.</div>';
     return;
   }
 
-  // Episode buttons ka container.
   episodeNav.innerHTML = "";
-
   const episodeButtons = document.createElement("div");
   episodeButtons.className = "episode-nav";
 
   data.forEach(episode => {
     const link = document.createElement("a");
-
-    link.href =
-      "watch.html?id=" + encodeURIComponent(animeId) +
-      "&episode=" + encodeURIComponent(episode.episode_number);
-
+    link.href = "watch.html?id=" + encodeURIComponent(animeId) + "&episode=" + encodeURIComponent(episode.episode_number);
     link.textContent = "Episode " + episode.episode_number;
-    link.title =
-      episode.episode_title ||
-      "Episode " + episode.episode_number;
+    link.title = episode.episode_title || "Episode " + episode.episode_number;
 
-    if(
-      Number(episode.episode_number) ===
-      Number(episodeNumber)
-    ){
+    if(Number(episode.episode_number) === Number(episodeNumber)){
       link.classList.add("active");
-      link.setAttribute("aria-current","page");
+      link.setAttribute("aria-current", "page");
     }
 
     episodeButtons.appendChild(link);
