@@ -346,8 +346,6 @@ header {
 /* SECTIONS */
 .section {
   margin-bottom: 40px;
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 320px;
 }
 .section-title {
   display: flex;
@@ -373,7 +371,7 @@ header {
   font-weight: 700;
 }
 
-/* ULTRA SMOOTH HORIZONTAL SCROLL */
+/* HORIZONTAL SCROLL */
 .anime-grid {
   display: flex;
   flex-flow: row nowrap;
@@ -386,7 +384,6 @@ header {
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   transform: translateZ(0);
-  will-change: scroll-position;
 }
 .anime-grid::-webkit-scrollbar { height: 5px; }
 .anime-grid::-webkit-scrollbar-track { background: var(--surface); border-radius: var(--radius-full); }
@@ -405,7 +402,7 @@ header {
 #allAnimeGrid > .anime-card { width: auto; flex: none; scroll-snap-align: none; }
 #allAnimeGrid > .message { width: auto; grid-column: 1 / -1; flex: none; }
 
-/* HARDWARE ACCELERATED CARDS */
+/* ANIME CARDS */
 .anime-card {
   background: var(--surface-card);
   border: 1px solid var(--line);
@@ -414,8 +411,6 @@ header {
   display: flex;
   flex-direction: column;
   transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
   transition: transform 0.18s ease, border-color 0.18s ease;
 }
 .anime-card:hover {
@@ -739,6 +734,8 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLI
 
 let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set();
 let selectedGenre="all", toastTimer=null, searchDebounceTimer=null;
+let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
+
 const $=id=>document.getElementById(id);
 const searchInput=$("searchInput"), genreSelect=$("genreSelect"), genreList=$("genreList"), toast=$("toast");
 
@@ -924,7 +921,6 @@ function getFilteredAnime(){
   return sortLatestFirst(list);
 }
 
-// OPTIMIZED CARD CREATION WITH ASYNC DECODING
 function createAnimeCard(anime){
   const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", genre=anime.genre||"Anime", views=viewCounts[id]||0;
   const isMov = isMovie(anime);
@@ -990,7 +986,6 @@ function createAnimeCard(anime){
   return card;
 }
 
-// BATCH RENDERING USING DOCUMENT FRAGMENT (NO LAYOUT THRASHING)
 function renderGrid(el,list,empty){
   el.replaceChildren();
   if(!list.length){
@@ -1019,10 +1014,9 @@ function renderAll(){
   const moviesList = filtered.filter(a => isMovie(a));
   renderGrid($("moviesGrid"), moviesList, hasFilter ? "Is filter ke liye koi movie nahi mili." : "Abhi koi movie add nahi hui. Admin panel se movie select karke add karo.");
 
-  renderGrid($allAnimeGrid = $("allAnimeGrid"), filtered, hasFilter ? "Is search ke liye koi anime nahi mila." : "Database mein koi anime nahi mila.");
+  renderGrid($("allAnimeGrid"), filtered, hasFilter ? "Is search ke liye koi anime nahi mila." : "Database mein koi anime nahi mila.");
 }
 
-let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
 function safeImageUrl(value){
   try {
     const url=new URL(String(value||""),window.location.href);
@@ -1100,7 +1094,6 @@ $("home").addEventListener("touchend",e=>{
   if(Math.abs(dx)>45){renderHero(heroIndex+(dx<0?1:-1));restartHeroTimer()}
 },{passive:true});
 
-// DEBOUNCED SEARCH (ZERO TYPING LAG)
 searchInput.addEventListener("input",()=>{
   clearTimeout(searchDebounceTimer);
   searchDebounceTimer = setTimeout(renderAll, 140);
