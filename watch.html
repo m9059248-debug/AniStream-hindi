@@ -5,304 +5,281 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Watch Anime - AniStream</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#0b0b0f;
-  color:#fff;
+:root {
+  --bg: #08090d;
+  --surface: #10121a;
+  --surface-card: #131520;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #f8f9fd;
+  --muted: #9ba1b6;
+  --accent: #ff2a6d;
+  --accent-glow: rgba(255, 42, 109, 0.35);
+  --radius-sm: 6px;
+  --radius-md: 10px;
 }
 
-header{
-  background:#111118;
-  border-bottom:1px solid #292936;
-  padding:16px 20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { font: inherit; outline: none; }
+
+/* COMPACT HEADER */
+header {
+  background: rgba(17, 17, 24, 0.95);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.nav {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+.logo b { color: var(--accent); }
+.nav a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 12px;
+}
+.nav a:hover { color: #fff; }
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 12px 10px 60px;
 }
 
-.nav{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 
-.logo{
-  color:#fff;
-  text-decoration:none;
-  font-size:22px;
-  font-weight:bold;
+/* COMPACT PLAYER CARD */
+.video-box, .section-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.video-wrapper {
+  width: 100%;
+  background: #000;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+video, iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  background: #000;
 }
 
-.logo b{color:#ff1744}
-
-.nav a{
-  color:#fff;
-  text-decoration:none;
-  margin-left:15px;
+.info-bar {
+  padding: 12px 14px;
+}
+.info-bar h1 {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+}
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.meta {
+  color: var(--muted);
+  font-size: 11.5px;
+}
+.view-info {
+  color: #00e676;
+  font-size: 11px;
+  font-weight: 700;
 }
 
-.nav a:hover{color:#ff1744}
-
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
+/* COMPACT CONTROLS BOX */
+.section-box {
+  padding: 12px 14px;
+}
+.section-title {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
-.back{
-  display:inline-block;
-  color:#ff1744;
-  text-decoration:none;
-  margin-bottom:15px;
-  font-weight:bold;
+/* COMPACT AUDIO CARD */
+.audio-card {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 10px;
+}
+.audio-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.audio-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.lang-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+.lang-pill {
+  background: #141724;
+  border: 1px solid var(--line);
+  color: #d1d5db;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.download-instruction {
+  color: #9ba1b6;
+  font-size: 10.5px;
+  line-height: 1.4;
+  margin-top: 5px;
 }
 
-.video-box,.quality-section,.section{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  margin-bottom:20px;
+/* QUALITY & STREAM / DOWNLOAD BUTTONS */
+.quality-buttons, .link-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
 }
-
-.video-box{overflow:hidden}
-
-.video-wrapper{
-  width:100%;
-  background:#000;
-  aspect-ratio:16/9;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.quality-btn {
+  background: #141622;
+  color: #d1d5db;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 11px;
+  transition: all 0.15s ease;
 }
-
-video{
-  width:100%;
-  height:100%;
-  display:block;
-  background:#000;
+.quality-btn:hover, .quality-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
-
-iframe{
-  width:100%;
-  height:100%;
-  border:none;
+.current-status {
+  color: var(--muted);
+  font-size: 11px;
+  margin-top: 8px;
 }
-
-.info{padding:18px}
-
-.info h1{
-  font-size:24px;
-  margin-bottom:8px;
+.link-buttons {
+  margin-top: 10px;
 }
-
-.meta{color:#aaa;font-size:14px}
-
-.view-info{
-  margin-top:10px;
-  color:#00e676;
-  font-size:13px;
-  font-weight:bold;
+.stream-btn, .download-btn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
+.stream-btn { background: var(--accent); }
+.download-btn { background: #00a86b; }
+.stream-btn:hover { background: #e9143d; }
+.download-btn:hover { background: #00c77d; }
 
-.quality-section,.section{padding:20px}
-
-.quality-section h2,.section h2{
-  color:#ff1744;
-  margin-bottom:12px;
-  font-size:18px;
+/* COMPACT EPISODES SELECTOR (DESKTOP CHIPS) */
+#episodeNav .episode-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  gap: 5px;
 }
-
-/* Audio Language Info Box */
-.audio-card{
-  background:#0e0e15;
-  border:1px solid #292936;
-  border-radius:10px;
-  padding:16px;
-  margin-bottom:20px;
+#episodeNav .episode-nav a {
+  background: #141622;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 7px 2px;
+  color: #d1d5db;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+  transition: all 0.15s ease;
 }
-
-.audio-header{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-  margin-bottom:10px;
-}
-
-.audio-label{
-  font-size:13px;
-  font-weight:bold;
-  color:#ff1744;
-  text-transform:uppercase;
-  letter-spacing:0.5px;
-}
-
-.lang-tags{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-.lang-pill{
-  background:#1a1a24;
-  border:1px solid #363646;
-  color:#e2e2ec;
-  padding:5px 12px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.download-instruction{
-  color:#b5b8c7;
-  font-size:13px;
-  line-height:1.5;
-  background:rgba(255,23,68,0.08);
-  border-left:3px solid #ff1744;
-  padding:10px 14px;
-  border-radius:6px;
-  margin-top:8px;
-}
-
-.quality-buttons,.link-buttons{
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.quality-btn{
-  background:#22222c;
-  color:#fff;
-  border:1px solid #363642;
-  padding:10px 16px;
-  border-radius:8px;
-  cursor:pointer;
-  font-weight:bold;
-  font-size:13px;
-  transition:all .2s;
-}
-
-.quality-btn:hover,.quality-btn.active{
-  background:#ff1744;
-  border-color:#ff1744;
-}
-
-.current-status{
-  color:#aaa;
-  font-size:13px;
-  margin-top:14px;
-}
-
-.link-buttons{margin-top:15px}
-
-.stream-btn,.download-btn{
-  display:inline-block;
-  padding:11px 18px;
-  border-radius:8px;
-  text-decoration:none;
-  color:#fff;
-  font-weight:bold;
-  overflow-wrap:anywhere;
-}
-
-.stream-btn{background:#ff1744}
-.download-btn{background:#00a86b}
-.stream-btn:hover{background:#e9143d}
-.download-btn:hover{background:#00c77d}
-
-.message{
-  text-align:center;
-  padding:30px 15px;
-  color:#aaa;
-  overflow-wrap:anywhere;
-}
-
-.error{color:#ff6b81}
-
-/* Episode buttons */
-#episodeNav .episode-nav{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-#episodeNav .episode-nav a{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  min-width:100px;
-  min-height:42px;
-  padding:10px 15px;
-  background:#22222c;
-  border:1px solid #363642;
-  border-radius:8px;
-  color:#fff;
-  text-decoration:none;
-  font-size:14px;
-  font-weight:bold;
-  transition:background .2s,border-color .2s;
-}
-
 #episodeNav .episode-nav a.active,
-#episodeNav .episode-nav a:hover{
-  background:#ff1744;
-  border-color:#ff1744;
+#episodeNav .episode-nav a:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
 }
 
-@media(max-width:600px){
-  .container{padding:14px}
-  .info h1{font-size:20px}
+.message {
+  text-align: center;
+  padding: 24px 10px;
+  color: #888;
+  font-size: 12px;
+}
+.error { color: #ff6b81; }
 
-  .nav{
-    flex-direction:column;
-    gap:10px;
+@media(max-width: 480px) {
+  #episodeNav .episode-nav {
+    grid-template-columns: repeat(6, 1fr);
   }
-
-  .nav a{margin-left:8px}
-
-  .quality-buttons{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-  }
-
-  .quality-btn{
-    width:100%;
-    padding:9px 4px;
-    font-size:12px;
-    text-align:center;
-  }
-
-  .link-buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-
-  .stream-btn,.download-btn{
-    text-align:center;
-    padding:11px 8px;
-  }
-
-  #episodeNav .episode-nav{
-    display:grid;
-    grid-template-columns:repeat(3,minmax(0,1fr));
-    gap:8px;
-  }
-
-  #episodeNav .episode-nav a{
-    min-width:0;
-    width:100%;
-    padding:10px 4px;
-    font-size:12px;
+  .link-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>
 </head>
 
 <body>
+
 <header>
   <div class="nav">
     <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a>
@@ -314,47 +291,45 @@ iframe{
 </header>
 
 <div class="container">
-  <a href="index.html" class="back">← Home</a>
+  <a href="index.html" class="back">‹ Back to Home</a>
 
+  <!-- VIDEO PLAYER CARD -->
   <div class="video-box">
     <div id="videoContainer" class="video-wrapper">
       <div class="message">Video load ho raha hai...</div>
     </div>
-
-    <div class="info">
+    <div class="info-bar">
       <h1 id="episodeTitle">Loading...</h1>
-      <div id="episodeMeta" class="meta"></div>
-      <div id="viewInfo" class="view-info"></div>
+      <div class="meta-row">
+        <div id="episodeMeta" class="meta"></div>
+        <div id="viewInfo" class="view-info"></div>
+      </div>
     </div>
   </div>
 
-  <!-- CONTROLS SECTION -->
-  <div id="controlsSection" class="quality-section">
-    <!-- 1. AVAILABLE LANGUAGES & NOTICE -->
+  <!-- COMPACT QUALITY & CONTROLS -->
+  <div id="controlsSection" class="section-box">
     <div class="audio-card">
       <div class="audio-header">
-        <span class="audio-label">🌐 Available Audio:</span>
+        <span class="audio-label">🌐 Audio:</span>
         <div id="languageTags" class="lang-tags">
           <span class="lang-pill">🇮🇳 Hindi</span>
-          <span class="lang-pill">🇯🇵 Japanese</span>
-          <span class="lang-pill">🇬🇧 English</span>
         </div>
       </div>
       <p class="download-instruction">
-        ⚠️ <b>Note:</b> To change the audio language, please download the video first and stream it using a media player (like VLC or MX Player) to switch audio tracks.
+        ⚠️ <b>Note:</b> Audio bhasha badalne ke liye video download karke VLC/MX Player mein play karein.
       </p>
     </div>
 
-    <!-- 2. VIDEO QUALITY BUTTONS -->
-    <h2>🎥 Video Quality</h2>
+    <div class="section-title">🎥 Video Quality</div>
     <div id="qualityButtons" class="quality-buttons"></div>
-    
     <div id="currentStatus" class="current-status"></div>
     <div id="linkButtons" class="link-buttons"></div>
   </div>
 
-  <div class="section">
-    <h2>📺 Episodes</h2>
+  <!-- COMPACT EPISODES SELECTOR -->
+  <div class="section-box">
+    <div class="section-title">📺 Select Episode</div>
     <div id="episodeNav">
       <div class="message">Episodes load ho rahe hain...</div>
     </div>
@@ -403,7 +378,7 @@ function safeUrl(value){
   }
 }
 
-/* ANONYMOUS & REAL-TIME VIEW TRACKING */
+/* REAL-TIME ANONYMOUS VIEW TRACKING */
 function getViewerId(){
   const key = "anistream_viewer_id";
   let id = localStorage.getItem(key);
@@ -459,8 +434,6 @@ async function loadAnimeLanguage(){
         if(lang.toLowerCase().includes("hindi")) icon = "🇮🇳";
         else if(lang.toLowerCase().includes("jap")) icon = "🇯🇵";
         else if(lang.toLowerCase().includes("eng")) icon = "🇬🇧";
-        else if(lang.toLowerCase().includes("tamil")) icon = "🇮🇳";
-        else if(lang.toLowerCase().includes("telugu")) icon = "🇮🇳";
         pill.textContent = icon + " " + lang;
         languageTags.appendChild(pill);
       });
@@ -469,12 +442,7 @@ async function loadAnimeLanguage(){
 }
 
 async function loadEpisode(){
-  if(
-    !animeId ||
-    !episodeNumber ||
-    !Number.isInteger(Number(episodeNumber)) ||
-    Number(episodeNumber) < 1
-  ){
+  if(!animeId || !episodeNumber || !Number.isInteger(Number(episodeNumber)) || Number(episodeNumber) < 1){
     showError("Anime ID ya Episode number missing hai.");
     episodeTitle.textContent = "Episode unavailable";
     return;
@@ -498,8 +466,8 @@ async function loadEpisode(){
   }
 
   episodeTitle.textContent = data.episode_title || "Episode " + data.episode_number;
-  episodeMeta.textContent = (data.anime_title || animeId) + " • Episode " + data.episode_number;
-  document.title = (data.anime_title || "Anime") + " - Episode " + data.episode_number;
+  episodeMeta.textContent = (data.anime_title || animeId) + " • Ep " + data.episode_number;
+  document.title = (data.anime_title || "Anime") + " - Ep " + data.episode_number;
   fallbackVideoUrl = data.video_url || "";
 
   await loadQualityLinks(data.anime_title);
@@ -523,10 +491,6 @@ async function loadQualityLinks(animeTitle){
     .select("*")
     .eq("anime_name", animeTitle)
     .eq("episode_number", Number(episodeNumber));
-
-  if(error){
-    console.error("episode_links error:", error);
-  }
 
   const order = { "1080p": 1, "720p": 2, "480p": 3 };
   if(data && data.length > 0){
@@ -582,7 +546,7 @@ function selectQuality(quality){
     streamButton.href = streamUrl;
     streamButton.target = "_blank";
     streamButton.rel = "noopener noreferrer";
-    streamButton.textContent = "▶ Open Stream (" + quality + ")";
+    streamButton.textContent = "▶ Stream (" + quality + ")";
     linkButtons.appendChild(streamButton);
   }
 
@@ -598,7 +562,7 @@ function selectQuality(quality){
 }
 
 function updateStatusDisplay(){
-  currentStatus.innerHTML = "<b>Playing Quality:</b> " + escapeHtml(selectedQuality);
+  currentStatus.innerHTML = "<b>Playing:</b> " + escapeHtml(selectedQuality);
 }
 
 function loadVideo(url){
@@ -620,7 +584,7 @@ function loadVideo(url){
     video.preload = "metadata";
     video.src = safe;
     video.addEventListener("error", () => {
-      showError("Video play nahi ho saka. Video hosting settings check karein.");
+      showError("Video play nahi ho saka.");
     });
     videoContainer.appendChild(video);
     return;
@@ -646,13 +610,7 @@ async function loadEpisodeList(){
     .eq("anime_id", animeId)
     .order("episode_number", {ascending:true});
 
-  if(error){
-    console.error("Episode list error:", error);
-    episodeNav.innerHTML = '<div class="message error">Episodes load failed.</div>';
-    return;
-  }
-
-  if(!data?.length){
+  if(error || !data?.length){
     episodeNav.innerHTML = '<div class="message">Abhi koi episode available nahi hai.</div>';
     return;
   }
@@ -664,12 +622,11 @@ async function loadEpisodeList(){
   data.forEach(episode => {
     const link = document.createElement("a");
     link.href = "watch.html?id=" + encodeURIComponent(animeId) + "&episode=" + encodeURIComponent(episode.episode_number);
-    link.textContent = "Episode " + episode.episode_number;
+    link.textContent = episode.episode_number;
     link.title = episode.episode_title || "Episode " + episode.episode_number;
 
     if(Number(episode.episode_number) === Number(episodeNumber)){
       link.classList.add("active");
-      link.setAttribute("aria-current", "page");
     }
 
     episodeButtons.appendChild(link);
