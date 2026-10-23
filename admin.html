@@ -48,8 +48,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .link-label{font-size:12px;color:#999;margin-bottom:4px}  
 .link-text{color:#ddd;word-break:break-all;font-size:13px}  
 .schedule-item{background:#0e0e15;border:1px solid #292936;padding:14px;border-radius:8px;margin-bottom:10px}  
-.schedule-date{color:#6dff91;margin-top:6px;font-size:14px}  
-.schedule-status{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:5px;background:#252530;color:#fff;font-size:12px}  
 .empty{color:#888;padding:15px;text-align:center}.hidden{display:none}  
 .toggle-row{display:flex;gap:10px;align-items:flex-start;margin:10px 0;color:#ddd;font-size:14px;line-height:1.45}  
 .toggle-row input{width:auto;margin:2px 0;accent-color:#ff1744}  
@@ -57,7 +55,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .filter-tab{background:#0d0d13;border:1px solid #333340;color:#aaa;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px}
 .filter-tab.active{background:#ff1744;color:#fff;border-color:#ff1744}
 
-/* MAIN SLOTS NAVIGATION */
 .main-nav-tabs{
   display:flex;
   gap:12px;
@@ -90,7 +87,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
   box-shadow:0 4px 15px rgba(255,23,68,0.35);
 }
 
-/* ANALYTICS STYLING */
 .stat-card{background:#0e0e15;border:1px solid #292936;border-radius:8px;padding:16px;text-align:center}
 .stat-label{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
 .stat-value{font-size:26px;font-weight:bold;margin-top:6px}
@@ -126,7 +122,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 </header>  
 
 <div class="container">  
-  <!-- 2 MAIN SLOTS SWITCHER -->
   <div class="main-nav-tabs">
     <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">
       ➕ Anime Manage
@@ -136,11 +131,8 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
     </button>
   </div>
 
-  <!-- ========================================================
-       SLOT 1: ANIME MANAGEMENT (ADD, EDIT, LIBRARY, EPISODES)
-  ======================================================== -->
+  <!-- SLOT 1: ANIME MANAGEMENT -->
   <div id="slotAnime">
-    <!-- SEARCH ANIME -->
     <div class="box">  
       <h2>🔎 Search Anime (Auto-Fill)</h2>  
       <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto, Your Name">  
@@ -148,7 +140,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
       <div id="searchMessage"></div><div id="searchResults"></div>  
     </div>    
 
-    <!-- ADD NEW ANIME -->
     <div class="box">  
       <h2>➕ Add New Anime</h2>  
       <p class="small">Pehle upar se search karke auto-fill karein ya manually details enter karein.</p>  
@@ -172,7 +163,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
       <div id="animeMessage"></div>  
     </div>    
 
-    <!-- ANIME LIBRARY -->
     <div class="box">  
       <h2>📚 Anime Library</h2>  
       <div class="filter-tabs">
@@ -184,7 +174,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
       <div id="animeLibrary"><div class="empty">Anime load ho rahe hain...</div></div>  
     </div>    
 
-    <!-- SELECTED ANIME & EDIT DETAILS -->
     <div id="animeDetails" class="box" style="display:none;">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
         <h2>🎬 Selected Anime</h2>
@@ -228,7 +217,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
       </div>
     </div>    
 
-    <!-- ADD EPISODE / MOVIE LINKS -->
     <div id="episodeForm" class="box" style="display:none;">  
       <h2>➕ Add Episode / Movie Link</h2>  
       <p class="small">Series ke liye episode number daalein. Movie ke liye Episode Number 1 daal sakte hain.</p>  
@@ -244,7 +232,6 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 
     <div id="episodeList" class="box" style="display:none;"><h2>📺 Episodes / Movie Links</h2><div id="episodesContainer"></div></div>    
 
-    <!-- SCHEDULE -->
     <div id="scheduleForm" class="box" style="display:none;">  
       <h2>📅 Add Anime Schedule</h2>  
       <input id="scheduleEpisodeNumber" type="number" min="1" placeholder="Episode Number">  
@@ -256,9 +243,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
     <div id="scheduleList" class="box" style="display:none;"><h2>📅 Anime Schedule</h2><div id="scheduleContainer"></div></div>  
   </div>
 
-  <!-- ========================================================
-       SLOT 2: ANALYTICS DASHBOARD
-  ======================================================== -->
+  <!-- SLOT 2: ANALYTICS DASHBOARD -->
   <div id="slotAnalytics" style="display:none;">
     <div class="box">
       <h2>📊 Website & Anime Analytics</h2>
@@ -319,9 +304,6 @@ let selectedAnime = null;
 let animeLibraryData = [];  
 let libraryFilter = "all";
 
-/* =========================================
-   TAB SWITCHING LOGIC
-========================================= */
 function switchSlot(slotName){
   const slotAnime = document.getElementById("slotAnime");
   const slotAnalytics = document.getElementById("slotAnalytics");
@@ -417,9 +399,6 @@ function isMovieRecord(anime){
   return s.includes("movie") || g.includes("movie");
 }
 
-/* =========================================
-   ANALYTICS ENGINE
-========================================= */
 async function loadAnalytics(){
   try{
     const [animeRes, viewsRes, likesRes, commentsRes] = await Promise.all([
@@ -479,9 +458,6 @@ async function loadAnalytics(){
   }
 }
 
-/* =========================================
-   SEARCH & AUTO-FILL
-========================================= */
 async function fetchFromKitsu(query) {
   const url = "https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10";
   const controller = new AbortController();
@@ -608,6 +584,7 @@ function fillAnimeForm(anime){
   setMessage(document.getElementById("animeMessage"), "success", "✅ Anime details fill ho gayi. Format: " + (isMov ? "Movie" : "Series"));  
 }  
 
+/* TIMESTAMP INCLUDED DURING INSERT */
 async function addAnime(){  
   const animeId = document.getElementById("animeId").value.trim();
   const title = document.getElementById("animeTitle").value.trim();  
@@ -619,6 +596,7 @@ async function addAnime(){
   if(type === "Movie" && !season.toLowerCase().includes("movie")){ season = "Movie"; }
 
   setMessage(message,"info","Anime add ho raha hai...");  
+  
   const {error} = await supabaseClient.from("anime").insert([{  
     anime_id: animeId,
     title,
@@ -628,8 +606,10 @@ async function addAnime(){
     genre: document.getElementById("genre").value.trim(),
     season: season,  
     language: document.getElementById("language").value.trim(),
-    status: document.getElementById("status").value  
+    status: document.getElementById("status").value,
+    created_at: new Date().toISOString()
   }]);  
+
   if(error){setMessage(message,"error","❌ Anime add failed: "+error.message);return;}  
   setMessage(message,"success","✅ "+title+" add ho gaya!");  
   ["animeId","animeTitle","thumbnail","banner","description","genre","season"].forEach(id => document.getElementById(id).value="");  
@@ -640,8 +620,17 @@ async function addAnime(){
 async function loadAnimeLibrary(){  
   const library = document.getElementById("animeLibrary");
   library.innerHTML = '<div class="empty">Loading...</div>';  
-  const {data,error} = await supabaseClient.from("anime").select("*").order("id",{ascending:false});  
-  if(error){library.innerHTML='<div class="empty">❌ '+escapeHtml(error.message)+'</div>';return;}  
+  const {data,error} = await supabaseClient.from("anime").select("*").order("created_at",{ascending:false, nullsFirst:false});  
+  if(error){
+    const fallback = await supabaseClient.from("anime").select("*").order("id",{ascending:false});
+    if(!fallback.error && fallback.data){
+      animeLibraryData = fallback.data;
+      applyLibraryFilter();
+      return;
+    }
+    library.innerHTML='<div class="empty">❌ '+escapeHtml(error.message)+'</div>';
+    return;
+  }  
   animeLibraryData = data || [];
   applyLibraryFilter();  
 }  
