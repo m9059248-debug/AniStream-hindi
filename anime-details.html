@@ -3,18 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Anime Details - AniStream</title>
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
-*{
-  box-sizing:border-box;
-  margin:0;
-  padding:0;
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 body{
   font-family:Arial,sans-serif;
@@ -46,9 +39,7 @@ header{
   text-decoration:none;
 }
 
-.logo b{
-  color:#ff1744;
-}
+.logo b{color:#ff1744}
 
 .nav a{
   color:#fff;
@@ -56,9 +47,7 @@ header{
   margin-left:15px;
 }
 
-.nav a:hover{
-  color:#ff1744;
-}
+.nav a:hover{color:#ff1744}
 
 .container{
   max-width:1100px;
@@ -87,12 +76,7 @@ header{
 .hero-overlay{
   position:absolute;
   inset:0;
-  background:linear-gradient(
-    to top,
-    #0b0b0f 5%,
-    rgba(11,11,15,.55),
-    transparent
-  );
+  background:linear-gradient(to top, #0b0b0f 5%, rgba(11,11,15,.55), transparent);
 }
 
 .hero-content{
@@ -114,9 +98,7 @@ header{
   border:2px solid #292936;
 }
 
-.info{
-  flex:1;
-}
+.info{flex:1}
 
 .info h1{
   font-size:32px;
@@ -150,11 +132,7 @@ header{
   margin-top:12px;
 }
 
-
-/* =========================
-   SHARE BOX
-========================= */
-
+/* SHARE BOX */
 .share-box{
   background:#14141c;
   border:1px solid #292936;
@@ -191,37 +169,14 @@ header{
   gap:6px;
 }
 
-.share-main{
-  background:#ff1744;
-}
-
-.share-main:hover{
-  background:#e9143d;
-}
-
-.copy-btn{
-  background:#33333f;
-}
-
-.copy-btn:hover{
-  background:#41414d;
-}
-
-.whatsapp-btn{
-  background:#25D366;
-}
-
-.whatsapp-btn:hover{
-  background:#1ebc59;
-}
-
-.telegram-btn{
-  background:#229ED9;
-}
-
-.telegram-btn:hover{
-  background:#1689bf;
-}
+.share-main{background:#ff1744}
+.share-main:hover{background:#e9143d}
+.copy-btn{background:#33333f}
+.copy-btn:hover{background:#41414d}
+.whatsapp-btn{background:#25D366}
+.whatsapp-btn:hover{background:#1ebc59}
+.telegram-btn{background:#229ED9}
+.telegram-btn:hover{background:#1689bf}
 
 .share-message{
   color:#8affaa;
@@ -230,11 +185,7 @@ header{
   display:none;
 }
 
-
-/* =========================
-   SECTIONS
-========================= */
-
+/* SECTIONS */
 .section{
   background:#14141c;
   border:1px solid #292936;
@@ -250,8 +201,7 @@ header{
 
 .episodes{
   display:grid;
-  grid-template-columns:
-    repeat(auto-fill,minmax(180px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
   gap:12px;
 }
 
@@ -291,914 +241,426 @@ header{
   font-weight:bold;
 }
 
-.watch:hover{
-  background:#e9143d;
+.watch:hover{background:#e9143d}
+
+/* COMMENTS STYLING */
+.comment-form{
+  background:#0e0e15;
+  border:1px solid #292936;
+  border-radius:10px;
+  padding:16px;
+  margin-bottom:20px;
 }
 
-.loading,
-.error,
-.empty{
+.comment-input, .comment-textarea{
+  width:100%;
+  padding:11px 14px;
+  background:#14141c;
+  border:1px solid #333340;
+  border-radius:7px;
+  color:#fff;
+  outline:none;
+  font-family:inherit;
+  font-size:13.5px;
+}
+
+.comment-input:focus, .comment-textarea:focus{
+  border-color:#ff1744;
+}
+
+.comment-textarea{
+  min-height:85px;
+  resize:vertical;
+  margin-top:10px;
+  line-height:1.45;
+}
+
+.comment-btn{
+  background:#ff1744;
+  color:#fff;
+  border:none;
+  padding:10px 18px;
+  border-radius:6px;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
+  margin-top:10px;
+  transition:background 0.2s;
+}
+
+.comment-btn:hover{background:#e9143d}
+
+.comment-card{
+  background:#0e0e15;
+  border:1px solid #292936;
+  border-radius:8px;
+  padding:14px;
+  margin-bottom:10px;
+}
+
+.comment-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:6px;
+}
+
+.comment-author{
+  font-weight:bold;
+  color:#ff1744;
+  font-size:13.5px;
+}
+
+.comment-date{
+  color:#777;
+  font-size:11.5px;
+}
+
+.comment-body{
+  color:#ddd;
+  font-size:13px;
+  line-height:1.5;
+  white-space:pre-wrap;
+}
+
+.loading, .error, .empty{
   text-align:center;
   color:#999;
-  padding:30px 10px;
+  padding:25px 10px;
+  font-size:13px;
 }
 
-.error{
-  color:#ff6b81;
-}
+.error{color:#ff6b81}
 
 .back{
   display:inline-block;
   margin-bottom:15px;
   color:#ff1744;
   text-decoration:none;
+  font-weight:bold;
 }
-
-
-/* =========================
-   MOBILE
-========================= */
 
 @media(max-width:650px){
-
-  .nav{
-    flex-direction:column;
-    gap:10px;
-  }
-
-  .nav a{
-    margin-left:8px;
-    margin-right:8px;
-  }
-
-  .hero-content{
-    align-items:flex-end;
-    padding:15px;
-  }
-
-  .poster{
-    width:100px;
-    height:145px;
-  }
-
-  .info h1{
-    font-size:23px;
-  }
-
-  .description{
-    font-size:13px;
-  }
-
-  .share-buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-  }
-
-  .share-btn{
-    width:100%;
-  }
-
+  .nav{flex-direction:column;gap:10px}
+  .nav a{margin:0 8px}
+  .hero-content{align-items:flex-end;padding:15px}
+  .poster{width:100px;height:145px}
+  .info h1{font-size:22px}
+  .description{font-size:13px}
+  .share-buttons{display:grid;grid-template-columns:1fr 1fr}
+  .share-btn{width:100%}
 }
-
 </style>
 </head>
 
 <body>
 
-
-<!-- =========================
-     HEADER
-========================= -->
-
 <header>
-
   <div class="nav">
-
-    <a
-      href="index.html"
-      class="logo"
-    >
-      🔥 Ani<b>Stream</b>
-    </a>
-
+    <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a>
     <div>
-
-      <a href="index.html">
-        Home
-      </a>
-
-      <a href="admin.html">
-        Admin
-      </a>
-
+      <a href="index.html">Home</a>
+      <a href="admin.html">Admin</a>
     </div>
-
   </div>
-
 </header>
 
-
 <div class="container">
+  <a href="index.html" class="back">← Back to Home</a>
 
-
-<!-- =========================
-     BACK
-========================= -->
-
-<a
-  href="index.html"
-  class="back"
->
-  ← Back to Home
-</a>
-
-
-<!-- =========================
-     ANIME DETAILS
-========================= -->
-
-<div id="animeContainer">
-
-  <div class="loading">
-    Anime details load ho rahe hain...
+  <!-- ANIME DETAILS HERO -->
+  <div id="animeContainer">
+    <div class="loading">Anime details load ho rahe hain...</div>
   </div>
 
-</div>
-
-
-<!-- =========================
-     SHARE ANIME
-========================= -->
-
-<div class="share-box">
-
-  <div class="share-title">
-    📤 Share Anime
+  <!-- SHARE BOX -->
+  <div class="share-box">
+    <div class="share-title">📤 Share Anime</div>
+    <div class="share-buttons">
+      <button class="share-btn share-main" onclick="shareAnime()">📤 Share</button>
+      <button class="share-btn copy-btn" onclick="copyAnimeLink()">📋 Copy Link</button>
+      <a id="whatsappShare" class="share-btn whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a>
+      <a id="telegramShare" class="share-btn telegram-btn" href="#" target="_blank" rel="noopener noreferrer">✈️ Telegram</a>
+    </div>
+    <div id="shareMessage" class="share-message">Link copied successfully!</div>
   </div>
 
-  <div class="share-buttons">
-
-    <button
-      class="share-btn share-main"
-      onclick="shareAnime()"
-    >
-      📤 Share
-    </button>
-
-
-    <button
-      class="share-btn copy-btn"
-      onclick="copyAnimeLink()"
-    >
-      📋 Copy Link
-    </button>
-
-
-    <a
-      id="whatsappShare"
-      class="share-btn whatsapp-btn"
-      href="#"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      🟢 WhatsApp
-    </a>
-
-
-    <a
-      id="telegramShare"
-      class="share-btn telegram-btn"
-      href="#"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      ✈️ Telegram
-    </a>
-
+  <!-- EPISODES SECTION -->
+  <div class="section">
+    <h2>📺 Episodes</h2>
+    <div id="episodeContainer" class="episodes">
+      <div class="loading">Episodes load ho rahe hain...</div>
+    </div>
   </div>
 
+  <!-- COMMENTS SECTION -->
+  <div class="section">
+    <h2>💬 Comments & Discussions</h2>
 
-  <div
-    id="shareMessage"
-    class="share-message"
-  >
-    Link copied successfully!
-  </div>
-
-</div>
-
-
-<!-- =========================
-     EPISODES
-========================= -->
-
-<div class="section">
-
-  <h2>
-    📺 Episodes
-  </h2>
-
-  <div
-    id="episodeContainer"
-    class="episodes"
-  >
-
-    <div class="loading">
-      Episodes load ho rahe hain...
+    <!-- Post Comment Form -->
+    <div class="comment-form">
+      <input type="text" id="commentUserName" class="comment-input" placeholder="Aapka Name (e.g. Rahul, AnimeFan)" maxlength="30">
+      <textarea id="commentTextInput" class="comment-textarea" placeholder="Is anime ke baare mein aapki kya raye hai? Apna comment likhein..." maxlength="500"></textarea>
+      <button type="button" class="comment-btn" onclick="postComment()">💬 Post Comment</button>
+      <div id="commentPostMessage" style="font-size:12px; margin-top:8px;"></div>
     </div>
 
+    <!-- Comments List -->
+    <div id="commentsContainer">
+      <div class="loading">Comments load ho rahe hain...</div>
+    </div>
   </div>
-
 </div>
-
-
-</div>
-
 
 <script>
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+const params = new URLSearchParams(window.location.search);
+const animeId = params.get("id");
 
-// ==========================
-// SUPABASE
-// ==========================
-
-const SUPABASE_URL =
-"https://gmacsiymybvfcxydvkla.supabase.co";
-
-const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
-
-
-// ==========================
-// GET ANIME ID
-// ==========================
-
-const params =
-new URLSearchParams(
-  window.location.search
-);
-
-const animeId =
-params.get("id");
-
-
-// ==========================
-// ELEMENTS
-// ==========================
-
-const animeContainer =
-document.getElementById(
-  "animeContainer"
-);
-
-const episodeContainer =
-document.getElementById(
-  "episodeContainer"
-);
-
-const shareMessage =
-document.getElementById(
-  "shareMessage"
-);
-
-const whatsappShare =
-document.getElementById(
-  "whatsappShare"
-);
-
-const telegramShare =
-document.getElementById(
-  "telegramShare"
-);
-
-
-// ==========================
-// ESCAPE HTML
-// ==========================
+const animeContainer = document.getElementById("animeContainer");
+const episodeContainer = document.getElementById("episodeContainer");
+const commentsContainer = document.getElementById("commentsContainer");
+const shareMessage = document.getElementById("shareMessage");
+const whatsappShare = document.getElementById("whatsappShare");
+const telegramShare = document.getElementById("telegramShare");
 
 function escapeHtml(value){
-
   return String(value || "")
-    .replace(
-      /&/g,
-      "&amp;"
-    )
-    .replace(
-      /</g,
-      "&lt;"
-    )
-    .replace(
-      />/g,
-      "&gt;"
-    )
-    .replace(
-      /"/g,
-      "&quot;"
-    )
-    .replace(
-      /'/g,
-      "&#039;"
-    );
-
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
-
-
-// ==========================
-// SHARE LINK
-// ==========================
 
 function getAnimeShareLink(){
-
   return window.location.href;
-
 }
-
-
-// ==========================
-// UPDATE SHARE LINKS
-// ==========================
 
 function updateShareLinks(){
-
-  const shareUrl =
-    getAnimeShareLink();
-
-  const shareText =
-    "Watch " +
-    (
-      document.title ||
-      "Anime"
-    ) +
-    " on AniStream";
-
-
-  whatsappShare.href =
-    "https://wa.me/?text=" +
-    encodeURIComponent(
-      shareText +
-      "\n\n" +
-      shareUrl
-    );
-
-
-  telegramShare.href =
-    "https://t.me/share/url?url=" +
-    encodeURIComponent(
-      shareUrl
-    ) +
-    "&text=" +
-    encodeURIComponent(
-      shareText
-    );
-
+  const shareUrl = getAnimeShareLink();
+  const shareText = "Watch " + (document.title || "Anime") + " on AniStream";
+  whatsappShare.href = "https://wa.me/?text=" + encodeURIComponent(shareText + "\n\n" + shareUrl);
+  telegramShare.href = "https://t.me/share/url?url=" + encodeURIComponent(shareUrl) + "&text=" + encodeURIComponent(shareText);
 }
-
-
-// ==========================
-// NATIVE SHARE
-// ==========================
 
 async function shareAnime(){
+  const shareUrl = getAnimeShareLink();
+  const shareTitle = document.title || "AniStream";
+  const shareText = "Watch this anime on AniStream";
 
-  const shareUrl =
-    getAnimeShareLink();
-
-  const shareTitle =
-    document.title ||
-    "AniStream";
-
-  const shareText =
-    "Watch this anime on AniStream";
-
-
-  if(
-    navigator.share
-  ){
-
+  if(navigator.share){
     try{
-
-      await navigator.share({
-
-        title:
-          shareTitle,
-
-        text:
-          shareText,
-
-        url:
-          shareUrl
-
-      });
-
+      await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
+    }catch(error){
+      console.log("Share cancelled:", error);
     }
-    catch(error){
-
-      console.log(
-        "Share cancelled:",
-        error
-      );
-
-    }
-
-  }
-  else{
-
+  }else{
     copyAnimeLink();
-
   }
-
 }
-
-
-// ==========================
-// COPY LINK
-// ==========================
 
 async function copyAnimeLink(){
-
-  const shareUrl =
-    getAnimeShareLink();
-
-
+  const shareUrl = getAnimeShareLink();
   try{
-
-    await navigator.clipboard.writeText(
-      shareUrl
-    );
-
-    showShareMessage(
-      "✅ Anime link copied!"
-    );
-
-  }
-  catch(error){
-
-    // Fallback
-    const textArea =
-      document.createElement(
-        "textarea"
-      );
-
-    textArea.value =
-      shareUrl;
-
-    document.body.appendChild(
-      textArea
-    );
-
+    await navigator.clipboard.writeText(shareUrl);
+    showShareMessage("✅ Anime link copied!");
+  }catch{
+    const textArea = document.createElement("textarea");
+    textArea.value = shareUrl;
+    document.body.appendChild(textArea);
     textArea.select();
-
-    document.execCommand(
-      "copy"
-    );
-
+    document.execCommand("copy");
     textArea.remove();
-
-    showShareMessage(
-      "✅ Anime link copied!"
-    );
-
+    showShareMessage("✅ Anime link copied!");
   }
-
 }
-
-
-// ==========================
-// SHARE MESSAGE
-// ==========================
 
 function showShareMessage(message){
-
-  shareMessage.innerText =
-    message;
-
-  shareMessage.style.display =
-    "block";
-
-
-  setTimeout(
-    function(){
-
-      shareMessage.style.display =
-        "none";
-
-    },
-    2500
-  );
-
+  shareMessage.innerText = message;
+  shareMessage.style.display = "block";
+  setTimeout(() => { shareMessage.style.display = "none"; }, 2500);
 }
-
-
-// ==========================
-// LOAD ANIME
-// ==========================
 
 async function loadAnime(){
-
   if(!animeId){
-
-    animeContainer.innerHTML =
-      `
-      <div class="error">
-        ❌ Anime ID nahi mila.
-      </div>
-      `;
-
-    episodeContainer.innerHTML =
-      `
-      <div class="empty">
-        Anime select karo.
-      </div>
-      `;
-
+    animeContainer.innerHTML = '<div class="error">❌ Anime ID nahi mila.</div>';
+    episodeContainer.innerHTML = '<div class="empty">Anime select karo.</div>';
+    commentsContainer.innerHTML = '<div class="empty">Comments unavailable.</div>';
     return;
-
   }
 
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("anime")
-      .select("*")
-      .eq(
-        "anime_id",
-        animeId
-      )
-      .maybeSingle();
-
+  const { data, error } = await supabaseClient
+    .from("anime")
+    .select("*")
+    .eq("anime_id", animeId)
+    .maybeSingle();
 
   if(error){
-
-    animeContainer.innerHTML =
-      `
-      <div class="error">
-        ❌ Anime load failed:
-        ${escapeHtml(
-          error.message
-        )}
-      </div>
-      `;
-
+    animeContainer.innerHTML = '<div class="error">❌ Anime load failed: ' + escapeHtml(error.message) + '</div>';
     return;
-
   }
-
 
   if(!data){
-
-    animeContainer.innerHTML =
-      `
-      <div class="error">
-        ❌ Anime nahi mila.
-      </div>
-      `;
-
-    episodeContainer.innerHTML =
-      `
-      <div class="empty">
-        Is anime ke liye koi data available nahi hai.
-      </div>
-      `;
-
+    animeContainer.innerHTML = '<div class="error">❌ Anime nahi mila.</div>';
+    episodeContainer.innerHTML = '<div class="empty">Is anime ke liye koi data available nahi hai.</div>';
     return;
-
   }
-
 
   renderAnime(data);
-
-  loadEpisodes(
-    data.anime_id
-  );
-
+  loadEpisodes(data.anime_id);
+  loadComments(data.anime_id);
 }
-
-
-// ==========================
-// RENDER ANIME
-// ==========================
 
 function renderAnime(anime){
-
-  const genres =
-    anime.genre
-      ? anime.genre
-          .split(",")
-          .map(
-            g =>
-              g.trim()
-          )
-          .filter(Boolean)
-      : [];
-
-
+  const genres = anime.genre ? anime.genre.split(",").map(g => g.trim()).filter(Boolean) : [];
   let tags = "";
 
-
-  genres.forEach(
-    genre => {
-
-      tags +=
-        `
-        <span class="tag">
-          ${escapeHtml(
-            genre
-          )}
-        </span>
-        `;
-
-    }
-  );
-
+  genres.forEach(genre => {
+    tags += `<span class="tag">${escapeHtml(genre)}</span>`;
+  });
 
   if(anime.language){
-
-    tags +=
-      `
-      <span class="tag">
-        ${escapeHtml(
-          anime.language
-        )}
-      </span>
-      `;
-
+    tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
   }
-
-
   if(anime.status){
-
-    tags +=
-      `
-      <span class="tag">
-        ${escapeHtml(
-          anime.status
-        )}
-      </span>
-      `;
-
+    tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
   }
 
+  document.title = (anime.title || "Anime") + " - AniStream";
 
-  document.title =
-    (
-      anime.title ||
-      "Anime"
-    ) +
-    " - AniStream";
-
-
-  animeContainer.innerHTML =
-
-    `
+  animeContainer.innerHTML = `
     <div class="hero">
-
-      ${
-        anime.banner_url
-        ?
-        `
-        <img
-          class="hero-bg"
-          src="${escapeHtml(
-            anime.banner_url
-          )}"
-          alt=""
-        >
-        `
-        :
-        ""
-      }
-
-
+      ${anime.banner_url ? `<img class="hero-bg" src="${escapeHtml(anime.banner_url)}" alt="">` : ""}
       <div class="hero-overlay"></div>
-
-
       <div class="hero-content">
-
-
-        ${
-          anime.thumbnail_url
-          ?
-          `
-          <img
-            class="poster"
-            src="${escapeHtml(
-              anime.thumbnail_url
-            )}"
-            alt="${escapeHtml(
-              anime.title
-            )}"
-            onerror="this.style.display='none'"
-          >
-          `
-          :
-          ""
-        }
-
-
+        ${anime.thumbnail_url ? `<img class="poster" src="${escapeHtml(anime.thumbnail_url)}" alt="${escapeHtml(anime.title)}" onerror="this.style.display='none'">` : ""}
         <div class="info">
-
-          <h1>
-            ${escapeHtml(
-              anime.title
-            )}
-          </h1>
-
-
-          <div class="tags">
-
-            ${tags}
-
-          </div>
-
-
-          ${
-            anime.season
-            ?
-            `
-            <div class="meta">
-              📅 Season:
-              ${escapeHtml(
-                anime.season
-              )}
-            </div>
-            `
-            :
-            ""
-          }
-
-
-          <div class="description">
-
-            ${escapeHtml(
-              anime.description ||
-              "Is anime ki description available nahi hai."
-            )}
-
-          </div>
-
+          <h1>${escapeHtml(anime.title)}</h1>
+          <div class="tags">${tags}</div>
+          ${anime.season ? `<div class="meta">📅 Season: ${escapeHtml(anime.season)}</div>` : ""}
+          <div class="description">${escapeHtml(anime.description || "Is anime ki description available nahi hai.")}</div>
         </div>
-
       </div>
-
     </div>
-    `;
+  `;
 
-
-  // Share links update
   updateShareLinks();
-
 }
 
+async function loadEpisodes(targetAnimeId){
+  episodeContainer.innerHTML = '<div class="loading">Episodes load ho rahe hain...</div>';
 
-// ==========================
-// LOAD EPISODES
-// ==========================
-
-async function loadEpisodes(animeId){
-
-  episodeContainer.innerHTML =
-    `
-    <div class="loading">
-      Episodes load ho rahe hain...
-    </div>
-    `;
-
-
-  const {
-    data,
-    error
-  } =
-    await supabaseClient
-      .from("episodes")
-      .select("*")
-      .eq(
-        "anime_id",
-        animeId
-      )
-      .order(
-        "episode_number",
-        {
-          ascending:true
-        }
-      );
-
+  const { data, error } = await supabaseClient
+    .from("episodes")
+    .select("*")
+    .eq("anime_id", targetAnimeId)
+    .order("episode_number", { ascending: true });
 
   if(error){
-
-    episodeContainer.innerHTML =
-      `
-      <div class="error">
-        ❌ Episodes load failed:
-        ${escapeHtml(
-          error.message
-        )}
-      </div>
-      `;
-
+    episodeContainer.innerHTML = '<div class="error">❌ Episodes load failed: ' + escapeHtml(error.message) + '</div>';
     return;
-
   }
 
-
-  if(
-    !data ||
-    data.length === 0
-  ){
-
-    episodeContainer.innerHTML =
-      `
-      <div class="empty">
-        📺 Abhi koi episode available nahi hai.
-      </div>
-      `;
-
+  if(!data || data.length === 0){
+    episodeContainer.innerHTML = '<div class="empty">📺 Abhi koi episode available nahi hai.</div>';
     return;
-
   }
 
-
-  episodeContainer.innerHTML =
-    "";
-
-
-  data.forEach(
-    episode => {
-
-      const div =
-        document.createElement(
-          "div"
-        );
-
-
-      div.className =
-        "episode";
-
-
-      div.innerHTML =
-
-        `
-        <div class="episode-number">
-
-          Episode
-          ${escapeHtml(
-            String(
-              episode.episode_number
-            )
-          )}
-
-        </div>
-
-
-        <div class="episode-title">
-
-          ${escapeHtml(
-            episode.episode_title ||
-            "Episode " +
-            episode.episode_number
-          )}
-
-        </div>
-
-
-        <a
-          class="watch"
-          href="watch.html?id=${encodeURIComponent(
-            animeId
-          )}&episode=${encodeURIComponent(
-            episode.episode_number
-          )}"
-        >
-          ▶ Watch Now
-        </a>
-
-        `;
-
-
-      episodeContainer.appendChild(
-        div
-      );
-
-    }
-  );
-
+  episodeContainer.innerHTML = "";
+  data.forEach(episode => {
+    const div = document.createElement("div");
+    div.className = "episode";
+    div.innerHTML = `
+      <div class="episode-number">Episode ${escapeHtml(String(episode.episode_number))}</div>
+      <div class="episode-title">${escapeHtml(episode.episode_title || "Episode " + episode.episode_number)}</div>
+      <a class="watch" href="watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}">▶ Watch Now</a>
+    `;
+    episodeContainer.appendChild(div);
+  });
 }
 
+/* COMMENTS SYSTEM */
+async function loadComments(targetAnimeId){
+  commentsContainer.innerHTML = '<div class="loading">Comments load ho rahe hain...</div>';
 
-// ==========================
-// START
-// ==========================
+  const { data, error } = await supabaseClient
+    .from("anime_comments")
+    .select("*")
+    .eq("anime_id", targetAnimeId)
+    .order("created_at", { ascending: false });
+
+  if(error){
+    commentsContainer.innerHTML = '<div class="empty">Comments load nahi ho sake. Supabase table check karein.</div>';
+    return;
+  }
+
+  if(!data || data.length === 0){
+    commentsContainer.innerHTML = '<div class="empty">Abhi koi comment nahi hai. Sabse pehla comment aap karein!</div>';
+    return;
+  }
+
+  commentsContainer.innerHTML = "";
+  data.forEach(c => {
+    const card = document.createElement("div");
+    card.className = "comment-card";
+    const dateFormatted = new Date(c.created_at).toLocaleString("en-IN", {
+      dateStyle: "medium",
+      timeStyle: "short"
+    });
+
+    card.innerHTML = `
+      <div class="comment-header">
+        <span class="comment-author">👤 ${escapeHtml(c.user_name)}</span>
+        <span class="comment-date">🕒 ${escapeHtml(dateFormatted)}</span>
+      </div>
+      <p class="comment-body">${escapeHtml(c.comment_text)}</p>
+    `;
+    commentsContainer.appendChild(card);
+  });
+}
+
+async function postComment(){
+  const nameInput = document.getElementById("commentUserName");
+  const textInput = document.getElementById("commentTextInput");
+  const msg = document.getElementById("commentPostMessage");
+
+  const userName = nameInput.value.trim();
+  const commentText = textInput.value.trim();
+
+  if(!userName || !commentText){
+    msg.style.color = "#ff6b81";
+    msg.textContent = "❌ Name aur Comment dono bharna zaroori hai.";
+    return;
+  }
+
+  msg.style.color = "#aaa";
+  msg.textContent = "Comment post ho raha hai...";
+
+  const { error } = await supabaseClient.from("anime_comments").insert([{
+    anime_id: animeId,
+    user_name: userName,
+    comment_text: commentText
+  }]);
+
+  if(error){
+    msg.style.color = "#ff6b81";
+    msg.textContent = "❌ Post failed: " + error.message;
+    return;
+  }
+
+  msg.style.color = "#6dff91";
+  msg.textContent = "✅ Comment post ho gaya!";
+  textInput.value = "";
+
+  loadComments(animeId);
+  setTimeout(() => { msg.textContent = ""; }, 3000);
+}
 
 loadAnime();
-
 </script>
 
 </body>
