@@ -25,13 +25,13 @@
   --accent-2: #ff5e62;
   --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
   --accent-glow: rgba(255, 42, 109, 0.35);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
   --radius-full: 9999px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-padding-top: 85px; }
+html { scroll-padding-top: 75px; }
 body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background: var(--bg);
@@ -53,7 +53,7 @@ header {
 }
 @supports (backdrop-filter: blur(15px)) {
   header {
-    background: rgba(8, 9, 13, 0.82);
+    background: rgba(8, 9, 13, 0.85);
     backdrop-filter: blur(15px);
     -webkit-backdrop-filter: blur(15px);
   }
@@ -61,26 +61,26 @@ header {
 .nav {
   max-width: 1320px;
   margin: auto;
-  min-height: 70px;
-  padding: 0 24px;
+  min-height: 58px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 15px;
 }
 .logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 20px;
+  gap: 6px;
+  font-size: 18px;
   font-weight: 900;
   letter-spacing: -0.5px;
 }
 .logo-badge {
   background: var(--accent-gradient);
   color: #fff;
-  font-size: 13px;
-  padding: 4px 8px;
+  font-size: 11px;
+  padding: 3px 6px;
   border-radius: var(--radius-sm);
 }
 .logo span { color: #fff; }
@@ -88,10 +88,10 @@ header {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 16px;
 }
 .nav-links a {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   transition: color 0.15s ease;
@@ -100,14 +100,16 @@ header {
 .nav-links .admin-btn {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--line-strong);
-  padding: 8px 14px;
+  padding: 6px 11px;
   border-radius: var(--radius-md);
   color: #fff;
+  font-size: 12px;
 }
 
+/* COMPACT HERO */
 .hero {
   position: relative;
-  min-height: 460px;
+  min-height: 320px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -132,35 +134,34 @@ header {
   max-width: 1320px;
   width: 100%;
   margin: auto;
-  padding: 70px 24px;
+  padding: 40px 16px;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  will-change: opacity, transform;
 }
 .hero-content.hero-changing {
   opacity: 0.2;
-  transform: translateY(6px);
+  transform: translateY(4px);
 }
 .hero-badge {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
+  gap: 5px;
   background: rgba(255, 42, 109, 0.12);
   border: 1px solid rgba(255, 42, 109, 0.3);
   color: #ff759f;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 1.2px;
-  padding: 6px 12px;
+  letter-spacing: 1px;
+  padding: 4px 9px;
   border-radius: var(--radius-full);
-  margin-bottom: 18px;
+  margin-bottom: 10px;
 }
 .hero h1 {
-  font-size: clamp(32px, 5vw, 56px);
+  font-size: clamp(24px, 4vw, 42px);
   font-weight: 900;
-  line-height: 1.1;
-  letter-spacing: -1.5px;
-  max-width: 760px;
-  margin-bottom: 16px;
+  line-height: 1.15;
+  letter-spacing: -1px;
+  max-width: 620px;
+  margin-bottom: 10px;
 }
 .hero h1 span {
   background: var(--accent-gradient);
@@ -169,47 +170,47 @@ header {
 }
 .hero p {
   color: #a7adb9;
-  max-width: 580px;
-  line-height: 1.65;
-  font-size: 14.5px;
+  max-width: 500px;
+  line-height: 1.5;
+  font-size: 12.5px;
 }
 .hero-meta {
   display: flex;
-  gap: 10px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-top: 20px;
-  font-size: 12px;
+  margin-top: 14px;
+  font-size: 11px;
 }
 .hero-meta span {
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--line);
-  padding: 6px 12px;
+  padding: 4px 9px;
   border-radius: var(--radius-sm);
   color: #d1d5db;
   font-weight: 600;
 }
 .hero-buttons {
   display: flex;
-  gap: 12px;
-  margin-top: 26px;
+  gap: 8px;
+  margin-top: 18px;
   flex-wrap: wrap;
 }
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   border: 0;
   border-radius: var(--radius-md);
-  padding: 12px 22px;
+  padding: 9px 16px;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 11.5px;
   cursor: pointer;
 }
 .btn-primary {
   background: var(--accent-gradient);
   color: white;
-  box-shadow: 0 4px 15px var(--accent-glow);
+  box-shadow: 0 3px 12px var(--accent-glow);
 }
 .btn-secondary {
   background: rgba(255, 255, 255, 0.06);
@@ -219,58 +220,58 @@ header {
 .hero-controls {
   position: absolute;
   z-index: 2;
-  right: max(24px, calc((100vw - 1280px)/2));
-  bottom: 24px;
+  right: 16px;
+  bottom: 16px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 .hero-arrow {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
   background: rgba(16, 18, 26, 0.85);
   color: #fff;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.hero-arrow:active { background: var(--accent); }
-.hero-dots { display: flex; align-items: center; gap: 6px; }
+.hero-dots { display: flex; align-items: center; gap: 5px; }
 .hero-dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border: 0;
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  transition: width 0.2s ease, background 0.2s ease;
 }
-.hero-dot.active { width: 24px; background: var(--accent); }
+.hero-dot.active { width: 18px; background: var(--accent); }
 
+/* MAIN CONTAINER COMPACT */
 .container {
   max-width: 1320px;
   margin: auto;
-  padding: 32px 24px 90px;
+  padding: 18px 12px 75px;
 }
 
+/* SEARCH & GENRE BAR COMPACT */
 .search-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 200px;
-  gap: 12px;
-  margin-bottom: 16px;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 .search-row input, .search-row select {
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--line);
   color: white;
-  padding: 13px 16px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  font-size: 13.5px;
+  font-size: 12px;
 }
 .search-row input:focus, .search-row select:focus {
   border-color: var(--accent);
@@ -279,11 +280,10 @@ header {
 
 .genre-list {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   overflow-x: auto;
-  padding: 4px 2px 20px;
+  padding: 2px 2px 14px;
   scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
 }
 .genre-list::-webkit-scrollbar { display: none; }
 .genre-chip {
@@ -291,9 +291,9 @@ header {
   background: var(--surface);
   color: var(--muted);
   border: 1px solid var(--line);
-  padding: 7px 15px;
+  padding: 5px 11px;
   border-radius: var(--radius-full);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -303,104 +303,107 @@ header {
   border-color: transparent;
 }
 
+/* TELEGRAM BANNER COMPACT */
 .telegram-banner {
   background: linear-gradient(135deg, #0e273c 0%, #153e5e 100%);
   border: 1px solid rgba(34, 158, 217, 0.3);
-  border-radius: var(--radius-lg);
-  padding: 16px 22px;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 34px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
-.telegram-left { display: flex; align-items: center; gap: 16px; }
+.telegram-left { display: flex; align-items: center; gap: 12px; }
 .telegram-icon {
-  width: 42px;
-  height: 42px;
+  width: 32px;
+  height: 32px;
   background: rgba(34, 158, 217, 0.2);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 16px;
 }
-.telegram-banner h3 { font-size: 14.5px; font-weight: 800; margin-bottom: 3px; color: #fff; }
-.telegram-banner p { font-size: 12px; color: #a5d2eb; }
+.telegram-banner h3 { font-size: 12.5px; font-weight: 800; color: #fff; }
+.telegram-banner p { font-size: 11px; color: #a5d2eb; }
 .join-btn {
   background: #229ed9;
   color: #fff;
-  padding: 10px 16px;
-  border-radius: var(--radius-md);
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
   font-weight: 800;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
 }
 
-.section { margin-bottom: 40px; }
+.section { margin-bottom: 28px; }
 .section-title {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 12px;
 }
 .section-title h2 {
-  font-size: clamp(19px, 2.2vw, 23px);
+  font-size: clamp(16px, 1.8vw, 20px);
   font-weight: 800;
   letter-spacing: -0.5px;
 }
 .section-title h2 span { color: var(--accent); }
 .section-title p {
   color: var(--muted);
-  font-size: 12px;
-  margin-top: 3px;
+  font-size: 11px;
+  margin-top: 2px;
 }
-.see-all { color: var(--accent-2); font-size: 12px; font-weight: 700; }
+.see-all { color: var(--accent-2); font-size: 11px; font-weight: 700; }
 
+/* COMPACT HORIZONTAL SCROLL */
 .anime-grid {
   display: flex;
   flex-flow: row nowrap;
-  gap: 14px;
+  gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 4px 4px 14px;
+  padding: 2px 2px 10px;
   scrollbar-width: thin;
   scrollbar-color: var(--accent) var(--surface);
   scroll-snap-type: x proximity;
   -webkit-overflow-scrolling: touch;
   transform: translateZ(0);
 }
-.anime-grid::-webkit-scrollbar { height: 5px; }
+.anime-grid::-webkit-scrollbar { height: 4px; }
 .anime-grid::-webkit-scrollbar-track { background: var(--surface); border-radius: var(--radius-full); }
 .anime-grid::-webkit-scrollbar-thumb { background: var(--accent); border-radius: var(--radius-full); }
-.anime-grid > .anime-card { flex: 0 0 178px; width: 178px; scroll-snap-align: start; }
+.anime-grid > .anime-card { flex: 0 0 135px; width: 135px; scroll-snap-align: start; }
 .anime-grid > .message { flex: 0 0 100%; width: 100%; min-width: 100%; }
 
+/* COMPLETE CATALOG: 3 CARDS PER ROW ON MOBILE (DESKTOP FEEL) */
 #allAnimeGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(165px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
   overflow: visible;
-  padding: 4px 2px;
+  padding: 2px;
 }
 #allAnimeGrid > .anime-card { width: auto; flex: none; scroll-snap-align: none; }
 #allAnimeGrid > .message { width: auto; grid-column: 1 / -1; flex: none; }
 
+/* COMPACT CARD STYLING */
 .anime-card {
   background: var(--surface-card);
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
   display: flex;
   flex-direction: column;
   transform: translateZ(0);
-  transition: transform 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.15s ease, border-color 0.15s ease;
 }
 .anime-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 42, 109, 0.5);
-  background: var(--surface-card-hover);
+  transform: translateY(-3px);
+  border-color: rgba(255, 42, 109, 0.4);
 }
 .poster-wrap {
   position: relative;
@@ -423,14 +426,14 @@ header {
 }
 .status {
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 5px;
+  left: 5px;
   background: rgba(16, 18, 26, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
-  font-size: 9.5px;
+  font-size: 8.5px;
   font-weight: 700;
-  padding: 3px 7px;
+  padding: 2px 5px;
   border-radius: var(--radius-sm);
   z-index: 1;
 }
@@ -438,42 +441,42 @@ header {
 .status.movie { background: #8b5cf6; border-color: transparent; }
 .view-badge {
   position: absolute;
-  right: 8px;
-  bottom: 8px;
+  right: 5px;
+  bottom: 5px;
   background: rgba(8, 9, 13, 0.85);
-  padding: 3px 6px;
+  padding: 2px 4px;
   border-radius: var(--radius-sm);
-  font-size: 9.5px;
+  font-size: 8.5px;
   font-weight: 600;
   color: #e5e7eb;
   z-index: 1;
 }
 .card-body {
-  padding: 11px;
+  padding: 7px 6px;
   display: flex;
   flex-direction: column;
   flex: 1;
 }
 .card-title {
-  font-size: 12.5px;
+  font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   color: #fff;
 }
 .card-meta {
   color: var(--muted);
-  font-size: 10.5px;
-  line-height: 1.35;
-  height: 26px;
+  font-size: 9.5px;
+  line-height: 1.25;
+  height: 22px;
   overflow: hidden;
 }
 .card-actions {
   display: flex;
-  gap: 5px;
-  margin-top: 10px;
+  gap: 4px;
+  margin-top: 6px;
   align-items: stretch;
 }
 .watch-btn {
@@ -483,9 +486,9 @@ header {
   border: 1px solid rgba(255, 42, 109, 0.3);
   color: #ff6893;
   text-align: center;
-  padding: 7px 5px;
+  padding: 5px 3px;
   border-radius: var(--radius-sm);
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -496,10 +499,10 @@ header {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
   border: 1px solid var(--line);
-  padding: 6px 9px;
+  padding: 5px 6px;
   border-radius: var(--radius-sm);
   cursor: pointer;
-  font-size: 10.5px;
+  font-size: 9.5px;
   font-weight: 600;
 }
 .like-btn.liked {
@@ -510,31 +513,31 @@ header {
 .message {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 28px 16px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-footer {
-  border-top: 1px solid var(--line);
-  padding: 28px 20px;
+  border-radius: var(--radius-md);
+  padding: 20px 12px;
   text-align: center;
   color: var(--muted);
   font-size: 12px;
 }
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 20px 16px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 11px;
+}
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 85px;
+  bottom: 75px;
   transform: translateX(-50%) translateY(20px);
   background: rgba(22, 25, 37, 0.95);
   border: 1px solid var(--line-strong);
   color: #fff;
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: var(--radius-full);
-  font-size: 12.5px;
+  font-size: 11.5px;
   font-weight: 600;
   opacity: 0;
   pointer-events: none;
@@ -548,27 +551,30 @@ footer {
 
 .bottom-nav { display: none; }
 @media (max-width: 720px) {
-  .nav { min-height: 60px; padding: 0 16px; }
-  .logo { font-size: 17px; }
+  .nav { min-height: 52px; padding: 0 12px; }
+  .logo { font-size: 15px; }
   .nav-links a { display: none; }
-  .nav-links .admin-btn { display: block; padding: 6px 10px; font-size: 11px; }
-  .hero { min-height: 380px; }
-  .hero-content { padding: 42px 16px 65px; }
-  .hero h1 { font-size: 30px; }
-  .hero p { font-size: 12.5px; }
-  .hero-controls { right: 16px; bottom: 16px; }
-  .container { padding: 20px 14px 85px; }
+  .nav-links .admin-btn { display: block; padding: 5px 8px; font-size: 10px; }
+  
+  .hero { min-height: 270px; }
+  .hero-content { padding: 25px 12px 45px; }
+  .hero h1 { font-size: 22px; }
+  .hero p { font-size: 11px; }
+  
+  .container { padding: 14px 8px 75px; }
   .search-row { grid-template-columns: 1fr; }
-  .telegram-banner { padding: 14px; }
   .telegram-banner p { display: none; }
-  .anime-grid > .anime-card { flex-basis: 142px; width: 142px; }
-  #allAnimeGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  
+  /* 3 CARDS PER ROW ON MOBILE PHONES */
+  .anime-grid > .anime-card { flex-basis: 112px; width: 112px; }
+  #allAnimeGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  
   .bottom-nav {
     position: fixed;
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    height: 56px;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 48px;
     background: rgba(16, 18, 26, 0.95);
     border: 1px solid var(--line-strong);
     border-radius: var(--radius-full);
@@ -580,15 +586,15 @@ footer {
   }
   .bottom-nav a {
     color: var(--muted);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px;
+    gap: 1px;
   }
   .bottom-nav a.active { color: var(--accent); }
-  .bottom-nav span { font-size: 16px; }
+  .bottom-nav span { font-size: 14px; }
 }
 </style>
 </head>
@@ -738,7 +744,6 @@ function getVoterId(){
   }
 }
 
-// GUARANTEED NEWEST-FIRST SORTING (Priority: created_at -> numeric id -> fallback)
 function sortLatestFirst(list){
   return [...list].sort((a,b)=>{
     const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
@@ -943,7 +948,7 @@ function createAnimeCard(anime){
   const details=document.createElement("a");
   details.className="watch-btn";
   details.href="anime-details.html?id="+encodeURIComponent(id);
-  details.textContent=isMov ? "▶ Watch Movie" : "▶ Details";
+  details.textContent=isMov ? "▶ Movie" : "▶ Details";
   
   const likeBtn=document.createElement("button");
   likeBtn.className="like-btn";
@@ -1011,9 +1016,9 @@ function renderHero(index, animate=true){
   const br=document.createElement("br"), span=document.createElement("span");
   span.textContent="Watch in Hindi";
   $("heroTitle").append(title,br,span);
-  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,240):"Stream popular anime series and movies with Hindi audio.";
+  $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,200):"Stream popular anime series and movies with Hindi audio.";
   $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
-  $("heroWatch").textContent=isMovie(featured) ? "🎬 Watch Movie" : "▶ View Series";
+  $("heroWatch").textContent=isMovie(featured) ? "🎬 Movie" : "▶ Series";
   
   const meta=$("heroMeta");
   meta.replaceChildren();
@@ -1030,7 +1035,6 @@ function renderHero(index, animate=true){
   hero.classList.toggle("has-image",Boolean(banner));
   $("heroDots").querySelectorAll(".hero-dot").forEach((dot,i)=>{
     dot.classList.toggle("active",i===heroIndex);
-    dot.setAttribute("aria-current",i===heroIndex?"true":"false");
   });
 }
 
@@ -1047,7 +1051,6 @@ function updateHero(){
     const dot=document.createElement("button");
     dot.type="button";
     dot.className="hero-dot"+(i===0?" active":"");
-    dot.setAttribute("aria-label","Show anime "+(i+1));
     dot.addEventListener("click",()=>{ renderHero(i); restartHeroTimer(); });
     frag.appendChild(dot);
   });
