@@ -30,11 +30,13 @@ header{
 }
 
 .logo{
-  color:#ff1744;
+  color:#fff;
   text-decoration:none;
   font-size:22px;
   font-weight:bold;
 }
+
+.logo b{color:#ff1744}
 
 .nav a{
   color:#fff;
@@ -100,8 +102,9 @@ iframe{
 
 .view-info{
   margin-top:10px;
-  color:#888;
+  color:#00e676;
   font-size:13px;
+  font-weight:bold;
 }
 
 .quality-section,.section{padding:20px}
@@ -302,7 +305,7 @@ iframe{
 <body>
 <header>
   <div class="nav">
-    <a href="index.html" class="logo">🔥 AniStream</a>
+    <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a>
     <div>
       <a href="index.html">Home</a>
       <a href="admin.html">Admin</a>
@@ -400,23 +403,40 @@ function safeUrl(value){
   }
 }
 
+/* ANONYMOUS & REAL-TIME VIEW TRACKING */
+function getViewerId(){
+  const key = "anistream_viewer_id";
+  let id = localStorage.getItem(key);
+  if(!id){
+    id = "viewer_" + (window.crypto?.randomUUID?.() || Date.now() + "_" + Math.random().toString(36).slice(2));
+    localStorage.setItem(key, id);
+  }
+  return id;
+}
+
 async function recordAnimeView(){
   if(!animeId) return;
   try{
-    const { data:{user}, error:userError } = await supabaseClient.auth.getUser();
-    if(userError || !user) return;
-
-    const {error} = await supabaseClient
-      .from("anime_views")
-      .insert({ anime_id: animeId, user_id: user.id });
-
-    if(error?.code === "23505"){
-      viewInfo.textContent = "👁️ Already viewed";
-    }else if(!error){
-      viewInfo.textContent = "👁️ View counted";
+    const sessionKey = "viewed_" + animeId;
+    if(sessionStorage.getItem(sessionKey)){
+      if(viewInfo) viewInfo.textContent = "👁️ View counted";
+      return;
     }
-  }catch(error){
-    console.error("View tracking error:", error);
+
+    const viewerId = getViewerId();
+    const { error } = await supabaseClient
+      .from("anime_views")
+      .insert([{
+        anime_id: String(animeId),
+        viewer_id: viewerId
+      }]);
+
+    if(!error){
+      sessionStorage.setItem(sessionKey, "true");
+      if(viewInfo) viewInfo.textContent = "👁️ View counted";
+    }
+  }catch(err){
+    console.error("View tracking error:", err);
   }
 }
 
