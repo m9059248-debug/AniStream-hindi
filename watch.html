@@ -35,7 +35,6 @@ body {
 a { color: inherit; text-decoration: none; }
 button { font: inherit; outline: none; }
 
-/* COMPACT HEADER */
 header {
   background: rgba(17, 17, 24, 0.95);
   border-bottom: 1px solid var(--line);
@@ -82,7 +81,6 @@ header {
   margin-bottom: 10px;
 }
 
-/* COMPACT PLAYER CARD */
 .video-box, .section-box {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -97,6 +95,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 video, iframe {
   width: 100%;
@@ -133,7 +132,6 @@ video, iframe {
   font-weight: 700;
 }
 
-/* COMPACT CONTROLS BOX */
 .section-box {
   padding: 12px 14px;
 }
@@ -147,7 +145,6 @@ video, iframe {
   gap: 5px;
 }
 
-/* COMPACT AUDIO CARD */
 .audio-card {
   background: #0e1017;
   border: 1px solid var(--line);
@@ -188,7 +185,6 @@ video, iframe {
   margin-top: 5px;
 }
 
-/* QUALITY & STREAM / DOWNLOAD BUTTONS */
 .quality-buttons, .link-buttons {
   display: flex;
   gap: 6px;
@@ -234,7 +230,6 @@ video, iframe {
 .stream-btn:hover { background: #e9143d; }
 .download-btn:hover { background: #00c77d; }
 
-/* COMPACT EPISODES SELECTOR (DESKTOP CHIPS) */
 #episodeNav .episode-nav {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
@@ -264,7 +259,27 @@ video, iframe {
   color: #888;
   font-size: 12px;
 }
-.error { color: #ff6b81; }
+.error-fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  text-align: center;
+}
+.error-fallback p {
+  color: #ff759f;
+  font-size: 12px;
+}
+.open-ext-btn {
+  background: var(--accent);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 800;
+}
 
 @media(max-width: 480px) {
   #episodeNav .episode-nav {
@@ -307,7 +322,7 @@ video, iframe {
     </div>
   </div>
 
-  <!-- COMPACT QUALITY & CONTROLS -->
+  <!-- CONTROLS & QUALITIES -->
   <div id="controlsSection" class="section-box">
     <div class="audio-card">
       <div class="audio-header">
@@ -327,7 +342,7 @@ video, iframe {
     <div id="linkButtons" class="link-buttons"></div>
   </div>
 
-  <!-- COMPACT EPISODES SELECTOR -->
+  <!-- EPISODES LIST -->
   <div class="section-box">
     <div class="section-title">📺 Select Episode</div>
     <div id="episodeNav">
@@ -378,7 +393,6 @@ function safeUrl(value){
   }
 }
 
-/* REAL-TIME ANONYMOUS VIEW TRACKING */
 function getViewerId(){
   const key = "anistream_viewer_id";
   let id = localStorage.getItem(key);
@@ -476,7 +490,7 @@ async function loadEpisode(){
 }
 
 function showError(message){
-  videoContainer.innerHTML = '<div class="message error">' + escapeHtml(message) + '</div>';
+  videoContainer.innerHTML = '<div class="message" style="color:#ff6b81">' + escapeHtml(message) + '</div>';
 }
 
 async function loadQualityLinks(animeTitle){
@@ -546,7 +560,7 @@ function selectQuality(quality){
     streamButton.href = streamUrl;
     streamButton.target = "_blank";
     streamButton.rel = "noopener noreferrer";
-    streamButton.textContent = "▶ Stream (" + quality + ")";
+    streamButton.textContent = "▶ Open Stream (" + quality + ")";
     linkButtons.appendChild(streamButton);
   }
 
@@ -565,6 +579,7 @@ function updateStatusDisplay(){
   currentStatus.innerHTML = "<b>Playing:</b> " + escapeHtml(selectedQuality);
 }
 
+/* SMART VIDEO LOADER WITH AUTO-FALLBACK */
 function loadVideo(url){
   const safe = safeUrl(url);
   if(!safe){
@@ -572,35 +587,66 @@ function loadVideo(url){
     return;
   }
 
-  const path = new URL(safe).pathname.toLowerCase();
-  const isVideoFile = /\.(mp4|webm|ogg|m3u8)$/.test(path);
-
   videoContainer.innerHTML = "";
 
-  if(isVideoFile && !path.endsWith(".m3u8")){
+  const parsed = new URL(safe);
+  const path = parsed.pathname.toLowerCase();
+  
+  // Hosts that require iframe directly
+  const isEmbedHost = safe.includes("drive.google.com") || 
+                       safe.includes("dood") || 
+                       safe.includes("streamtape") || 
+                       safe.includes("filemoon") || 
+                       safe.includes("mega.nz") ||
+                       safe.includes("streamwish");
+
+  const isDirectFile = /\.(mp4|webm|ogg)$/.test(path) && !isEmbedHost;
+
+  if(isDirectFile){
     const video = document.createElement("video");
     video.controls = true;
     video.playsInline = true;
     video.preload = "metadata";
     video.src = safe;
-    video.addEventListener("error", () => {
-      showError("Video play nahi ho saka.");
-    });
+    
+    // Auto fallback to iframe on error
+    video.onerror = () => {
+      renderIframe(safe);
+    };
+    
     videoContainer.appendChild(video);
-    return;
+  } else {
+    renderIframe(safe);
   }
+}
 
+function renderIframe(safe){
+  videoContainer.innerHTML = "";
   const iframe = document.createElement("iframe");
   iframe.src = safe;
   iframe.allowFullscreen = true;
-  iframe.referrerPolicy = "strict-origin-when-cross-origin";
-  iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture");
+  iframe.referrerPolicy = "no-referrer";
+  iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
+  
+  iframe.onerror = () => {
+    renderFallbackButton(safe);
+  };
+  
   videoContainer.appendChild(iframe);
+}
+
+function renderFallbackButton(safe){
+  videoContainer.innerHTML = `
+    <div class="error-fallback">
+      <p>⚠️ Is server ka video internal player mein load nahi ho pa raha hai.</p>
+      <a class="open-ext-btn" href="${escapeHtml(safe)}" target="_blank" rel="noopener noreferrer">▶ Open External Player</a>
+    </div>
+  `;
 }
 
 async function loadEpisodeList(){
   if(!animeId){
-    episodeNav.innerHTML = '<div class="message error">Anime ID nahi mili.</div>';
+    episodeNav.innerHTML = '<div class="message" style="color:#ff6b81">Anime ID nahi mili.</div>';
     return;
   }
 
