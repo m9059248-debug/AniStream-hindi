@@ -3,7 +3,7 @@
 <head>  
 <meta charset="UTF-8">  
 <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>AniStream Admin & Analytics</title>  
+<title>AniStream Admin Panel</title>  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
 <style>  
 *{box-sizing:border-box;margin:0;padding:0}  
@@ -51,23 +51,56 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .schedule-date{color:#6dff91;margin-top:6px;font-size:14px}  
 .schedule-status{display:inline-block;margin-top:8px;padding:5px 9px;border-radius:5px;background:#252530;color:#fff;font-size:12px}  
 .empty{color:#888;padding:15px;text-align:center}.hidden{display:none}  
-.episode-quality-summary{color:#aaa;font-size:13px;margin-top:8px}  
 .toggle-row{display:flex;gap:10px;align-items:flex-start;margin:10px 0;color:#ddd;font-size:14px;line-height:1.45}  
 .toggle-row input{width:auto;margin:2px 0;accent-color:#ff1744}  
 .filter-tabs{display:flex;gap:8px;margin:10px 0 15px}
 .filter-tab{background:#0d0d13;border:1px solid #333340;color:#aaa;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px}
 .filter-tab.active{background:#ff1744;color:#fff;border-color:#ff1744}
 
-/* Analytics Styling */
+/* MAIN SLOTS NAVIGATION */
+.main-nav-tabs{
+  display:flex;
+  gap:12px;
+  margin-bottom:22px;
+  background:#14141c;
+  padding:8px;
+  border-radius:12px;
+  border:1px solid #292936;
+}
+.main-tab-btn{
+  flex:1;
+  padding:14px;
+  background:transparent;
+  color:#aaa;
+  border:none;
+  border-radius:8px;
+  font-size:15px;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:all 0.2s ease;
+}
+.main-tab-btn:hover{color:#fff;background:rgba(255,255,255,0.03)}
+.main-tab-btn.active{
+  background:#ff1744;
+  color:#fff;
+  box-shadow:0 4px 15px rgba(255,23,68,0.35);
+}
+
+/* ANALYTICS STYLING */
 .stat-card{background:#0e0e15;border:1px solid #292936;border-radius:8px;padding:16px;text-align:center}
 .stat-label{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
 .stat-value{font-size:26px;font-weight:bold;margin-top:6px}
 .analytics-table{width:100%;border-collapse:collapse;text-align:left;font-size:13px;margin-top:12px}
-.analytics-table th{padding:10px;border-bottom:1px solid #333340;color:#aaa}
-.analytics-table td{padding:10px;border-bottom:1px solid #1a1a24}
+.analytics-table th{padding:11px;border-bottom:1px solid #333340;color:#aaa}
+.analytics-table td{padding:11px;border-bottom:1px solid #1a1a24}
 
 @media(max-width:600px){  
 .container{padding:12px}.box{padding:15px}header h1{font-size:19px;margin-top:8px}  
+.main-tab-btn{font-size:13px;padding:11px}
 .search-result{align-items:flex-start;flex-wrap:wrap}.search-result img{width:65px;height:90px}  
 .search-info{min-width:calc(100% - 80px)}.search-result button{width:100%}  
 .anime-item{align-items:flex-start}.library-actions{flex-direction:column;align-items:stretch}
@@ -91,164 +124,188 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
   <button class="logout" onclick="logoutAdmin()">Logout</button>  
   <h1>🔥 AniStream Admin</h1>  
 </header>  
+
 <div class="container">  
-
-  <!-- 1. ANALYTICS & INSIGHTS DASHBOARD -->
-  <div class="box" id="analyticsBox">
-    <h2>📊 Website & Anime Analytics</h2>
-    
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:18px;">
-      <div class="stat-card">
-        <div class="stat-label">Total Anime Views</div>
-        <div id="statTotalViews" class="stat-value" style="color:#ff1744;">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Likes</div>
-        <div id="statTotalLikes" class="stat-value" style="color:#ff759f;">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Comments</div>
-        <div id="statTotalComments" class="stat-value" style="color:#229ed9;">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Listed Anime</div>
-        <div id="statTotalAnime" class="stat-value" style="color:#6dff91;">0</div>
-      </div>
-    </div>
-
-    <h3 style="color:#ff759f; font-size:15px; margin-bottom:10px;">📈 Most Watched & Liked Anime</h3>
-    <div style="overflow-x:auto;">
-      <table class="analytics-table">
-        <thead>
-          <tr>
-            <th>Anime Title</th>
-            <th>Type</th>
-            <th>Views</th>
-            <th>Likes</th>
-            <th>Comments</th>
-          </tr>
-        </thead>
-        <tbody id="analyticsTableBody">
-          <tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">Analytics load ho rahe hain...</td></tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- 2 MAIN SLOTS SWITCHER -->
+  <div class="main-nav-tabs">
+    <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">
+      ➕ Anime Manage
+    </button>
+    <button type="button" class="main-tab-btn" id="tabBtnAnalytics" onclick="switchSlot('analytics')">
+      📊 Analytics Dashboard
+    </button>
   </div>
 
-  <!-- 2. SEARCH ANIME -->
-  <div class="box">  
-    <h2>🔎 Search Anime (Auto-Fill)</h2>  
-    <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto, Your Name">  
-    <button class="primary search-btn" onclick="searchAnime()">🔎 Search Anime</button>  
-    <div id="searchMessage"></div><div id="searchResults"></div>  
-  </div>    
+  <!-- ========================================================
+       SLOT 1: ANIME MANAGEMENT (ADD, EDIT, LIBRARY, EPISODES)
+  ======================================================== -->
+  <div id="slotAnime">
+    <!-- SEARCH ANIME -->
+    <div class="box">  
+      <h2>🔎 Search Anime (Auto-Fill)</h2>  
+      <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto, Your Name">  
+      <button class="primary search-btn" onclick="searchAnime()">🔎 Search Anime</button>  
+      <div id="searchMessage"></div><div id="searchResults"></div>  
+    </div>    
 
-  <!-- 3. ADD NEW ANIME -->
-  <div class="box">  
-    <h2>➕ Add New Anime</h2>  
-    <p class="small">Pehle upar se search karke auto-fill karein ya manually details enter karein.</p>  
-    
-    <label class="small">Type (Series / Movie Chuno)</label>
-    <select id="animeType" onchange="handleTypeChange()">
-      <option value="Series">📺 Anime Series</option>
-      <option value="Movie">🎬 Anime Movie</option>
-    </select>
-
-    <input id="animeId" placeholder="Anime ID e.g. solo-leveling">  
-    <input id="animeTitle" placeholder="Anime Name">  
-    <input id="thumbnail" placeholder="Thumbnail URL">  
-    <input id="banner" placeholder="Banner URL">  
-    <textarea id="description" placeholder="Anime Description"></textarea>  
-    <input id="genre" placeholder="Genre e.g. Action, Fantasy">  
-    <input id="season" placeholder="Season e.g. Season 1 (Movies ke liye 'Movie')">  
-    <input id="language" placeholder="Language e.g. Hindi" value="Hindi">  
-    <select id="status"><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option></select>  
-    <button class="primary" onclick="addAnime()">➕ Add Anime</button>  
-    <div id="animeMessage"></div>  
-  </div>    
-
-  <!-- 4. ANIME LIBRARY -->
-  <div class="box">  
-    <h2>📚 Anime Library</h2>  
-    <div class="filter-tabs">
-      <button class="filter-tab active" onclick="setLibraryFilter('all', this)">All</button>
-      <button class="filter-tab" onclick="setLibraryFilter('series', this)">📺 Series</button>
-      <button class="filter-tab" onclick="setLibraryFilter('movie', this)">🎬 Movies</button>
-    </div>
-    <input id="animeLibrarySearch" placeholder="🔎 Search anime inside library...">  
-    <div id="animeLibrary"><div class="empty">Anime load ho rahe hain...</div></div>  
-  </div>    
-
-  <!-- 5. SELECTED ANIME & EDIT DETAILS -->
-  <div id="animeDetails" class="box" style="display:none;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-      <h2>🎬 Selected Anime</h2>
-      <button class="primary" id="toggleEditBtn" onclick="toggleEditMode()" style="background:#00a86b;">✏️ Edit Anime Details</button>
-    </div>
-    
-    <div id="selectedAnimeInfo"></div>
-
-    <div id="editAnimeForm" style="display:none;margin-top:18px;border-top:1px solid #292936;padding-top:16px;">
-      <h3 style="color:#00a86b;margin-bottom:12px;">✏️ Edit Anime Details</h3>
-      <label class="small">Anime Title</label>
-      <input id="editTitle" placeholder="Anime Title">
-      <label class="small">Type / Format</label>
-      <select id="editType" onchange="handleEditTypeChange()">
+    <!-- ADD NEW ANIME -->
+    <div class="box">  
+      <h2>➕ Add New Anime</h2>  
+      <p class="small">Pehle upar se search karke auto-fill karein ya manually details enter karein.</p>  
+      
+      <label class="small">Type (Series / Movie Chuno)</label>
+      <select id="animeType" onchange="handleTypeChange()">
         <option value="Series">📺 Anime Series</option>
         <option value="Movie">🎬 Anime Movie</option>
       </select>
-      <label class="small">Season</label>
-      <input id="editSeason" placeholder="Season">
-      <label class="small">Status</label>
-      <select id="editStatus">
-        <option value="Ongoing">Ongoing</option>
-        <option value="Completed">Completed</option>
-      </select>
-      <label class="small">Language</label>
-      <input id="editLanguage" placeholder="Language">
-      <label class="small">Genre</label>
-      <input id="editGenre" placeholder="Genre">
-      <label class="small">Thumbnail URL</label>
-      <input id="editThumbnail" placeholder="Thumbnail URL">
-      <label class="small">Banner URL</label>
-      <input id="editBanner" placeholder="Banner URL">
-      <label class="small">Description</label>
-      <textarea id="editDescription" placeholder="Anime Description"></textarea>
-      
-      <div style="display:flex;gap:10px;margin-top:12px;">
-        <button class="primary" onclick="saveAnimeDetails()" style="flex:1;background:#00a86b;">💾 Save Changes</button>
-        <button class="secondary" onclick="toggleEditMode()" style="flex:1;">❌ Cancel</button>
+
+      <input id="animeId" placeholder="Anime ID e.g. solo-leveling">  
+      <input id="animeTitle" placeholder="Anime Name">  
+      <input id="thumbnail" placeholder="Thumbnail URL">  
+      <input id="banner" placeholder="Banner URL">  
+      <textarea id="description" placeholder="Anime Description"></textarea>  
+      <input id="genre" placeholder="Genre e.g. Action, Fantasy">  
+      <input id="season" placeholder="Season e.g. Season 1 (Movies ke liye 'Movie')">  
+      <input id="language" placeholder="Language e.g. Hindi" value="Hindi">  
+      <select id="status"><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option></select>  
+      <button class="primary" onclick="addAnime()">➕ Add Anime</button>  
+      <div id="animeMessage"></div>  
+    </div>    
+
+    <!-- ANIME LIBRARY -->
+    <div class="box">  
+      <h2>📚 Anime Library</h2>  
+      <div class="filter-tabs">
+        <button class="filter-tab active" onclick="setLibraryFilter('all', this)">All</button>
+        <button class="filter-tab" onclick="setLibraryFilter('series', this)">📺 Series</button>
+        <button class="filter-tab" onclick="setLibraryFilter('movie', this)">🎬 Movies</button>
       </div>
-      <div id="editAnimeMessage"></div>
+      <input id="animeLibrarySearch" placeholder="🔎 Search anime inside library...">  
+      <div id="animeLibrary"><div class="empty">Anime load ho rahe hain...</div></div>  
+    </div>    
+
+    <!-- SELECTED ANIME & EDIT DETAILS -->
+    <div id="animeDetails" class="box" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+        <h2>🎬 Selected Anime</h2>
+        <button class="primary" id="toggleEditBtn" onclick="toggleEditMode()" style="background:#00a86b;">✏️ Edit Anime Details</button>
+      </div>
+      
+      <div id="selectedAnimeInfo"></div>
+
+      <div id="editAnimeForm" style="display:none;margin-top:18px;border-top:1px solid #292936;padding-top:16px;">
+        <h3 style="color:#00a86b;margin-bottom:12px;">✏️ Edit Anime Details</h3>
+        <label class="small">Anime Title</label>
+        <input id="editTitle" placeholder="Anime Title">
+        <label class="small">Type / Format</label>
+        <select id="editType" onchange="handleEditTypeChange()">
+          <option value="Series">📺 Anime Series</option>
+          <option value="Movie">🎬 Anime Movie</option>
+        </select>
+        <label class="small">Season</label>
+        <input id="editSeason" placeholder="Season">
+        <label class="small">Status</label>
+        <select id="editStatus">
+          <option value="Ongoing">Ongoing</option>
+          <option value="Completed">Completed</option>
+        </select>
+        <label class="small">Language</label>
+        <input id="editLanguage" placeholder="Language">
+        <label class="small">Genre</label>
+        <input id="editGenre" placeholder="Genre">
+        <label class="small">Thumbnail URL</label>
+        <input id="editThumbnail" placeholder="Thumbnail URL">
+        <label class="small">Banner URL</label>
+        <input id="editBanner" placeholder="Banner URL">
+        <label class="small">Description</label>
+        <textarea id="editDescription" placeholder="Anime Description"></textarea>
+        
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <button class="primary" onclick="saveAnimeDetails()" style="flex:1;background:#00a86b;">💾 Save Changes</button>
+          <button class="secondary" onclick="toggleEditMode()" style="flex:1;">❌ Cancel</button>
+        </div>
+        <div id="editAnimeMessage"></div>
+      </div>
+    </div>    
+
+    <!-- ADD EPISODE / MOVIE LINKS -->
+    <div id="episodeForm" class="box" style="display:none;">  
+      <h2>➕ Add Episode / Movie Link</h2>  
+      <p class="small">Series ke liye episode number daalein. Movie ke liye Episode Number 1 daal sakte hain.</p>  
+      <div class="toggle-row"><input type="checkbox" id="autoShortenLinks" checked><label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label></div>  
+      <input id="episodeNumber" type="number" min="1" placeholder="Episode Number (Movie ke liye 1)">  
+      <input id="episodeTitle" placeholder="Title e.g. Full Movie / Episode 1">  
+      <div class="quality-box"><div class="quality-title">📱 480p</div><input id="stream480" placeholder="480p Stream Link"><input id="download480" placeholder="480p Download Link"></div>  
+      <div class="quality-box"><div class="quality-title">📺 720p</div><input id="stream720" placeholder="720p Stream Link"><input id="download720" placeholder="720p Download Link"></div>  
+      <div class="quality-box"><div class="quality-title">🔥 1080p</div><input id="stream1080" placeholder="1080p Stream Link"><input id="download1080" placeholder="1080p Download Link"></div>  
+      <button class="primary" style="margin-top:15px;width:100%;" onclick="addEpisode()">➕ Add Link</button>  
+      <div id="episodeMessage"></div>  
+    </div>    
+
+    <div id="episodeList" class="box" style="display:none;"><h2>📺 Episodes / Movie Links</h2><div id="episodesContainer"></div></div>    
+
+    <!-- SCHEDULE -->
+    <div id="scheduleForm" class="box" style="display:none;">  
+      <h2>📅 Add Anime Schedule</h2>  
+      <input id="scheduleEpisodeNumber" type="number" min="1" placeholder="Episode Number">  
+      <input id="scheduleEpisodeTitle" placeholder="Title e.g. New Episode">  
+      <label class="small" style="display:block;margin-top:8px;">Release Date &amp; Time</label>  
+      <input id="scheduleReleaseAt" type="datetime-local">  
+      <button class="primary" onclick="addSchedule()">📅 Add Schedule</button><div id="scheduleMessage"></div>  
+    </div>  
+    <div id="scheduleList" class="box" style="display:none;"><h2>📅 Anime Schedule</h2><div id="scheduleContainer"></div></div>  
+  </div>
+
+  <!-- ========================================================
+       SLOT 2: ANALYTICS DASHBOARD
+  ======================================================== -->
+  <div id="slotAnalytics" style="display:none;">
+    <div class="box">
+      <h2>📊 Website & Anime Analytics</h2>
+      
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:18px;">
+        <div class="stat-card">
+          <div class="stat-label">Total Anime Views</div>
+          <div id="statTotalViews" class="stat-value" style="color:#ff1744;">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Likes</div>
+          <div id="statTotalLikes" class="stat-value" style="color:#ff759f;">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Comments</div>
+          <div id="statTotalComments" class="stat-value" style="color:#229ed9;">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Listed Anime</div>
+          <div id="statTotalAnime" class="stat-value" style="color:#6dff91;">0</div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px;">
+        <h3 style="color:#ff759f; font-size:15px;">📈 Anime Performance Report</h3>
+        <button class="secondary" style="padding:6px 12px; font-size:12px;" onclick="loadAnalytics()">🔄 Refresh Stats</button>
+      </div>
+
+      <div style="overflow-x:auto;">
+        <table class="analytics-table">
+          <thead>
+            <tr>
+              <th>Anime Title</th>
+              <th>Type</th>
+              <th>Views</th>
+              <th>Likes</th>
+              <th>Comments</th>
+            </tr>
+          </thead>
+          <tbody id="analyticsTableBody">
+            <tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">Analytics load ho rahe hain...</td></tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>    
+  </div>
 
-  <!-- 6. ADD EPISODE / MOVIE LINKS -->
-  <div id="episodeForm" class="box" style="display:none;">  
-    <h2>➕ Add Episode / Movie Link</h2>  
-    <p class="small">Series ke liye episode number daalein. Movie ke liye Episode Number 1 daal sakte hain.</p>  
-    <div class="toggle-row"><input type="checkbox" id="autoShortenLinks" checked><label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label></div>  
-    <input id="episodeNumber" type="number" min="1" placeholder="Episode Number (Movie ke liye 1)">  
-    <input id="episodeTitle" placeholder="Title e.g. Full Movie / Episode 1">  
-    <div class="quality-box"><div class="quality-title">📱 480p</div><input id="stream480" placeholder="480p Stream Link"><input id="download480" placeholder="480p Download Link"></div>  
-    <div class="quality-box"><div class="quality-title">📺 720p</div><input id="stream720" placeholder="720p Stream Link"><input id="download720" placeholder="720p Download Link"></div>  
-    <div class="quality-box"><div class="quality-title">🔥 1080p</div><input id="stream1080" placeholder="1080p Stream Link"><input id="download1080" placeholder="1080p Download Link"></div>  
-    <button class="primary" style="margin-top:15px;width:100%;" onclick="addEpisode()">➕ Add Link</button>  
-    <div id="episodeMessage"></div>  
-  </div>    
-
-  <div id="episodeList" class="box" style="display:none;"><h2>📺 Episodes / Movie Links</h2><div id="episodesContainer"></div></div>    
-
-  <!-- 7. SCHEDULE -->
-  <div id="scheduleForm" class="box" style="display:none;">  
-    <h2>📅 Add Anime Schedule</h2>  
-    <input id="scheduleEpisodeNumber" type="number" min="1" placeholder="Episode Number">  
-    <input id="scheduleEpisodeTitle" placeholder="Title e.g. New Episode">  
-    <label class="small" style="display:block;margin-top:8px;">Release Date &amp; Time</label>  
-    <input id="scheduleReleaseAt" type="datetime-local">  
-    <button class="primary" onclick="addSchedule()">📅 Add Schedule</button><div id="scheduleMessage"></div>  
-  </div>  
-  <div id="scheduleList" class="box" style="display:none;"><h2>📅 Anime Schedule</h2><div id="scheduleContainer"></div></div>  
 </div>  
 </div>  
 
@@ -261,6 +318,29 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLI
 let selectedAnime = null;  
 let animeLibraryData = [];  
 let libraryFilter = "all";
+
+/* =========================================
+   TAB SWITCHING LOGIC
+========================================= */
+function switchSlot(slotName){
+  const slotAnime = document.getElementById("slotAnime");
+  const slotAnalytics = document.getElementById("slotAnalytics");
+  const tabBtnAnime = document.getElementById("tabBtnAnime");
+  const tabBtnAnalytics = document.getElementById("tabBtnAnalytics");
+
+  if(slotName === "anime"){
+    slotAnime.style.display = "block";
+    slotAnalytics.style.display = "none";
+    tabBtnAnime.classList.add("active");
+    tabBtnAnalytics.classList.remove("active");
+  } else {
+    slotAnime.style.display = "none";
+    slotAnalytics.style.display = "block";
+    tabBtnAnime.classList.remove("active");
+    tabBtnAnalytics.classList.add("active");
+    loadAnalytics();
+  }
+}
   
 async function loginAdmin(){  
   const email = document.getElementById("loginEmail").value.trim();  
