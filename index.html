@@ -701,7 +701,7 @@ footer {
   </div>
   <div id="genreList" class="genre-list"><button class="genre-chip active" data-genre="all">All</button></div>
 
-  <!-- UPDATED TELEGRAM BANNER -->
+  <!-- TELEGRAM BANNER -->
   <div class="telegram-banner">
     <div class="telegram-left">
       <div class="telegram-icon">✈️</div>
@@ -801,18 +801,50 @@ function getVoterId(){
   }
 }
 
+// Robust Latest-First Sorting Function
+function sortLatestFirst(list){
+  return [...list].sort((a,b)=>{
+    const timeA = new Date(a.created_at || a.updated_at || 0).getTime();
+    const timeB = new Date(b.created_at || b.updated_at || 0).getTime();
+    if(timeA && timeB && timeA !== timeB){
+      return timeB - timeA; // Jo naya date hoga wo sabse aage aayega
+    }
+    const numA = Number(a.id);
+    const numB = Number(b.id);
+    if(!isNaN(numA) && !isNaN(numB) && numA !== numB){
+      return numB - numA; // Jo highest ID hogi wo sabse aage aayegi
+    }
+    return String(b.id || b.anime_id || "").localeCompare(String(a.id || a.anime_id || ""));
+  });
+}
+
 async function loadAnime(){
   ["allAnimeGrid","ongoingGrid","seriesGrid","moviesGrid"].forEach(id => {
     $(id).innerHTML='<div class="message">Anime load ho rahe hain…</div>';
   });
-  const {data,error}=await supabaseClient.from("anime").select("*").order("id",{ascending:false});
+
+  // 1. Pehle created_at se descending order mangwayenge
+  let {data, error} = await supabaseClient.from("anime").select("*").order("created_at", {ascending:false});
+  
+  // 2. Fallback agar created_at index na ho toh id descending se
   if(error){
-    console.error("Anime load error:",error);
+    console.warn("created_at query fallback to id:", error);
+    const fallback = await supabaseClient.from("anime").select("*").order("id", {ascending:false});
+    data = fallback.data;
+    error = fallback.error;
+  }
+
+  if(error){
+    console.error("Anime load error:", error);
     const msg="Anime load nahi ho sake. Supabase check karo.";
     ["allAnimeGrid","ongoingGrid","seriesGrid","moviesGrid"].forEach(id => $(id).innerHTML='<div class="message">'+escapeHtml(msg)+'</div>');
     return;
   }
-  animeList=Array.isArray(data)?data:[];
+
+  // 3. Javascript me bhi strictly latest upload anime ko Index 0 (first) par set karenge
+  const rawList = Array.isArray(data) ? data : [];
+  animeList = sortLatestFirst(rawList);
+
   buildGenres();
   renderAll();
 }
@@ -922,12 +954,14 @@ function setGenre(g){
 
 function getFilteredAnime(){
   const search=String(searchInput.value||"").trim().toLowerCase();
-  return animeList.filter(a=>{
+  const list = animeList.filter(a=>{
     const title=String(a.title||"").toLowerCase(),genre=String(a.genre||"").toLowerCase(),lang=String(a.language||"").toLowerCase(),id=getAnimeId(a).toLowerCase();
     const match=!search||title.includes(search)||genre.includes(search)||lang.includes(search)||id.includes(search);
     const genreMatch=selectedGenre==="all"||genre.split(",").some(g=>g.trim()===selectedGenre.toLowerCase());
     return match&&genreMatch;
   });
+  // Maintain Latest First in filter
+  return sortLatestFirst(list);
 }
 
 function createAnimeCard(anime){
@@ -1013,19 +1047,19 @@ function renderGrid(el,list,empty){
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
-  // 1. Ongoing Series (Movies excluded)
+  // 1. Ongoing Series - Latest Uploaded First
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   renderGrid($("ongoingGrid"), ongoingList, hasFilter ? "Is filter ke liye koi ongoing series nahi mili." : "Abhi koi ongoing series nahi hai.");
   
-  // 2. Anime Series (All multi-episode series)
+  // 2. Anime Series - Latest Uploaded First
   const seriesList = filtered.filter(a => !isMovie(a));
   renderGrid($("seriesGrid"), seriesList, hasFilter ? "Is filter ke liye koi anime series nahi mili." : "Abhi koi anime series add nahi hui.");
   
-  // 3. Anime Movies (Standalone movies only)
+  // 3. Anime Movies - Latest Uploaded First
   const moviesList = filtered.filter(a => isMovie(a));
   renderGrid($("moviesGrid"), moviesList, hasFilter ? "Is filter ke liye koi movie nahi mili." : "Abhi koi movie add nahi hui. Admin panel se movie select karke add karo.");
 
-  // 4. All Anime Catalog
+  // 4. All Anime Catalog - Latest Uploaded First
   renderGrid($("allAnimeGrid"), filtered, hasFilter ? "Is search ke liye koi anime nahi mila." : "Database mein koi anime nahi mila.");
 }
 
