@@ -5,350 +5,326 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Anime Details - AniStream</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  font-family:Arial,sans-serif;
-  background:#0b0b0f;
-  color:#fff;
+:root {
+  --bg: #08090d;
+  --surface: #10121a;
+  --surface-card: #131520;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #f8f9fd;
+  --muted: #9ba1b6;
+  --accent: #ff2a6d;
+  --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
+  --radius-sm: 6px;
+  --radius-md: 10px;
 }
 
-header{
-  background:#111118;
-  border-bottom:1px solid #292936;
-  padding:16px 20px;
-  position:sticky;
-  top:0;
-  z-index:10;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font: inherit; outline: none; }
+
+header {
+  background: rgba(17, 17, 24, 0.95);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+.nav {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
+}
+.logo b { color: var(--accent); }
+.nav a {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 12px;
+}
+.nav a:hover { color: #fff; }
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 14px 10px 60px;
 }
 
-.nav{
-  max-width:1100px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-size: 11.5px;
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 
-.logo{
-  color:#fff;
-  font-size:22px;
-  font-weight:bold;
-  text-decoration:none;
+/* COMPACT HERO */
+.hero {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  background: #14141c;
+  border: 1px solid var(--line);
+  margin-bottom: 14px;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.22;
+}
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, #0b0b0f 8%, rgba(11,11,15,0.7) 60%, transparent);
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+  padding: 16px 14px;
+}
+.poster {
+  width: 95px;
+  height: 140px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  background: #222;
+  border: 1px solid var(--line-strong);
+  flex-shrink: 0;
+}
+.info { flex: 1; min-width: 0; }
+.info h1 {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 6px;
+  color: #fff;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.tag {
+  background: rgba(255, 42, 109, 0.15);
+  border: 1px solid rgba(255, 42, 109, 0.3);
+  color: #ff759f;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 700;
+}
+.meta {
+  color: var(--muted);
+  font-size: 11px;
+  margin: 3px 0 6px;
+}
+.description {
+  color: #c7cbd7;
+  line-height: 1.45;
+  font-size: 11.5px;
+  max-height: 58px;
+  overflow-y: auto;
 }
 
-.logo b{color:#ff1744}
-
-.nav a{
-  color:#fff;
-  text-decoration:none;
-  margin-left:15px;
+/* COMPACT SHARE BOX */
+.share-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 10px 12px;
+  margin-bottom: 14px;
+}
+.share-title {
+  color: var(--accent);
+  font-size: 12.5px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.share-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.share-btn {
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.share-main { background: var(--accent); }
+.copy-btn { background: #262938; }
+.whatsapp-btn { background: #128c7e; }
+.telegram-btn { background: #229ed9; }
+.share-message {
+  color: #6dff91;
+  font-size: 11px;
+  margin-top: 6px;
+  display: none;
 }
 
-.nav a:hover{color:#ff1744}
-
-.container{
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
+/* COMPACT SECTIONS */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 14px 12px;
+  margin-bottom: 14px;
+}
+.section h2 {
+  color: var(--accent);
+  font-size: 14.5px;
+  font-weight: 800;
+  margin-bottom: 10px;
 }
 
-.hero{
-  min-height:300px;
-  border-radius:15px;
-  overflow:hidden;
-  position:relative;
-  background:#15151d;
-  margin-bottom:20px;
+/* COMPACT EPISODES (DESKTOP-LIKE GRID) */
+.episodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 6px;
+}
+.episode-btn {
+  background: #141622;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+.episode-btn:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.episode-btn .ep-num {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+}
+.episode-btn .ep-tag {
+  font-size: 8.5px;
+  color: #ff85a6;
+  margin-top: 2px;
+}
+.episode-btn:hover .ep-tag { color: #fff; }
+
+/* COMPACT COMMENTS */
+.comment-form {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  margin-bottom: 12px;
+}
+.comment-input, .comment-textarea {
+  width: 100%;
+  padding: 7px 10px;
+  background: #141724;
+  border: 1px solid var(--line);
+  border-radius: 5px;
+  color: #fff;
+  font-size: 12px;
+}
+.comment-textarea {
+  min-height: 55px;
+  resize: vertical;
+  margin-top: 6px;
+  line-height: 1.35;
+}
+.comment-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 7px 14px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 6px;
+}
+.comment-card {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 10px;
+  margin-bottom: 6px;
+}
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 3px;
+}
+.comment-author {
+  font-weight: 800;
+  color: var(--accent);
+  font-size: 11.5px;
+}
+.comment-date {
+  color: #6b7280;
+  font-size: 9.5px;
+}
+.comment-body {
+  color: #d1d5db;
+  font-size: 11.5px;
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
 
-.hero-bg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  opacity:.28;
+.loading, .error, .empty {
+  text-align: center;
+  color: #888;
+  padding: 16px 8px;
+  font-size: 11.5px;
 }
+.error { color: #ff6b81; }
 
-.hero-overlay{
-  position:absolute;
-  inset:0;
-  background:linear-gradient(to top, #0b0b0f 5%, rgba(11,11,15,.55), transparent);
-}
-
-.hero-content{
-  position:relative;
-  z-index:2;
-  min-height:300px;
-  display:flex;
-  align-items:flex-end;
-  gap:20px;
-  padding:25px;
-}
-
-.poster{
-  width:150px;
-  height:215px;
-  object-fit:cover;
-  border-radius:10px;
-  background:#222;
-  border:2px solid #292936;
-}
-
-.info{flex:1}
-
-.info h1{
-  font-size:32px;
-  margin-bottom:10px;
-}
-
-.tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-bottom:12px;
-}
-
-.tag{
-  background:#ff1744;
-  padding:5px 9px;
-  border-radius:6px;
-  font-size:12px;
-  font-weight:bold;
-}
-
-.meta{
-  color:#bbb;
-  font-size:14px;
-  margin:5px 0;
-}
-
-.description{
-  color:#ccc;
-  line-height:1.6;
-  margin-top:12px;
-}
-
-/* SHARE BOX */
-.share-box{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  padding:18px;
-  margin-bottom:20px;
-}
-
-.share-title{
-  color:#ff1744;
-  font-size:18px;
-  font-weight:bold;
-  margin-bottom:12px;
-}
-
-.share-buttons{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.share-btn{
-  border:none;
-  cursor:pointer;
-  text-decoration:none;
-  color:#fff;
-  padding:10px 14px;
-  border-radius:7px;
-  font-size:13px;
-  font-weight:bold;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-}
-
-.share-main{background:#ff1744}
-.share-main:hover{background:#e9143d}
-.copy-btn{background:#33333f}
-.copy-btn:hover{background:#41414d}
-.whatsapp-btn{background:#25D366}
-.whatsapp-btn:hover{background:#1ebc59}
-.telegram-btn{background:#229ED9}
-.telegram-btn:hover{background:#1689bf}
-
-.share-message{
-  color:#8affaa;
-  font-size:13px;
-  margin-top:10px;
-  display:none;
-}
-
-/* SECTIONS */
-.section{
-  background:#14141c;
-  border:1px solid #292936;
-  border-radius:12px;
-  padding:20px;
-  margin-bottom:20px;
-}
-
-.section h2{
-  color:#ff1744;
-  margin-bottom:15px;
-}
-
-.episodes{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:12px;
-}
-
-.episode{
-  background:#0e0e15;
-  border:1px solid #292936;
-  border-radius:9px;
-  padding:15px;
-  transition:.2s;
-}
-
-.episode:hover{
-  border-color:#ff1744;
-  transform:translateY(-2px);
-}
-
-.episode-number{
-  font-weight:bold;
-  margin-bottom:6px;
-}
-
-.episode-title{
-  color:#aaa;
-  font-size:13px;
-  margin-bottom:12px;
-  min-height:32px;
-}
-
-.watch{
-  display:inline-block;
-  background:#ff1744;
-  color:#fff;
-  text-decoration:none;
-  padding:8px 12px;
-  border-radius:6px;
-  font-size:13px;
-  font-weight:bold;
-}
-
-.watch:hover{background:#e9143d}
-
-/* COMMENTS STYLING */
-.comment-form{
-  background:#0e0e15;
-  border:1px solid #292936;
-  border-radius:10px;
-  padding:16px;
-  margin-bottom:20px;
-}
-
-.comment-input, .comment-textarea{
-  width:100%;
-  padding:11px 14px;
-  background:#14141c;
-  border:1px solid #333340;
-  border-radius:7px;
-  color:#fff;
-  outline:none;
-  font-family:inherit;
-  font-size:13.5px;
-}
-
-.comment-input:focus, .comment-textarea:focus{
-  border-color:#ff1744;
-}
-
-.comment-textarea{
-  min-height:85px;
-  resize:vertical;
-  margin-top:10px;
-  line-height:1.45;
-}
-
-.comment-btn{
-  background:#ff1744;
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:6px;
-  font-size:13px;
-  font-weight:bold;
-  cursor:pointer;
-  margin-top:10px;
-  transition:background 0.2s;
-}
-
-.comment-btn:hover{background:#e9143d}
-
-.comment-card{
-  background:#0e0e15;
-  border:1px solid #292936;
-  border-radius:8px;
-  padding:14px;
-  margin-bottom:10px;
-}
-
-.comment-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:6px;
-}
-
-.comment-author{
-  font-weight:bold;
-  color:#ff1744;
-  font-size:13.5px;
-}
-
-.comment-date{
-  color:#777;
-  font-size:11.5px;
-}
-
-.comment-body{
-  color:#ddd;
-  font-size:13px;
-  line-height:1.5;
-  white-space:pre-wrap;
-}
-
-.loading, .error, .empty{
-  text-align:center;
-  color:#999;
-  padding:25px 10px;
-  font-size:13px;
-}
-
-.error{color:#ff6b81}
-
-.back{
-  display:inline-block;
-  margin-bottom:15px;
-  color:#ff1744;
-  text-decoration:none;
-  font-weight:bold;
-}
-
-@media(max-width:650px){
-  .nav{flex-direction:column;gap:10px}
-  .nav a{margin:0 8px}
-  .hero-content{align-items:flex-end;padding:15px}
-  .poster{width:100px;height:145px}
-  .info h1{font-size:22px}
-  .description{font-size:13px}
-  .share-buttons{display:grid;grid-template-columns:1fr 1fr}
-  .share-btn{width:100%}
+@media(max-width: 480px) {
+  .hero-content { padding: 12px 10px; gap: 10px; }
+  .poster { width: 80px; height: 118px; }
+  .info h1 { font-size: 16px; }
+  .share-buttons { display: grid; grid-template-columns: repeat(2, 1fr); }
+  .episodes { grid-template-columns: repeat(4, 1fr); gap: 5px; }
 }
 </style>
 </head>
@@ -366,7 +342,7 @@ header{
 </header>
 
 <div class="container">
-  <a href="index.html" class="back">← Back to Home</a>
+  <a href="index.html" class="back">‹ Back to Home</a>
 
   <!-- ANIME DETAILS HERO -->
   <div id="animeContainer">
@@ -387,7 +363,7 @@ header{
 
   <!-- EPISODES SECTION -->
   <div class="section">
-    <h2>📺 Episodes</h2>
+    <h2>📺 Select Episode</h2>
     <div id="episodeContainer" class="episodes">
       <div class="loading">Episodes load ho rahe hain...</div>
     </div>
@@ -395,17 +371,13 @@ header{
 
   <!-- COMMENTS SECTION -->
   <div class="section">
-    <h2>💬 Comments & Discussions</h2>
-
-    <!-- Post Comment Form -->
+    <h2>💬 Comments</h2>
     <div class="comment-form">
-      <input type="text" id="commentUserName" class="comment-input" placeholder="Aapka Name (e.g. Rahul, AnimeFan)" maxlength="30">
-      <textarea id="commentTextInput" class="comment-textarea" placeholder="Is anime ke baare mein aapki kya raye hai? Apna comment likhein..." maxlength="500"></textarea>
-      <button type="button" class="comment-btn" onclick="postComment()">💬 Post Comment</button>
-      <div id="commentPostMessage" style="font-size:12px; margin-top:8px;"></div>
+      <input type="text" id="commentUserName" class="comment-input" placeholder="Aapka Name" maxlength="30">
+      <textarea id="commentTextInput" class="comment-textarea" placeholder="Apna comment likhein..." maxlength="500"></textarea>
+      <button type="button" class="comment-btn" onclick="postComment()">Post Comment</button>
+      <div id="commentPostMessage" style="font-size:11px; margin-top:5px;"></div>
     </div>
-
-    <!-- Comments List -->
     <div id="commentsContainer">
       <div class="loading">Comments load ho rahe hain...</div>
     </div>
@@ -451,13 +423,10 @@ async function shareAnime(){
   const shareUrl = getAnimeShareLink();
   const shareTitle = document.title || "AniStream";
   const shareText = "Watch this anime on AniStream";
-
   if(navigator.share){
     try{
       await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-    }catch(error){
-      console.log("Share cancelled:", error);
-    }
+    }catch(error){}
   }else{
     copyAnimeLink();
   }
@@ -467,7 +436,7 @@ async function copyAnimeLink(){
   const shareUrl = getAnimeShareLink();
   try{
     await navigator.clipboard.writeText(shareUrl);
-    showShareMessage("✅ Anime link copied!");
+    showShareMessage("✅ Link copied!");
   }catch{
     const textArea = document.createElement("textarea");
     textArea.value = shareUrl;
@@ -475,14 +444,14 @@ async function copyAnimeLink(){
     textArea.select();
     document.execCommand("copy");
     textArea.remove();
-    showShareMessage("✅ Anime link copied!");
+    showShareMessage("✅ Link copied!");
   }
 }
 
 function showShareMessage(message){
   shareMessage.innerText = message;
   shareMessage.style.display = "block";
-  setTimeout(() => { shareMessage.style.display = "none"; }, 2500);
+  setTimeout(() => { shareMessage.style.display = "none"; }, 2000);
 }
 
 async function loadAnime(){
@@ -500,13 +469,12 @@ async function loadAnime(){
     .maybeSingle();
 
   if(error){
-    animeContainer.innerHTML = '<div class="error">❌ Anime load failed: ' + escapeHtml(error.message) + '</div>';
+    animeContainer.innerHTML = '<div class="error">❌ Load failed: ' + escapeHtml(error.message) + '</div>';
     return;
   }
 
   if(!data){
     animeContainer.innerHTML = '<div class="error">❌ Anime nahi mila.</div>';
-    episodeContainer.innerHTML = '<div class="empty">Is anime ke liye koi data available nahi hai.</div>';
     return;
   }
 
@@ -518,17 +486,9 @@ async function loadAnime(){
 function renderAnime(anime){
   const genres = anime.genre ? anime.genre.split(",").map(g => g.trim()).filter(Boolean) : [];
   let tags = "";
-
-  genres.forEach(genre => {
-    tags += `<span class="tag">${escapeHtml(genre)}</span>`;
-  });
-
-  if(anime.language){
-    tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
-  }
-  if(anime.status){
-    tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
-  }
+  genres.forEach(genre => { tags += `<span class="tag">${escapeHtml(genre)}</span>`; });
+  if(anime.language) tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
+  if(anime.status) tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
 
   document.title = (anime.title || "Anime") + " - AniStream";
 
@@ -541,18 +501,17 @@ function renderAnime(anime){
         <div class="info">
           <h1>${escapeHtml(anime.title)}</h1>
           <div class="tags">${tags}</div>
-          ${anime.season ? `<div class="meta">📅 Season: ${escapeHtml(anime.season)}</div>` : ""}
-          <div class="description">${escapeHtml(anime.description || "Is anime ki description available nahi hai.")}</div>
+          ${anime.season ? `<div class="meta">Format: ${escapeHtml(anime.season)}</div>` : ""}
+          <div class="description">${escapeHtml(anime.description || "Description available nahi hai.")}</div>
         </div>
       </div>
     </div>
   `;
-
   updateShareLinks();
 }
 
 async function loadEpisodes(targetAnimeId){
-  episodeContainer.innerHTML = '<div class="loading">Episodes load ho rahe hain...</div>';
+  episodeContainer.innerHTML = '<div class="loading">Loading episodes...</div>';
 
   const { data, error } = await supabaseClient
     .from("episodes")
@@ -560,32 +519,26 @@ async function loadEpisodes(targetAnimeId){
     .eq("anime_id", targetAnimeId)
     .order("episode_number", { ascending: true });
 
-  if(error){
-    episodeContainer.innerHTML = '<div class="error">❌ Episodes load failed: ' + escapeHtml(error.message) + '</div>';
-    return;
-  }
-
-  if(!data || data.length === 0){
-    episodeContainer.innerHTML = '<div class="empty">📺 Abhi koi episode available nahi hai.</div>';
+  if(error || !data || data.length === 0){
+    episodeContainer.innerHTML = '<div class="empty">Abhi koi episode available nahi hai.</div>';
     return;
   }
 
   episodeContainer.innerHTML = "";
   data.forEach(episode => {
-    const div = document.createElement("div");
-    div.className = "episode";
-    div.innerHTML = `
-      <div class="episode-number">Episode ${escapeHtml(String(episode.episode_number))}</div>
-      <div class="episode-title">${escapeHtml(episode.episode_title || "Episode " + episode.episode_number)}</div>
-      <a class="watch" href="watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}">▶ Watch Now</a>
+    const a = document.createElement("a");
+    a.className = "episode-btn";
+    a.href = `watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}`;
+    a.innerHTML = `
+      <span class="ep-num">Ep ${escapeHtml(String(episode.episode_number))}</span>
+      <span class="ep-tag">▶ Play</span>
     `;
-    episodeContainer.appendChild(div);
+    episodeContainer.appendChild(a);
   });
 }
 
-/* COMMENTS SYSTEM */
 async function loadComments(targetAnimeId){
-  commentsContainer.innerHTML = '<div class="loading">Comments load ho rahe hain...</div>';
+  commentsContainer.innerHTML = '<div class="loading">Loading comments...</div>';
 
   const { data, error } = await supabaseClient
     .from("anime_comments")
@@ -593,13 +546,8 @@ async function loadComments(targetAnimeId){
     .eq("anime_id", targetAnimeId)
     .order("created_at", { ascending: false });
 
-  if(error){
-    commentsContainer.innerHTML = '<div class="empty">Comments load nahi ho sake. Supabase table check karein.</div>';
-    return;
-  }
-
-  if(!data || data.length === 0){
-    commentsContainer.innerHTML = '<div class="empty">Abhi koi comment nahi hai. Sabse pehla comment aap karein!</div>';
+  if(error || !data || data.length === 0){
+    commentsContainer.innerHTML = '<div class="empty">Abhi koi comment nahi hai. Pehle comment aap karein!</div>';
     return;
   }
 
@@ -607,15 +555,14 @@ async function loadComments(targetAnimeId){
   data.forEach(c => {
     const card = document.createElement("div");
     card.className = "comment-card";
-    const dateFormatted = new Date(c.created_at).toLocaleString("en-IN", {
-      dateStyle: "medium",
-      timeStyle: "short"
+    const dateFormatted = new Date(c.created_at).toLocaleDateString("en-IN", {
+      day: "numeric", month: "short"
     });
 
     card.innerHTML = `
       <div class="comment-header">
         <span class="comment-author">👤 ${escapeHtml(c.user_name)}</span>
-        <span class="comment-date">🕒 ${escapeHtml(dateFormatted)}</span>
+        <span class="comment-date">${escapeHtml(dateFormatted)}</span>
       </div>
       <p class="comment-body">${escapeHtml(c.comment_text)}</p>
     `;
@@ -633,12 +580,12 @@ async function postComment(){
 
   if(!userName || !commentText){
     msg.style.color = "#ff6b81";
-    msg.textContent = "❌ Name aur Comment dono bharna zaroori hai.";
+    msg.textContent = "❌ Name aur comment dono zaroori hain.";
     return;
   }
 
   msg.style.color = "#aaa";
-  msg.textContent = "Comment post ho raha hai...";
+  msg.textContent = "Posting...";
 
   const { error } = await supabaseClient.from("anime_comments").insert([{
     anime_id: animeId,
@@ -648,16 +595,15 @@ async function postComment(){
 
   if(error){
     msg.style.color = "#ff6b81";
-    msg.textContent = "❌ Post failed: " + error.message;
+    msg.textContent = "❌ Failed: " + error.message;
     return;
   }
 
   msg.style.color = "#6dff91";
-  msg.textContent = "✅ Comment post ho gaya!";
+  msg.textContent = "✅ Comment posted!";
   textInput.value = "";
-
   loadComments(animeId);
-  setTimeout(() => { msg.textContent = ""; }, 3000);
+  setTimeout(() => { msg.textContent = ""; }, 2500);
 }
 
 loadAnime();
