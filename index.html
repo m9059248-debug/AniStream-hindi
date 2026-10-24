@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="monetag" content="2b1552195c0697852785197fab449e97">
 <meta name="theme-color" content="#08090d">
 <meta name="description" content="Watch Anime Series and Anime Movies in Hindi Dub on AniStream.">
 <title>AniStream — Anime Series & Movies in Hindi</title>
@@ -106,7 +108,7 @@ header {
   font-size: 12px;
 }
 
-/* COMPACT HERO */
+/* HERO */
 .hero {
   position: relative;
   min-height: 320px;
@@ -250,14 +252,11 @@ header {
 }
 .hero-dot.active { width: 18px; background: var(--accent); }
 
-/* MAIN CONTAINER COMPACT */
 .container {
   max-width: 1320px;
   margin: auto;
   padding: 18px 12px 75px;
 }
-
-/* SEARCH & GENRE BAR COMPACT */
 .search-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 150px;
@@ -303,7 +302,6 @@ header {
   border-color: transparent;
 }
 
-/* TELEGRAM BANNER COMPACT */
 .telegram-banner {
   background: linear-gradient(135deg, #0e273c 0%, #153e5e 100%);
   border: 1px solid rgba(34, 158, 217, 0.3);
@@ -359,7 +357,6 @@ header {
 }
 .see-all { color: var(--accent-2); font-size: 11px; font-weight: 700; }
 
-/* COMPACT HORIZONTAL SCROLL */
 .anime-grid {
   display: flex;
   flex-flow: row nowrap;
@@ -379,7 +376,6 @@ header {
 .anime-grid > .anime-card { flex: 0 0 135px; width: 135px; scroll-snap-align: start; }
 .anime-grid > .message { flex: 0 0 100%; width: 100%; min-width: 100%; }
 
-/* COMPLETE CATALOG: 3 CARDS PER ROW ON MOBILE (DESKTOP FEEL) */
 #allAnimeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -390,7 +386,6 @@ header {
 #allAnimeGrid > .anime-card { width: auto; flex: none; scroll-snap-align: none; }
 #allAnimeGrid > .message { width: auto; grid-column: 1 / -1; flex: none; }
 
-/* COMPACT CARD STYLING */
 .anime-card {
   background: var(--surface-card);
   border: 1px solid var(--line);
@@ -555,20 +550,19 @@ footer {
   .logo { font-size: 15px; }
   .nav-links a { display: none; }
   .nav-links .admin-btn { display: block; padding: 5px 8px; font-size: 10px; }
-  
+
   .hero { min-height: 270px; }
   .hero-content { padding: 25px 12px 45px; }
   .hero h1 { font-size: 22px; }
   .hero p { font-size: 11px; }
-  
+
   .container { padding: 14px 8px 75px; }
   .search-row { grid-template-columns: 1fr; }
   .telegram-banner p { display: none; }
-  
-  /* 3 CARDS PER ROW ON MOBILE PHONES */
+
   .anime-grid > .anime-card { flex-basis: 112px; width: 112px; }
   #allAnimeGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
-  
+
   .bottom-nav {
     position: fixed;
     left: 10px;
@@ -642,7 +636,6 @@ footer {
   </div>
   <div id="genreList" class="genre-list"><button class="genre-chip active" data-genre="all">All</button></div>
 
-  <!-- TELEGRAM BANNER -->
   <div class="telegram-banner">
     <div class="telegram-left">
       <div class="telegram-icon">✈️</div>
@@ -654,7 +647,6 @@ footer {
     <a href="https://t.me/Anistream_hindi" target="_blank" rel="noopener noreferrer" class="join-btn">JOIN TELEGRAM ↗</a>
   </div>
 
-  <!-- 1. ONGOING ANIME -->
   <section id="ongoing" class="section">
     <div class="section-title">
       <div><h2>⚡ <span>Ongoing Series</span></h2><p>Currently running weekly episodes</p></div>
@@ -663,7 +655,6 @@ footer {
     <div id="ongoingGrid" class="anime-grid"><div class="message">Ongoing anime load ho rahe hain…</div></div>
   </section>
 
-  <!-- 2. ANIME SERIES -->
   <section id="series" class="section">
     <div class="section-title">
       <div><h2>📺 <span>Anime Series</span></h2><p>Complete seasons and episodic series</p></div>
@@ -671,7 +662,6 @@ footer {
     <div id="seriesGrid" class="anime-grid"><div class="message">Anime series load ho rahi hain…</div></div>
   </section>
 
-  <!-- 3. ANIME MOVIES -->
   <section id="movies" class="section">
     <div class="section-title">
       <div><h2>🎬 <span>Anime Movies</span></h2><p>Standalone movies & theatrical releases</p></div>
@@ -679,7 +669,6 @@ footer {
     <div id="moviesGrid" class="anime-grid"><div class="message">Movies load ho rahi hain…</div></div>
   </section>
 
-  <!-- 4. ALL ANIME CATALOG -->
   <section id="allAnime" class="section">
     <div class="section-title">
       <div><h2>📚 All <span>Anime Catalog</span></h2><p>Search and filter through the complete library</p></div>
@@ -748,24 +737,19 @@ function sortLatestFirst(list){
   return [...list].sort((a,b)=>{
     const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
     const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
-    if(timeA && timeB && timeA !== timeB){
-      return timeB - timeA;
-    }
+    if(timeA && timeB && timeA !== timeB) return timeB - timeA;
     if(timeA && !timeB) return -1;
     if(!timeA && timeB) return 1;
-
     const numA = Number(a.id);
     const numB = Number(b.id);
-    if(!isNaN(numA) && !isNaN(numB) && numA !== numB){
-      return numB - numA;
-    }
+    if(!isNaN(numA) && !isNaN(numB) && numA !== numB) return numB - numA;
     return 0;
   });
 }
 
 async function loadAnime(){
   let {data, error} = await supabaseClient.from("anime").select("*").order("created_at", {ascending:false, nullsFirst:false});
-  
+
   if(error || !data || !data.length){
     const fallback = await supabaseClient.from("anime").select("*").order("id", {ascending:false});
     if(!fallback.error && fallback.data){
@@ -859,7 +843,7 @@ function buildGenres(){
   animeList.forEach(a=>String(a.genre||"").split(",").forEach(g=>{if(g.trim())genres.add(g.trim())}));
   genreList.replaceChildren();
   genreSelect.innerHTML='<option value="all">All genres</option>';
-  
+
   const frag = document.createDocumentFragment();
   const addChip=(name)=>{
     const b=document.createElement("button");
@@ -906,7 +890,7 @@ function createAnimeCard(anime){
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   const card=document.createElement("article");
   card.className="anime-card";
-  
+
   const posterWrap=document.createElement("div");
   posterWrap.className="poster-wrap";
   if(poster){
@@ -920,36 +904,36 @@ function createAnimeCard(anime){
   }else{
     const p=document.createElement("div"); p.className="message"; p.style.height="100%"; p.textContent="No poster"; posterWrap.appendChild(p);
   }
-  
+
   const status=document.createElement("span");
   status.className="status" + (isMov ? " movie" : (isOngoing ? " ongoing" : ""));
   status.textContent=isMov ? "🎬 Movie" : (anime.status||"Series");
   posterWrap.appendChild(status);
-  
+
   const badge=document.createElement("span");
   badge.className="view-badge";
   badge.textContent="👁 "+views;
   posterWrap.appendChild(badge);
-  
+
   const body=document.createElement("div");
   body.className="card-body";
   const name=document.createElement("div");
   name.className="card-title";
   name.title=title;
   name.textContent=title;
-  
+
   const meta=document.createElement("div");
   meta.className="card-meta";
   meta.textContent=(isMov ? "Movie" : (anime.season||"Series")) + (anime.language ? " · " + anime.language : "");
   body.append(name,meta);
-  
+
   const actions=document.createElement("div");
   actions.className="card-actions";
   const details=document.createElement("a");
   details.className="watch-btn";
   details.href="anime-details.html?id="+encodeURIComponent(id);
   details.textContent=isMov ? "▶ Movie" : "▶ Details";
-  
+
   const likeBtn=document.createElement("button");
   likeBtn.className="like-btn";
   likeBtn.type="button";
@@ -958,7 +942,7 @@ function createAnimeCard(anime){
   likeBtn.textContent=(liked?"❤️ ":"🤍 ")+(animeLikeCounts[id]||0);
   likeBtn.disabled=likeBusyIds.has(id);
   likeBtn.addEventListener("click",()=>toggleAnimeLike(id));
-  
+
   actions.append(details,likeBtn);
   body.appendChild(actions);
   card.append(posterWrap,body);
@@ -983,13 +967,13 @@ function renderGrid(el,list,empty){
 
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
-  
+
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   renderGrid($("ongoingGrid"), ongoingList, hasFilter ? "Is filter ke liye koi ongoing series nahi mili." : "Abhi koi ongoing series nahi hai.");
-  
+
   const seriesList = filtered.filter(a => !isMovie(a));
   renderGrid($("seriesGrid"), seriesList, hasFilter ? "Is filter ke liye koi anime series nahi mili." : "Abhi koi anime series add nahi hui.");
-  
+
   const moviesList = filtered.filter(a => isMovie(a));
   renderGrid($("moviesGrid"), moviesList, hasFilter ? "Is filter ke liye koi movie nahi mili." : "Abhi koi movie add nahi hui. Admin panel se movie select karke add karo.");
 
@@ -1019,7 +1003,7 @@ function renderHero(index, animate=true){
   $("heroDescription").textContent=featured.description?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,200):"Stream popular anime series and movies with Hindi audio.";
   $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
   $("heroWatch").textContent=isMovie(featured) ? "🎬 Movie" : "▶ Series";
-  
+
   const meta=$("heroMeta");
   meta.replaceChildren();
   [isMovie(featured) ? "Anime Movie" : (featured.season||"Series"), featured.genre||"Anime", featured.status||"Available"].forEach(t=>{
@@ -1027,7 +1011,7 @@ function renderHero(index, animate=true){
     s.textContent=t;
     meta.appendChild(s);
   });
-  
+
   const banner=safeImageUrl(featured.banner_url||featured.thumbnail_url);
   hero.style.backgroundImage=banner
     ? "linear-gradient(90deg,rgba(8,9,13,0.98) 0%,rgba(8,9,13,0.85) 50%,rgba(8,9,13,0.3) 100%),url("+JSON.stringify(banner)+")"
