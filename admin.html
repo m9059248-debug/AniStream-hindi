@@ -1,1012 +1,653 @@
-<!DOCTYPE html>  
-<html lang="en">  
-<head>  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0">  
-<title>AniStream Admin Panel</title>  
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  
-<style>  
-*{box-sizing:border-box;margin:0;padding:0}  
-body{font-family:Arial,sans-serif;background:#0b0b0f;color:#fff}  
-header{background:#111118;padding:18px;border-bottom:1px solid #292936;overflow:hidden}  
-header h1{color:#ff1744;font-size:24px}  
-.container{max-width:1100px;margin:auto;padding:20px}  
-.box{background:#14141c;border:1px solid #292936;border-radius:12px;padding:20px;margin-bottom:20px}  
-h2{margin-bottom:15px;color:#ff1744}  
-label.small{color:#aaa;font-size:12px;margin-top:6px;display:block}
-input,textarea,select{width:100%;padding:12px;margin:7px 0;background:#0d0d13;border:1px solid #333340;border-radius:8px;color:#fff;outline:none}  
-input:focus,textarea:focus,select:focus{border-color:#ff1744}  
-textarea{min-height:100px;resize:vertical}  
-button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weight:bold}  
-.primary{background:#ff1744;color:#fff}.primary:hover{background:#e9143d}  
-.secondary{background:#33333f;color:#fff}.secondary:hover{background:#444452}  
-.green{background:#00a86b;color:#fff}.green:hover{background:#00c77d}  
-.delete-btn{background:#d50000;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
-.edit-btn{background:#00a86b;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
-.search-btn{width:100%;margin-top:5px}  
-.message{padding:12px;margin-top:10px;border-radius:8px;overflow-wrap:anywhere}  
-.message.success{background:#123b20;color:#6dff91}.message.error{background:#40131b;color:#ff7d91}.message.info{background:#222231;color:#ddd}  
-.anime-item{background:#0e0e15;border:1px solid #292936;border-radius:10px;padding:12px;margin-bottom:12px;display:flex;gap:12px;align-items:center;cursor:pointer}  
-.anime-item:hover{border-color:#ff1744}  
-.anime-thumb{width:70px;height:90px;object-fit:cover;border-radius:7px;background:#222}  
-.anime-info{flex:1;min-width:0}.anime-info h3{margin-bottom:6px}  
-.small{color:#999;font-size:13px}  
-.status{display:inline-block;margin-top:5px;padding:4px 8px;background:#252530;border-radius:5px;font-size:12px}  
-.type-badge{display:inline-block;margin-top:5px;margin-left:5px;padding:4px 8px;background:#ff174426;border:1px solid #ff174466;color:#ff759f;border-radius:5px;font-size:12px}
-.library-actions{display:flex;gap:6px;align-items:center}  
-.search-result{background:#0e0e15;border:1px solid #292936;border-radius:10px;padding:12px;margin-top:12px;display:flex;gap:12px;align-items:center}  
-.search-result img{width:80px;height:110px;object-fit:cover;border-radius:8px;background:#222}  
-.search-info{flex:1;min-width:0}.search-info h3{margin-bottom:7px}.search-info p{color:#aaa;font-size:13px;line-height:1.4}  
-.add-search-btn{background:#00a86b;color:white;margin-top:8px}.add-search-btn:hover{background:#00c77d}  
-.logout{float:right;background:#33333f;color:white}  
-.home-btn{float:left;background:#ff1744;color:white;text-decoration:none;padding:11px 16px;border-radius:8px;font-weight:bold}.home-btn:hover{background:#e9143d}  
-.episode-item{background:#0e0e15;border:1px solid #292936;padding:14px;border-radius:10px;margin-bottom:12px}  
-.episode-item a{color:#ff1744;word-break:break-all}  
-.quality-box{background:#111119;border:1px solid #30303d;border-radius:10px;padding:15px;margin-top:12px}  
-.quality-title{color:#ff1744;font-size:18px;font-weight:bold;margin-bottom:8px}  
-.link-box{margin-top:12px;padding:10px;background:#0b0b10;border-radius:8px;border:1px solid #24242f}  
-.link-label{font-size:12px;color:#999;margin-bottom:4px}  
-.link-text{color:#ddd;word-break:break-all;font-size:13px}  
-.schedule-item{background:#0e0e15;border:1px solid #292936;padding:14px;border-radius:8px;margin-bottom:10px}  
-.empty{color:#888;padding:15px;text-align:center}.hidden{display:none}  
-.toggle-row{display:flex;gap:10px;align-items:flex-start;margin:10px 0;color:#ddd;font-size:14px;line-height:1.45}  
-.toggle-row input{width:auto;margin:2px 0;accent-color:#ff1744}  
-.filter-tabs{display:flex;gap:8px;margin:10px 0 15px}
-.filter-tab{background:#0d0d13;border:1px solid #333340;color:#aaa;padding:8px 14px;border-radius:6px;cursor:pointer;font-size:12px}
-.filter-tab.active{background:#ff1744;color:#fff;border-color:#ff1744}
-
-.main-nav-tabs{
-  display:flex;
-  gap:12px;
-  margin-bottom:22px;
-  background:#14141c;
-  padding:8px;
-  border-radius:12px;
-  border:1px solid #292936;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
+<title>AniStream — Admin Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --bg: #08090d;
+  --surface: #10121a;
+  --surface-card: #131520;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --text: #f8f9fd;
+  --muted: #9ba1b6;
+  --accent: #ff2a6d;
+  --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
+  --danger: #ef4444;
+  --danger-hover: #dc2626;
+  --radius-sm: 6px;
+  --radius-md: 10px;
 }
-.main-tab-btn{
-  flex:1;
-  padding:14px;
-  background:transparent;
-  color:#aaa;
-  border:none;
-  border-radius:8px;
-  font-size:15px;
-  font-weight:bold;
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  transition:all 0.2s ease;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 60px;
 }
-.main-tab-btn:hover{color:#fff;background:rgba(255,255,255,0.03)}
-.main-tab-btn.active{
-  background:#ff1744;
-  color:#fff;
-  box-shadow:0 4px 15px rgba(255,23,68,0.35);
+header {
+  background: rgba(16, 18, 26, 0.95);
+  border-bottom: 1px solid var(--line);
+  padding: 14px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
+.logo { font-size: 18px; font-weight: 900; }
+.logo span { color: var(--accent); }
+.back-btn {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: 1px solid var(--line);
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  text-decoration: none;
+  font-weight: 700;
+}
+.container {
+  max-width: 1100px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+.grid-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.stat-box {
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 16px;
+}
+.stat-box h4 { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.stat-box p { font-size: 24px; font-weight: 900; color: #fff; }
+.card {
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.card h2 {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+label { font-size: 11px; font-weight: 700; color: var(--muted); }
+input, select, textarea {
+  background: var(--surface);
+  border: 1px solid var(--line-strong);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-family: inherit;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
+textarea { resize: vertical; min-height: 70px; }
+.btn {
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn:hover { opacity: 0.9; }
+.btn-danger {
+  background: var(--danger);
+}
+.btn-danger:hover {
+  background: var(--danger-hover);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 14px;
+  font-size: 12px;
+}
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+th { color: var(--muted); font-size: 11px; font-weight: 700; }
+.action-btns { display: flex; gap: 6px; }
+.btn-small {
+  padding: 5px 9px;
+  font-size: 10.5px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+}
+.poster-thumb {
+  width: 36px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #1a1d2d;
+}
+.status-badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+}
+.status-badge.ongoing { background: rgba(0, 168, 107, 0.2); color: #00e691; }
+.status-badge.completed { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
+.alert-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.alert-box span { font-size: 11.5px; color: #fca5a5; font-weight: 600; }
+</style>
+</head>
+<body>
 
-.stat-card{background:#0e0e15;border:1px solid #292936;border-radius:8px;padding:16px;text-align:center}
-.stat-label{color:#aaa;font-size:12px;text-transform:uppercase;letter-spacing:0.5px}
-.stat-value{font-size:26px;font-weight:bold;margin-top:6px}
-.analytics-table{width:100%;border-collapse:collapse;text-align:left;font-size:13px;margin-top:12px}
-.analytics-table th{padding:11px;border-bottom:1px solid #333340;color:#aaa}
-.analytics-table td{padding:11px;border-bottom:1px solid #1a1a24}
+<header>
+  <div class="logo">Ani<span>Stream</span> Admin</div>
+  <a href="index.html" class="back-btn">← Website Par Jayein</a>
+</header>
 
-@media(max-width:600px){  
-.container{padding:12px}.box{padding:15px}header h1{font-size:19px;margin-top:8px}  
-.main-tab-btn{font-size:13px;padding:11px}
-.search-result{align-items:flex-start;flex-wrap:wrap}.search-result img{width:65px;height:90px}  
-.search-info{min-width:calc(100% - 80px)}.search-result button{width:100%}  
-.anime-item{align-items:flex-start}.library-actions{flex-direction:column;align-items:stretch}
-}  
-</style>  
-</head>  
-<body>  
-<div id="loginScreen" class="container">  
-  <div class="box" style="max-width:420px;margin:60px auto;">  
-    <h2>🔐 Admin Login</h2>  
-    <input type="email" id="loginEmail" placeholder="Admin Email" autocomplete="username">  
-    <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password">  
-    <button class="primary" onclick="loginAdmin()">Login</button>  
-    <div id="loginMessage"></div>  
-  </div>  
-</div>  
+<div class="container">
 
-<div id="adminPanel" class="hidden">  
-<header>  
-  <a href="index.html" class="home-btn">🏠 Home</a>  
-  <button class="logout" onclick="logoutAdmin()">Logout</button>  
-  <h1>🔥 AniStream Admin</h1>  
-</header>  
-
-<div class="container">  
-  <div class="main-nav-tabs">
-    <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">
-      ➕ Anime Manage
-    </button>
-    <button type="button" class="main-tab-btn" id="tabBtnAnalytics" onclick="switchSlot('analytics')">
-      📊 Analytics Dashboard
-    </button>
-  </div>
-
-  <!-- SLOT 1: ANIME MANAGEMENT -->
-  <div id="slotAnime">
-    <div class="box">  
-      <h2>🔎 Search Anime (Auto-Fill)</h2>  
-      <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto, Your Name">  
-      <button class="primary search-btn" onclick="searchAnime()">🔎 Search Anime</button>  
-      <div id="searchMessage"></div><div id="searchResults"></div>  
-    </div>    
-
-    <div class="box">  
-      <h2>➕ Add New Anime</h2>  
-      <p class="small">Pehle upar se search karke auto-fill karein ya manually details enter karein.</p>  
-      
-      <label class="small">Type (Series / Movie Chuno)</label>
-      <select id="animeType" onchange="handleTypeChange()">
-        <option value="Series">📺 Anime Series</option>
-        <option value="Movie">🎬 Anime Movie</option>
-      </select>
-
-      <input id="animeId" placeholder="Anime ID e.g. solo-leveling">  
-      <input id="animeTitle" placeholder="Anime Name">  
-      <input id="thumbnail" placeholder="Thumbnail URL">  
-      <input id="banner" placeholder="Banner URL">  
-      <textarea id="description" placeholder="Anime Description"></textarea>  
-      <input id="genre" placeholder="Genre e.g. Action, Fantasy">  
-      <input id="season" placeholder="Season e.g. Season 1 (Movies ke liye 'Movie')">  
-      <input id="language" placeholder="Language e.g. Hindi" value="Hindi">  
-      <select id="status"><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option></select>  
-      <button class="primary" onclick="addAnime()">➕ Add Anime</button>  
-      <div id="animeMessage"></div>  
-    </div>    
-
-    <div class="box">  
-      <h2>📚 Anime Library</h2>  
-      <div class="filter-tabs">
-        <button class="filter-tab active" onclick="setLibraryFilter('all', this)">All</button>
-        <button class="filter-tab" onclick="setLibraryFilter('series', this)">📺 Series</button>
-        <button class="filter-tab" onclick="setLibraryFilter('movie', this)">🎬 Movies</button>
-      </div>
-      <input id="animeLibrarySearch" placeholder="🔎 Search anime inside library...">  
-      <div id="animeLibrary"><div class="empty">Anime load ho rahe hain...</div></div>  
-    </div>    
-
-    <div id="animeDetails" class="box" style="display:none;">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
-        <h2>🎬 Selected Anime</h2>
-        <button class="primary" id="toggleEditBtn" onclick="toggleEditMode()" style="background:#00a86b;">✏️ Edit Anime Details</button>
-      </div>
-      
-      <div id="selectedAnimeInfo"></div>
-
-      <div id="editAnimeForm" style="display:none;margin-top:18px;border-top:1px solid #292936;padding-top:16px;">
-        <h3 style="color:#00a86b;margin-bottom:12px;">✏️ Edit Anime Details</h3>
-        <label class="small">Anime Title</label>
-        <input id="editTitle" placeholder="Anime Title">
-        <label class="small">Type / Format</label>
-        <select id="editType" onchange="handleEditTypeChange()">
-          <option value="Series">📺 Anime Series</option>
-          <option value="Movie">🎬 Anime Movie</option>
-        </select>
-        <label class="small">Season</label>
-        <input id="editSeason" placeholder="Season">
-        <label class="small">Status</label>
-        <select id="editStatus">
-          <option value="Ongoing">Ongoing</option>
-          <option value="Completed">Completed</option>
-        </select>
-        <label class="small">Language</label>
-        <input id="editLanguage" placeholder="Language">
-        <label class="small">Genre</label>
-        <input id="editGenre" placeholder="Genre">
-        <label class="small">Thumbnail URL</label>
-        <input id="editThumbnail" placeholder="Thumbnail URL">
-        <label class="small">Banner URL</label>
-        <input id="editBanner" placeholder="Banner URL">
-        <label class="small">Description</label>
-        <textarea id="editDescription" placeholder="Anime Description"></textarea>
-        
-        <div style="display:flex;gap:10px;margin-top:12px;">
-          <button class="primary" onclick="saveAnimeDetails()" style="flex:1;background:#00a86b;">💾 Save Changes</button>
-          <button class="secondary" onclick="toggleEditMode()" style="flex:1;">❌ Cancel</button>
-        </div>
-        <div id="editAnimeMessage"></div>
-      </div>
-    </div>    
-
-    <div id="episodeForm" class="box" style="display:none;">  
-      <h2>➕ Add Episode / Movie Link</h2>  
-      <p class="small">Series ke liye episode number daalein. Movie ke liye Episode Number 1 daal sakte hain.</p>  
-      <div class="toggle-row"><input type="checkbox" id="autoShortenLinks" checked><label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label></div>  
-      <input id="episodeNumber" type="number" min="1" placeholder="Episode Number (Movie ke liye 1)">  
-      <input id="episodeTitle" placeholder="Title e.g. Full Movie / Episode 1">  
-      <div class="quality-box"><div class="quality-title">📱 480p</div><input id="stream480" placeholder="480p Stream Link"><input id="download480" placeholder="480p Download Link"></div>  
-      <div class="quality-box"><div class="quality-title">📺 720p</div><input id="stream720" placeholder="720p Stream Link"><input id="download720" placeholder="720p Download Link"></div>  
-      <div class="quality-box"><div class="quality-title">🔥 1080p</div><input id="stream1080" placeholder="1080p Stream Link"><input id="download1080" placeholder="1080p Download Link"></div>  
-      <button class="primary" style="margin-top:15px;width:100%;" onclick="addEpisode()">➕ Add Link</button>  
-      <div id="episodeMessage"></div>  
-    </div>    
-
-    <div id="episodeList" class="box" style="display:none;"><h2>📺 Episodes / Movie Links</h2><div id="episodesContainer"></div></div>    
-
-    <div id="scheduleForm" class="box" style="display:none;">  
-      <h2>📅 Add Anime Schedule</h2>  
-      <input id="scheduleEpisodeNumber" type="number" min="1" placeholder="Episode Number">  
-      <input id="scheduleEpisodeTitle" placeholder="Title e.g. New Episode">  
-      <label class="small" style="display:block;margin-top:8px;">Release Date &amp; Time</label>  
-      <input id="scheduleReleaseAt" type="datetime-local">  
-      <button class="primary" onclick="addSchedule()">📅 Add Schedule</button><div id="scheduleMessage"></div>  
-    </div>  
-    <div id="scheduleList" class="box" style="display:none;"><h2>📅 Anime Schedule</h2><div id="scheduleContainer"></div></div>  
-  </div>
-
-  <!-- SLOT 2: ANALYTICS DASHBOARD -->
-  <div id="slotAnalytics" style="display:none;">
-    <div class="box">
-      <h2>📊 Website & Anime Analytics</h2>
-      
-      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:18px;">
-        <div class="stat-card">
-          <div class="stat-label">Total Anime Views</div>
-          <div id="statTotalViews" class="stat-value" style="color:#ff1744;">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Likes</div>
-          <div id="statTotalLikes" class="stat-value" style="color:#ff759f;">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Comments</div>
-          <div id="statTotalComments" class="stat-value" style="color:#229ed9;">0</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Total Listed Anime</div>
-          <div id="statTotalAnime" class="stat-value" style="color:#6dff91;">0</div>
-        </div>
-      </div>
-
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; margin-bottom:10px;">
-        <h3 style="color:#ff759f; font-size:15px;">📈 Anime Performance Report</h3>
-        <button class="secondary" style="padding:6px 12px; font-size:12px;" onclick="loadAnalytics()">🔄 Refresh Stats</button>
-      </div>
-
-      <div style="overflow-x:auto;">
-        <table class="analytics-table">
-          <thead>
-            <tr>
-              <th>Anime Title</th>
-              <th>Type</th>
-              <th>Views</th>
-              <th>Likes</th>
-              <th>Comments</th>
-            </tr>
-          </thead>
-          <tbody id="analyticsTableBody">
-            <tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">Analytics load ho rahe hain...</td></tr>
-          </tbody>
-        </table>
-      </div>
+  <!-- TOP STATS (INCLUDES VIEWS) -->
+  <div class="grid-stats">
+    <div class="stat-box">
+      <h4>Total Anime</h4>
+      <p id="totalAnimeCount">0</p>
+    </div>
+    <div class="stat-box">
+      <h4>Total Episodes</h4>
+      <p id="totalEpisodeCount">0</p>
+    </div>
+    <div class="stat-box">
+      <h4>Total Views</h4>
+      <p id="totalViewsCount">0</p>
     </div>
   </div>
 
-</div>  
-</div>  
+  <!-- SECTION 1: ADD NEW ANIME -->
+  <div class="card">
+    <h2>➕ Naya Anime Add Karein</h2>
+    <form id="addAnimeForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Anime Title *</label>
+          <input type="text" id="animeTitle" placeholder="e.g. Solo Leveling Season 2" required>
+        </div>
+        <div class="form-group">
+          <label>Category / Type *</label>
+          <select id="animeType">
+            <option value="Series">Anime Series</option>
+            <option value="Movie">Anime Movie</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="animeStatus">
+            <option value="Ongoing">Ongoing</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Genre (comma separated)</label>
+          <input type="text" id="animeGenre" placeholder="Action, Fantasy, Adventure">
+        </div>
+        <div class="form-group">
+          <label>Language</label>
+          <input type="text" id="animeLang" value="Hindi Dub">
+        </div>
+        <div class="form-group">
+          <label>Poster Image URL *</label>
+          <input type="url" id="animeThumb" placeholder="https://..." required>
+        </div>
+        <div class="form-group">
+          <label>Banner URL (Hero background)</label>
+          <input type="url" id="animeBanner" placeholder="https://...">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Description</label>
+        <textarea id="animeDesc" placeholder="Storyline..."></textarea>
+      </div>
+      <button type="submit" class="btn">💾 Save Anime</button>
+    </form>
+  </div>
 
-<script>  
-const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";  
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";  
-const AROLINK_FUNCTION_URL = SUPABASE_URL + "/functions/v1/arolink-shortener";  
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);  
+  <!-- SECTION 2: MANAGE EPISODES -->
+  <div class="card">
+    <h2>🎬 Episodes Management</h2>
+    
+    <div class="form-group" style="margin-bottom: 16px;">
+      <label>Pehle Anime Select Karein:</label>
+      <select id="selectAnimeForEp" onchange="loadEpisodesForSelectedAnime()">
+        <option value="">-- Anime Chunein --</option>
+      </select>
+    </div>
 
-let selectedAnime = null;  
-let animeLibraryData = [];  
-let libraryFilter = "all";
+    <!-- ADD EPISODE FORM -->
+    <form id="addEpForm" style="border: 1px dashed var(--line-strong); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 20px;">
+      <h3 style="font-size: 13px; margin-bottom: 10px;">Is Anime Me Naya Episode Jodein:</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Episode Number *</label>
+          <input type="number" id="epNumber" placeholder="1, 2, 3..." required>
+        </div>
+        <div class="form-group">
+          <label>Quality</label>
+          <select id="epQuality">
+            <option value="720p">720p HD</option>
+            <option value="1080p">1080p FHD</option>
+            <option value="480p">480p SD</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Stream Embed URL * (Streamwish/Filemoon/etc)</label>
+          <input type="url" id="epStreamUrl" placeholder="https://streamwish.to/e/..." required>
+        </div>
+        <div class="form-group">
+          <label>Direct Download URL (Optional)</label>
+          <input type="url" id="epDownloadUrl" placeholder="https://...">
+        </div>
+      </div>
+      <button type="submit" class="btn">➕ Episode Add Karein</button>
+    </form>
 
-function switchSlot(slotName){
-  const slotAnime = document.getElementById("slotAnime");
-  const slotAnalytics = document.getElementById("slotAnalytics");
-  const tabBtnAnime = document.getElementById("tabBtnAnime");
-  const tabBtnAnalytics = document.getElementById("tabBtnAnalytics");
+    <!-- EPISODES LIST & BULK DELETE -->
+    <div id="episodesContainer" style="display: none;">
+      <div class="alert-box">
+        <span>⚠️ Is Anime Ke Sabhi Episodes Ek Sath Remove Karein?</span>
+        <button type="button" class="btn btn-danger" onclick="deleteAllEpisodesForCurrentAnime()">
+          🗑️ Delete All Episodes
+        </button>
+      </div>
 
-  if(slotName === "anime"){
-    slotAnime.style.display = "block";
-    slotAnalytics.style.display = "none";
-    tabBtnAnime.classList.add("active");
-    tabBtnAnalytics.classList.remove("active");
-  } else {
-    slotAnime.style.display = "none";
-    slotAnalytics.style.display = "block";
-    tabBtnAnime.classList.remove("active");
-    tabBtnAnalytics.classList.add("active");
-    loadAnalytics();
-  }
-}
-  
-async function loginAdmin(){  
-  const email = document.getElementById("loginEmail").value.trim();  
-  const password = document.getElementById("loginPassword").value;  
-  const message = document.getElementById("loginMessage");  
-  if(!email || !password){setMessage(message,"error","❌ Email aur password enter karo.");return;}  
-  const {error} = await supabaseClient.auth.signInWithPassword({email,password});  
-  if(error){setMessage(message,"error","❌ Login failed: "+error.message);return;}  
-  showAdminPanel();  
-}  
+      <table id="episodesTable">
+        <thead>
+          <tr>
+            <th>Episode</th>
+            <th>Quality</th>
+            <th>Stream Link</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="episodesTableBody"></tbody>
+      </table>
+    </div>
+  </div>
 
-function showAdminPanel(){  
-  document.getElementById("loginScreen").style.display="none";  
-  document.getElementById("adminPanel").classList.remove("hidden");  
-  loadAnimeLibrary();
-  loadAnalytics();
-}  
+  <!-- SECTION 3: ALL ANIME LIST & VIEWS MONITOR -->
+  <div class="card">
+    <h2>
+      <span>📚 Registered Anime & Views Status</span>
+      <button onclick="refreshAll()" class="btn-small" style="background: rgba(255,255,255,0.08); color: #fff;">🔄 Refresh</button>
+    </h2>
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Poster</th>
+            <th>Title</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>👁 Views</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="animeTableBody">
+          <tr><td colspan="6" style="text-align: center; color: var(--muted);">Anime load ho rahe hain...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-async function logoutAdmin(){await supabaseClient.auth.signOut();location.reload();}  
-function setMessage(el,type,text){el.className="message "+type;el.textContent=text;}  
+</div>
 
-function getAnimeTitle(anime){
-  if(!anime) return "Unknown Anime";
-  if(typeof anime.title === "string") return anime.title;
-  return anime.title?.english || anime.title?.romaji || anime.title?.native || "Unknown Anime";
-}  
+<script>
+"use strict";
 
-function formatAnimeStatus(status){
-  if(!status) return "Ongoing";
-  const s = String(status).toUpperCase();
-  if(s === "FINISHED" || s === "COMPLETED" || s === "FINISHED AIRING") return "Completed";
-  return "Ongoing";
-}  
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-function formatSeason(season){
-  if(!season) return "";
-  const map={WINTER:"Winter",SPRING:"Spring",SUMMER:"Summer",FALL:"Fall"};
-  return map[season.toUpperCase()] || season;
-}  
+let animeList = [];
+let viewCounts = {};
 
-function cleanDescription(description){
-  return String(description||"").replace(/<br\s*\/?>/gi,"\n").replace(/<[^>]*>/g,"").trim();
-}  
-
-function createAnimeId(title){
-  return title.toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
-}  
-
-function handleTypeChange(){
-  const type = document.getElementById("animeType").value;
-  const seasonInput = document.getElementById("season");
-  if(type === "Movie"){
-    seasonInput.value = "Movie";
-    document.getElementById("status").value = "Completed";
-  } else {
-    if(seasonInput.value === "Movie") seasonInput.value = "Season 1";
-  }
-}
-
-function handleEditTypeChange(){
-  const type = document.getElementById("editType").value;
-  const seasonInput = document.getElementById("editSeason");
-  if(type === "Movie"){
-    seasonInput.value = "Movie";
-    document.getElementById("editStatus").value = "Completed";
-  } else {
-    if(seasonInput.value === "Movie") seasonInput.value = "Season 1";
-  }
-}
-
-function isMovieRecord(anime){
-  const s = String(anime.season||"").toLowerCase();
-  const g = String(anime.genre||"").toLowerCase();
-  return s.includes("movie") || g.includes("movie");
-}
-
-async function loadAnalytics(){
-  try{
-    const [animeRes, viewsRes, likesRes, commentsRes] = await Promise.all([
-      supabaseClient.from("anime").select("anime_id, id, title, season, genre"),
-      supabaseClient.from("anime_views").select("anime_id"),
-      supabaseClient.from("anime_likes").select("anime_id"),
-      supabaseClient.from("anime_comments").select("anime_id")
-    ]);
-
-    const animes = animeRes.data || [];
-    const views = viewsRes.data || [];
-    const likes = likesRes.data || [];
-    const comments = commentsRes.data || [];
-
-    document.getElementById("statTotalViews").textContent = views.length;
-    document.getElementById("statTotalLikes").textContent = likes.length;
-    document.getElementById("statTotalComments").textContent = comments.length;
-    document.getElementById("statTotalAnime").textContent = animes.length;
-
-    const viewMap = {}, likeMap = {}, commentMap = {};
-    views.forEach(v => { const id = String(v.anime_id); viewMap[id] = (viewMap[id] || 0) + 1; });
-    likes.forEach(l => { const id = String(l.anime_id); likeMap[id] = (likeMap[id] || 0) + 1; });
-    comments.forEach(c => { const id = String(c.anime_id); commentMap[id] = (commentMap[id] || 0) + 1; });
-
-    const tbody = document.getElementById("analyticsTableBody");
-    tbody.innerHTML = "";
-
-    if(!animes.length){
-      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:15px; color:#888;">Koi anime report available nahi hai.</td></tr>';
-      return;
-    }
-
-    const report = animes.map(a => {
-      const aid = String(a.anime_id || a.id);
-      return {
-        title: a.title,
-        isMovie: isMovieRecord(a),
-        views: viewMap[aid] || 0,
-        likes: likeMap[aid] || 0,
-        comments: commentMap[aid] || 0
-      };
-    }).sort((a,b) => b.views - a.views);
-
-    report.forEach(item => {
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td style="font-weight:bold; color:#fff;">${escapeHtml(item.title)}</td>
-        <td style="color:#aaa;">${item.isMovie ? "🎬 Movie" : "📺 Series"}</td>
-        <td style="color:#ff1744; font-weight:bold;">👁️ ${item.views}</td>
-        <td style="color:#ff759f; font-weight:bold;">❤️ ${item.likes}</td>
-        <td style="color:#229ed9; font-weight:bold;">💬 ${item.comments}</td>
-      `;
-      tbody.appendChild(tr);
-    });
-  }catch(e){
-    console.error("Analytics load error:", e);
-  }
+// Helper: Safely get Anime ID (matches anime_id or id)
+function getAnimeId(a) {
+  return String(a.anime_id || a.id || "");
 }
 
-async function fetchFromKitsu(query) {
-  const url = "https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10";
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), 7000);
+// 1. Load View Counts
+async function loadViewCounts() {
   try {
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) throw new Error("Kitsu HTTP " + res.status);
-    const json = await res.json();
-    return (json.data || []).map(item => {
-      const a = item.attributes || {};
-      const poster = a.posterImage?.large || a.posterImage?.original || "";
-      return {
-        id: item.id,
-        title: { english: a.titles?.en || a.canonicalTitle || "Unknown Anime" },
-        coverImage: { large: poster, extraLarge: poster },
-        bannerImage: a.coverImage?.large || poster,
-        description: a.synopsis || "",
-        genres: [],
-        season: "",
-        seasonYear: a.startDate ? a.startDate.slice(0, 4) : "",
-        status: a.status === "finished" ? "FINISHED" : "Ongoing",
-        format: a.subtype ? a.subtype.toUpperCase() : "TV"
-      };
-    });
-  } catch (err) {
-    clearTimeout(timer);
-    throw err;
-  }
-}
+    // Attempt 1: Call RPC if configured
+    const { data, error } = await supabaseClient.rpc("get_anime_view_counts");
+    if (!error && Array.isArray(data)) {
+      viewCounts = {};
+      data.forEach(x => { viewCounts[String(x.anime_id)] = Number(x.view_count || 0); });
+      return;
+    }
+  } catch (e) {}
 
-async function fetchFromAniList(query) {
-  const queryBody = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME) { id title { english romaji native } coverImage { large extraLarge } bannerImage description(asHtml: false) genres season seasonYear status format } } }`;
-  const res = await fetch("https://graphql.anilist.co", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: queryBody, variables: { search: query } })
-  });
-  const json = await res.json();
-  return (json.data?.Page?.media || []).map(item => ({
-    ...item,
-    title: { english: item.title?.english || item.title?.romaji || "Unknown Anime" }
-  }));
-}
-
-async function searchAnime() {  
-  const query = document.getElementById("animeSearchInput").value.trim();  
-  const results = document.getElementById("searchResults");
-  const message = document.getElementById("searchMessage");  
-  if(!query){ setMessage(message, "error", "❌ Anime name enter karo."); return; }  
-  setMessage(message, "info", "🔎 Searching anime...");
-  results.innerHTML = "";  
-  
-  let animeList = [];
+  // Attempt 2: Fallback query directly from anime_views table
   try {
-    animeList = await fetchFromKitsu(query);
-  } catch {
-    try {
-      animeList = await fetchFromAniList(query);
-    } catch {
-      setMessage(message, "error", "❌ Search failed: Network error.");
-      return;
+    const { data: viewsData, error: vErr } = await supabaseClient.from("anime_views").select("anime_id");
+    if (!vErr && Array.isArray(viewsData)) {
+      viewCounts = {};
+      viewsData.forEach(row => {
+        const id = String(row.anime_id);
+        viewCounts[id] = (viewCounts[id] || 0) + 1;
+      });
     }
+  } catch (e) {
+    viewCounts = {};
   }
-
-  if(!animeList.length){ setMessage(message, "error", "❌ Anime nahi mila."); return; }  
-  setMessage(message, "success", "✅ " + animeList.length + " anime result mile.");  
-  animeList.forEach(anime => createSearchResult(anime, results));  
 }
 
-function createSearchResult(anime,container){  
-  const item = document.createElement("div");
-  item.className = "search-result";  
-  const image = document.createElement("img");
-  image.src = anime.coverImage?.extraLarge || anime.coverImage?.large || "";
-  image.alt = getAnimeTitle(anime);
-  image.onerror = function(){ this.style.display="none"; };  
-  
-  const info = document.createElement("div");
-  info.className = "search-info";  
-  const title = document.createElement("h3");
-  title.textContent = getAnimeTitle(anime);
-  info.appendChild(title);  
-  
-  const isMov = String(anime.format).toUpperCase() === "MOVIE";
-  const details = document.createElement("p");
-  details.textContent = (isMov ? "🎬 MOVIE" : "📺 TV SERIES") + " • " + (anime.seasonYear||"N/A") + " • " + formatAnimeStatus(anime.status);  
-  info.append(details);  
-  
-  const button = document.createElement("button");
-  button.className = "add-search-btn";
-  button.textContent = "➕ Fill Anime Details";
-  button.onclick = () => fillAnimeForm(anime);  
-  
-  item.append(image, info, button);
-  container.appendChild(item);  
-}  
+// 2. Load All Anime
+async function loadAnime() {
+  const { data, error } = await supabaseClient
+    .from("anime")
+    .select("*")
+    .order("id", { ascending: false });
 
-function fillAnimeForm(anime){  
-  const title = getAnimeTitle(anime);
-  const thumbnail = anime.coverImage?.extraLarge || anime.coverImage?.large || "";  
-  const isMov = String(anime.format).toUpperCase() === "MOVIE";
-
-  document.getElementById("animeType").value = isMov ? "Movie" : "Series";
-  document.getElementById("animeId").value = createAnimeId(title);  
-  document.getElementById("animeTitle").value = title;  
-  document.getElementById("thumbnail").value = thumbnail;  
-  document.getElementById("banner").value = anime.bannerImage || thumbnail;  
-  document.getElementById("description").value = cleanDescription(anime.description || "");  
-  document.getElementById("genre").value = Array.isArray(anime.genres) && anime.genres.length ? anime.genres.join(", ") : (isMov ? "Anime Movie" : "Action, Fantasy");  
-  
-  if(isMov){
-    document.getElementById("season").value = "Movie";
-    document.getElementById("status").value = "Completed";
-  } else {
-    let season = formatSeason(anime.season);
-    if(anime.seasonYear) season += (season ? " " : "") + anime.seasonYear;  
-    document.getElementById("season").value = season || "Season 1";
-    document.getElementById("status").value = formatAnimeStatus(anime.status) === "Completed" ? "Completed" : "Ongoing";  
-  }  
-  
-  document.getElementById("language").value = "Hindi";  
-  document.getElementById("animeTitle").scrollIntoView({behavior:"smooth", block:"center"});  
-  setMessage(document.getElementById("animeMessage"), "success", "✅ Anime details fill ho gayi. Format: " + (isMov ? "Movie" : "Series"));  
-}  
-
-/* TIMESTAMP INCLUDED DURING INSERT */
-async function addAnime(){  
-  const animeId = document.getElementById("animeId").value.trim();
-  const title = document.getElementById("animeTitle").value.trim();  
-  const type = document.getElementById("animeType").value;
-  let season = document.getElementById("season").value.trim();
-  const message = document.getElementById("animeMessage");  
-
-  if(!animeId || !title){ setMessage(message,"error","❌ Anime ID aur Anime Name required hai."); return; }  
-  if(type === "Movie" && !season.toLowerCase().includes("movie")){ season = "Movie"; }
-
-  setMessage(message,"info","Anime add ho raha hai...");  
-  
-  const {error} = await supabaseClient.from("anime").insert([{  
-    anime_id: animeId,
-    title,
-    thumbnail_url: document.getElementById("thumbnail").value.trim(),  
-    banner_url: document.getElementById("banner").value.trim(),
-    description: document.getElementById("description").value.trim(),  
-    genre: document.getElementById("genre").value.trim(),
-    season: season,  
-    language: document.getElementById("language").value.trim(),
-    status: document.getElementById("status").value,
-    created_at: new Date().toISOString()
-  }]);  
-
-  if(error){setMessage(message,"error","❌ Anime add failed: "+error.message);return;}  
-  setMessage(message,"success","✅ "+title+" add ho gaya!");  
-  ["animeId","animeTitle","thumbnail","banner","description","genre","season"].forEach(id => document.getElementById(id).value="");  
-  await loadAnimeLibrary();  
-  loadAnalytics();
-}  
-
-async function loadAnimeLibrary(){  
-  const library = document.getElementById("animeLibrary");
-  library.innerHTML = '<div class="empty">Loading...</div>';  
-  const {data,error} = await supabaseClient.from("anime").select("*").order("created_at",{ascending:false, nullsFirst:false});  
-  if(error){
-    const fallback = await supabaseClient.from("anime").select("*").order("id",{ascending:false});
-    if(!fallback.error && fallback.data){
-      animeLibraryData = fallback.data;
-      applyLibraryFilter();
-      return;
-    }
-    library.innerHTML='<div class="empty">❌ '+escapeHtml(error.message)+'</div>';
+  if (error) {
+    console.error("Error loading anime:", error);
     return;
-  }  
-  animeLibraryData = data || [];
-  applyLibraryFilter();  
-}  
-
-function setLibraryFilter(type, btn){
-  libraryFilter = type;
-  document.querySelectorAll(".filter-tab").forEach(t => t.classList.remove("active"));
-  btn.classList.add("active");
-  applyLibraryFilter();
-}
-
-function applyLibraryFilter(){
-  const search = (document.getElementById("animeLibrarySearch").value||"").toLowerCase().trim();
-  let list = animeLibraryData;
-  if(libraryFilter === "series"){ list = list.filter(a => !isMovieRecord(a)); }
-  else if(libraryFilter === "movie"){ list = list.filter(a => isMovieRecord(a)); }
-  if(search){
-    list = list.filter(a => (a.title||"").toLowerCase().includes(search) || (a.anime_id||"").toLowerCase().includes(search));
   }
-  renderAnimeLibrary(list);
+
+  animeList = data || [];
+  renderAnimeTable();
+  populateAnimeDropdown();
+  updateStats();
 }
 
-function renderAnimeLibrary(list){  
-  const library = document.getElementById("animeLibrary");  
-  if(!list?.length){library.innerHTML='<div class="empty">Anime nahi mila.</div>';return;}  
-  library.innerHTML = "";  
-  list.forEach(anime => {  
-    const item = document.createElement("div");
-    item.className = "anime-item";
-    item.onclick = () => selectAnimeFromDatabase(anime);  
-    
-    const isMov = isMovieRecord(anime);
-    const image = document.createElement("img");
-    image.className = "anime-thumb";
-    image.src = anime.thumbnail_url || "";
-    image.alt = anime.title || "Anime";
-    image.onerror = function(){ this.style.display="none"; };  
-    
-    const info = document.createElement("div");
-    info.className = "anime-info";  
-    info.innerHTML = "<h3>"+escapeHtml(anime.title||"Untitled")+"</h3><div class='small'>ID: "+escapeHtml(anime.anime_id||"-")+"</div>"+
-      "<div class='status'>"+escapeHtml(anime.status||"Ongoing")+"</div>"+
-      "<div class='type-badge'>"+(isMov ? "🎬 Movie" : "📺 Series")+"</div>";  
-    
-    const actions = document.createElement("div");
-    actions.className = "library-actions";  
+// 3. Render Anime Table
+function renderAnimeTable() {
+  const tbody = document.getElementById("animeTableBody");
+  tbody.innerHTML = "";
 
-    const editBtn = document.createElement("button");
-    editBtn.className = "edit-btn";
-    editBtn.textContent = "✏️ Edit";
-    editBtn.onclick = event => {
-      event.stopPropagation();
-      selectAnimeFromDatabase(anime);
-      openEditModeDirectly();
-    };
+  if (!animeList.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted);">Koi anime nahi mila. Upar se naya anime add karein.</td></tr>`;
+    return;
+  }
 
-    const deleteButton = document.createElement("button");
-    deleteButton.className = "delete-btn";
-    deleteButton.textContent = "🗑️ Delete";  
-    deleteButton.onclick = event => { 
-      event.stopPropagation(); 
-      deleteAnime(anime.anime_id, anime.title); 
-    };  
-    
-    actions.append(editBtn, deleteButton);
-    item.append(image, info, actions);
-    library.appendChild(item);  
-  });  
-}  
+  animeList.forEach(anime => {
+    const id = getAnimeId(anime);
+    const views = viewCounts[id] || 0;
+    const isOngoing = String(anime.status || "").toLowerCase() === "ongoing";
 
-async function deleteAnime(animeId,title){  
-  if(!animeId || !confirm("⚠️ Kya tum '"+title+"' ko delete karna chahte ho?")) return;  
-  const message = document.getElementById("animeMessage");
-  setMessage(message,"info","Anime delete ho raha hai...");  
-  const {error} = await supabaseClient.from("anime").delete().eq("anime_id",animeId);  
-  if(error){setMessage(message,"error","❌ Delete failed: "+error.message);return;}  
-  selectedAnime = null;
-  hideSelectedSections();
-  setMessage(message,"success","✅ "+title+" deleted successfully!");
-  await loadAnimeLibrary();
-  loadAnalytics();
-}  
-
-function hideSelectedSections(){
-  ["animeDetails","episodeForm","episodeList","scheduleForm","scheduleList"].forEach(id => document.getElementById(id).style.display="none");
-  const editForm = document.getElementById("editAnimeForm");
-  if(editForm) editForm.style.display = "none";
-}  
-
-function selectAnimeFromDatabase(anime){  
-  selectedAnime = {
-    databaseId: anime.id,
-    id: anime.anime_id,
-    title: anime.title,
-    description: anime.description||"",  
-    genres: anime.genre ? anime.genre.split(",").map(g=>g.trim()) : [],
-    season: anime.season||"-",
-    language: anime.language||"Hindi",  
-    status: anime.status||"Ongoing",
-    thumbnail: anime.thumbnail_url||"",
-    banner: anime.banner_url||""
-  };  
-  showSelectedAnime();  
-}  
-
-function showSelectedAnime(){  
-  ["animeDetails","episodeForm","episodeList","scheduleForm","scheduleList"].forEach(id => document.getElementById(id).style.display="block");  
-  const isMov = isMovieRecord(selectedAnime);
-  const info = document.getElementById("selectedAnimeInfo");  
-  info.innerHTML = "<h3>"+escapeHtml(selectedAnime.title)+" <span class='type-badge'>"+(isMov ? "🎬 Movie" : "📺 Series")+"</span></h3><p class='small'>Anime ID: "+escapeHtml(selectedAnime.id)+"</p>"+  
-    "<p style='margin-top:10px;white-space:pre-wrap'>"+escapeHtml(selectedAnime.description)+"</p>"+  
-    "<p style='margin-top:10px'><b>Format:</b> "+escapeHtml(selectedAnime.season)+"</p>"+  
-    "<p style='margin-top:5px'><b>Genre:</b> "+escapeHtml(selectedAnime.genres.join(", "))+"</p>"+  
-    "<p style='margin-top:5px'><b>Status:</b> "+escapeHtml(selectedAnime.status)+"</p>";  
-  displayEpisodes();
-  displaySchedules();  
-
-  const editForm = document.getElementById("editAnimeForm");
-  if(editForm.style.display === "block"){ populateEditInputs(); }
-}  
-
-function populateEditInputs(){
-  if(!selectedAnime) return;
-  document.getElementById("editTitle").value = selectedAnime.title || "";
-  const isMov = isMovieRecord(selectedAnime);
-  document.getElementById("editType").value = isMov ? "Movie" : "Series";
-  document.getElementById("editSeason").value = selectedAnime.season || (isMov ? "Movie" : "Season 1");
-  document.getElementById("editStatus").value = selectedAnime.status || "Ongoing";
-  document.getElementById("editLanguage").value = selectedAnime.language || "Hindi";
-  document.getElementById("editGenre").value = Array.isArray(selectedAnime.genres) ? selectedAnime.genres.join(", ") : "";
-  document.getElementById("editThumbnail").value = selectedAnime.thumbnail || "";
-  document.getElementById("editBanner").value = selectedAnime.banner || "";
-  document.getElementById("editDescription").value = selectedAnime.description || "";
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><img src="${anime.thumbnail_url || ''}" class="poster-thumb" onerror="this.src=''"></td>
+      <td><strong>${anime.title}</strong><br><small style="color:var(--muted);">ID: ${id}</small></td>
+      <td>${anime.season || 'Series'}</td>
+      <td><span class="status-badge ${isOngoing ? 'ongoing' : 'completed'}">${anime.status || 'Available'}</span></td>
+      <td><span style="font-weight:800; color: #ff2a6d;">👁 ${views}</span></td>
+      <td>
+        <div class="action-btns">
+          <button class="btn-small btn-danger" onclick="deleteAnime('${id}', '${anime.title.replace(/'/g, "\\'")}')">🗑 Delete</button>
+        </div>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
 }
 
-function openEditModeDirectly(){
-  const form = document.getElementById("editAnimeForm");
-  const btn = document.getElementById("toggleEditBtn");
-  form.style.display = "block";
-  btn.textContent = "✖ Close Edit";
-  btn.style.background = "#33333f";
-  populateEditInputs();
-  form.scrollIntoView({behavior:"smooth", block:"start"});
+// 4. Populate Dropdown for Episode Selector
+function populateAnimeDropdown() {
+  const select = document.getElementById("selectAnimeForEp");
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">-- Anime Chunein --</option>';
+
+  animeList.forEach(a => {
+    const opt = document.createElement("option");
+    opt.value = getAnimeId(a);
+    opt.textContent = `${a.title} (${a.season || 'Series'})`;
+    select.appendChild(opt);
+  });
+
+  if (currentVal) select.value = currentVal;
 }
 
-function toggleEditMode(){
-  const form = document.getElementById("editAnimeForm");
-  const btn = document.getElementById("toggleEditBtn");
-  if(form.style.display === "none" || !form.style.display){
-    form.style.display = "block";
-    btn.textContent = "✖ Close Edit";
-    btn.style.background = "#33333f";
-    populateEditInputs();
-    form.scrollIntoView({behavior:"smooth", block:"start"});
+// 5. Update Stat Numbers
+async function updateStats() {
+  document.getElementById("totalAnimeCount").textContent = animeList.length;
+
+  let totalViews = 0;
+  Object.values(viewCounts).forEach(v => { totalViews += v; });
+  document.getElementById("totalViewsCount").textContent = totalViews;
+
+  const { count, error } = await supabaseClient
+    .from("episodes")
+    .select("*", { count: "exact", head: true });
+  document.getElementById("totalEpisodeCount").textContent = (!error && count !== null) ? count : "0";
+}
+
+// 6. Add Anime Form Submit
+document.getElementById("addAnimeForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const title = document.getElementById("animeTitle").value.trim();
+  const type = document.getElementById("animeType").value;
+  const status = document.getElementById("animeStatus").value;
+  const genre = document.getElementById("animeGenre").value.trim();
+  const lang = document.getElementById("animeLang").value.trim();
+  const thumb = document.getElementById("animeThumb").value.trim();
+  const banner = document.getElementById("animeBanner").value.trim();
+  const desc = document.getElementById("animeDesc").value.trim();
+
+  const { error } = await supabaseClient.from("anime").insert([{
+    title: title,
+    season: type,
+    status: status,
+    genre: genre,
+    language: lang,
+    thumbnail_url: thumb,
+    banner_url: banner,
+    description: desc
+  }]);
+
+  if (error) {
+    alert("Error adding anime: " + error.message);
   } else {
-    form.style.display = "none";
-    btn.textContent = "✏️ Edit Anime Details";
-    btn.style.background = "#00a86b";
+    alert("Anime successfully save ho gaya!");
+    document.getElementById("addAnimeForm").reset();
+    refreshAll();
+  }
+});
+
+// 7. Delete Whole Anime
+async function deleteAnime(id, title) {
+  if (!confirm(`Kya aap sach me "${title}" aur iske sabhi data ko delete karna chahte hain?`)) return;
+
+  await supabaseClient.from("episodes").delete().eq("anime_id", id);
+  const { error } = await supabaseClient.from("anime").delete().eq("id", id);
+
+  if (error) {
+    // Agar id column uuid ya anime_id hai
+    await supabaseClient.from("anime").delete().eq("anime_id", id);
+  }
+  alert("Anime delete ho gaya!");
+  refreshAll();
+}
+
+// 8. Load Episodes for Selected Anime
+async function loadEpisodesForSelectedAnime() {
+  const animeId = document.getElementById("selectAnimeForEp").value;
+  const container = document.getElementById("episodesContainer");
+  const tbody = document.getElementById("episodesTableBody");
+
+  if (!animeId) {
+    container.style.display = "none";
+    return;
+  }
+
+  container.style.display = "block";
+  tbody.innerHTML = '<tr><td colspan="4">Loading episodes...</td></tr>';
+
+  const { data, error } = await supabaseClient
+    .from("episodes")
+    .select("*")
+    .eq("anime_id", animeId)
+    .order("episode_number", { ascending: true });
+
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">Error: ${error.message}</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = "";
+  if (!data || !data.length) {
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">Is anime me abhi koi episode nahi hai. Upar se add karein.</td></tr>';
+    return;
+  }
+
+  data.forEach(ep => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><strong>Episode ${ep.episode_number || ep.episode || '1'}</strong></td>
+      <td>${ep.quality || '720p'}</td>
+      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        <a href="${ep.stream_url}" target="_blank" style="color:#ff2a6d;">${ep.stream_url}</a>
+      </td>
+      <td>
+        <button class="btn-small btn-danger" onclick="deleteSingleEpisode('${ep.id}')">Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// 9. Add Episode Form Submit
+document.getElementById("addEpForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const animeId = document.getElementById("selectAnimeForEp").value;
+  if (!animeId) {
+    alert("Kripya pehle upar se Anime chunein!");
+    return;
+  }
+
+  const epNum = document.getElementById("epNumber").value;
+  const quality = document.getElementById("epQuality").value;
+  const streamUrl = document.getElementById("epStreamUrl").value.trim();
+  const downloadUrl = document.getElementById("epDownloadUrl").value.trim();
+
+  const { error } = await supabaseClient.from("episodes").insert([{
+    anime_id: animeId,
+    episode_number: parseInt(epNum, 10),
+    quality: quality,
+    stream_url: streamUrl,
+    download_url: downloadUrl
+  }]);
+
+  if (error) {
+    alert("Error adding episode: " + error.message);
+  } else {
+    alert("Episode add ho gaya!");
+    document.getElementById("epStreamUrl").value = "";
+    document.getElementById("epDownloadUrl").value = "";
+    document.getElementById("epNumber").value = parseInt(epNum, 10) + 1;
+    loadEpisodesForSelectedAnime();
+    updateStats();
+  }
+});
+
+// 10. Delete Single Episode
+async function deleteSingleEpisode(epId) {
+  if (!confirm("Kya aap is episode ko delete karna chahte hain?")) return;
+  const { error } = await supabaseClient.from("episodes").delete().eq("id", epId);
+  if (error) {
+    alert("Delete fail: " + error.message);
+  } else {
+    loadEpisodesForSelectedAnime();
+    updateStats();
   }
 }
 
-async function saveAnimeDetails(){
-  if(!selectedAnime) return;
-  const message = document.getElementById("editAnimeMessage");
-  const title = document.getElementById("editTitle").value.trim();
-  const type = document.getElementById("editType").value;
-  let season = document.getElementById("editSeason").value.trim();
-  const status = document.getElementById("editStatus").value;
-  const language = document.getElementById("editLanguage").value.trim();
-  const genre = document.getElementById("editGenre").value.trim();
-  const thumbnail_url = document.getElementById("editThumbnail").value.trim();
-  const banner_url = document.getElementById("editBanner").value.trim();
-  const description = document.getElementById("editDescription").value.trim();
+// 11. BULK DELETE: Delete All Episodes for Selected Anime
+async function deleteAllEpisodesForCurrentAnime() {
+  const animeSelect = document.getElementById("selectAnimeForEp");
+  const selectedAnimeId = animeSelect.value;
+  const selectedAnimeName = animeSelect.options[animeSelect.selectedIndex].text;
 
-  if(!title){ setMessage(message, "error", "❌ Anime Title required hai."); return; }
-  if(type === "Movie" && !season.toLowerCase().includes("movie")){ season = "Movie"; }
+  if (!selectedAnimeId) {
+    alert("Kripya pehle kisi anime ko select karein!");
+    return;
+  }
 
-  setMessage(message, "info", "Details update ho rahi hain...");
-  const updateData = { title, thumbnail_url, banner_url, description, genre, season, language, status };
+  const confirmDelete = confirm(`⚠️ DHYAN DEIN:\nKya aap sach me "${selectedAnimeName}" ke SARE EPISODES ek sath delete karna chahte hain?\nYeh action wapas nahi liya ja sakega!`);
+  if (!confirmDelete) return;
 
-  let query = supabaseClient.from("anime").update(updateData);
-  if(selectedAnime.databaseId){ query = query.eq("id", selectedAnime.databaseId); }
-  else { query = query.eq("anime_id", selectedAnime.id); }
+  try {
+    const { error } = await supabaseClient
+      .from("episodes")
+      .delete()
+      .eq("anime_id", selectedAnimeId);
 
-  const {error} = await query;
-  if(error){ setMessage(message, "error", "❌ Update failed: " + error.message); return; }
+    if (error) throw error;
 
-  selectedAnime.title = title;
-  selectedAnime.thumbnail = thumbnail_url;
-  selectedAnime.banner = banner_url;
-  selectedAnime.description = description;
-  selectedAnime.genres = genre ? genre.split(",").map(g => g.trim()) : [];
-  selectedAnime.season = season;
-  selectedAnime.language = language;
-  selectedAnime.status = status;
-
-  setMessage(message, "success", "✅ Details successfully update ho gayi!");
-  showSelectedAnime();
-  await loadAnimeLibrary();
-  setTimeout(() => toggleEditMode(), 1200);
+    alert(`✅ "${selectedAnimeName}" ke sabhi episodes safaltapoorvak delete ho gaye!`);
+    loadEpisodesForSelectedAnime();
+    updateStats();
+  } catch (err) {
+    console.error("Delete Error:", err);
+    alert("❌ Episodes delete karne me error aaya: " + err.message);
+  }
 }
 
-function getQualityInputs(){  
-  return ["480","720","1080"].map(q => ({
-    quality: q+"p",
-    stream_url: document.getElementById("stream"+q).value.trim(),
-    download_url: document.getElementById("download"+q).value.trim()
-  })).filter(item => item.stream_url || item.download_url);  
-}  
+async function refreshAll() {
+  await loadViewCounts();
+  await loadAnime();
+}
 
-function clearEpisodeForm(){  
-  ["episodeNumber","episodeTitle","stream480","download480","stream720","download720","stream1080","download1080"].forEach(id => document.getElementById(id).value="");  
-}  
-
-function isWebUrl(value){  
-  if(!value) return true;  
-  try{ const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:"; }
-  catch { return false; }  
-}  
-  
-async function shortenWithAroLinks(destination){  
-  const {data:{session}} = await supabaseClient.auth.getSession();  
-  if(!session?.access_token) throw new Error("Admin session nahi mili. Dobara login karo.");  
-  const response = await fetch(AROLINK_FUNCTION_URL,{  
-    method: "POST",  
-    headers: {  
-      "Authorization": "Bearer "+session.access_token,  
-      "apikey": SUPABASE_PUBLISHABLE_KEY,  
-      "Content-Type": "application/json"  
-    },  
-    body: JSON.stringify({url: destination})  
-  });  
-  const data = await response.json();  
-  if(!response.ok) throw new Error(data.error || "Short link failed.");  
-  return data.shortenedUrl;  
-}  
-
-async function addEpisode(){  
-  if(!selectedAnime){ alert("Pehle anime select karo."); return; }  
-  const episodeNumber = document.getElementById("episodeNumber").value;  
-  const episodeTitle = document.getElementById("episodeTitle").value.trim();  
-  const message = document.getElementById("episodeMessage");  
-  const qualityLinks = getQualityInputs();  
-
-  if(!episodeNumber || Number(episodeNumber)<1){ setMessage(message,"error","❌ Valid episode number enter karo."); return; }  
-  if(!qualityLinks.length){ setMessage(message,"error","❌ Kam se kam ek quality ka link add karo."); return; }  
-
-  const autoShorten = document.getElementById("autoShortenLinks").checked;  
-  setMessage(message,"info",autoShorten ? "AroLinks se links short ho rahe hain..." : "Link save ho raha hai...");  
-  const episodeNum = Number(episodeNumber);  
-  const episodeTitleFinal = episodeTitle || (isMovieRecord(selectedAnime) ? "Full Movie" : "Episode " + episodeNumber);  
-  
-  const {data:userData} = await supabaseClient.auth.getUser();  
-  const user = userData?.user;  
-  if(!user){ setMessage(message,"error","❌ Admin session expired. Dobara login karo."); return; }  
-  
-  if(autoShorten){  
-    try{  
-      for(const link of qualityLinks){  
-        if(link.download_url){ link.download_url = await shortenWithAroLinks(link.download_url); }  
-      }  
-    }catch(error){  
-      setMessage(message,"error","❌ AroLinks failed: "+error.message);  
-      return;  
-    }  
-  }  
-  
-  const {data:existingEpisode} = await supabaseClient.from("episodes").select("id")  
-    .eq("anime_id",selectedAnime.id).eq("episode_number",episodeNum).maybeSingle();  
-  
-  if(!existingEpisode){  
-    await supabaseClient.from("episodes").insert([{  
-      anime_id: selectedAnime.id,
-      anime_title: selectedAnime.title,
-      episode_number: episodeNum,  
-      episode_title: episodeTitleFinal,
-      video_url: qualityLinks[0]?.stream_url || ""  
-    }]);  
-  }  
-  
-  const rows = qualityLinks.map(link => ({  
-    anime_name: selectedAnime.title,
-    episode_number: episodeNum,
-    quality: link.quality,  
-    stream_url: link.stream_url || "",
-    download_url: link.download_url || "",
-    created_by: user.id  
-  }));  
-  await supabaseClient.from("episode_links").insert(rows);  
-  setMessage(message,"success","✅ Links successfully save ho gaye!");  
-  clearEpisodeForm();
-  displayEpisodes();  
-}  
-
-async function displayEpisodes(){  
-  if(!selectedAnime) return;  
-  const container = document.getElementById("episodesContainer");
-  container.innerHTML = '<div class="empty">Loading links...</div>';  
-  const {data} = await supabaseClient.from("episodes").select("*").eq("anime_id",selectedAnime.id).order("episode_number",{ascending:true});  
-  if(!data?.length){container.innerHTML='<div class="empty">Abhi koi link add nahi hua.</div>';return;}  
-  container.innerHTML = "";  
-  for(const ep of data){  
-    const div = document.createElement("div");
-    div.className = "episode-item";  
-    const qualityData = await getEpisodeLinks(ep.episode_number);  
-    let qualityHTML = qualityData.map(link => `<div class="quality-box"><div class="quality-title">${escapeHtml(link.quality)}</div>  
-      ${link.stream_url?`<div class="link-box"><div class="link-label">▶ Stream Link</div><div class="link-text">${escapeHtml(link.stream_url)}</div></div>`:""}  
-      ${link.download_url?`<div class="link-box"><div class="link-label">⬇ Download Link</div><div class="link-text">${escapeHtml(link.download_url)}</div></div>`:""}  
-      </div>`).join("");  
-    div.innerHTML = "<b>"+(isMovieRecord(selectedAnime)?"Movie Link: ":"Episode ")+escapeHtml(String(ep.episode_number))+"</b><p style='margin-top:5px'>"+escapeHtml(ep.episode_title||"")+"</p>"+qualityHTML+  
-      "<button class='delete-btn' onclick='deleteEpisode("+JSON.stringify(ep.id)+")'>🗑️ Delete</button>";  
-    container.appendChild(div);  
-  }  
-}  
-
-async function getEpisodeLinks(episodeNumber){  
-  if(!selectedAnime) return [];  
-  const {data} = await supabaseClient.from("episode_links").select("*").eq("anime_name",selectedAnime.title)  
-    .eq("episode_number",Number(episodeNumber)).order("quality",{ascending:true});  
-  return data || [];  
-}  
-
-async function deleteEpisode(id){  
-  if(!confirm("Kya tum ise delete karna chahte ho?")) return;  
-  const {data:episodeData} = await supabaseClient.from("episodes").select("anime_id,episode_number").eq("id",id).maybeSingle();  
-  if(episodeData){  
-    await supabaseClient.from("episode_links").delete().eq("anime_name",selectedAnime.title).eq("episode_number",Number(episodeData.episode_number));  
-  }  
-  await supabaseClient.from("episodes").delete().eq("id",id);  
-  alert("✅ Successfully deleted!");
-  displayEpisodes();  
-}  
-
-async function addSchedule(){  
-  if(!selectedAnime){alert("Pehle anime select karo.");return;}  
-  const episodeNumber = document.getElementById("scheduleEpisodeNumber").value;  
-  const episodeTitle = document.getElementById("scheduleEpisodeTitle").value.trim();  
-  const releaseAt = document.getElementById("scheduleReleaseAt").value;  
-  if(!episodeNumber || !releaseAt) return;  
-  await supabaseClient.from("schedule").insert([{  
-    anime_id: selectedAnime.id,
-    anime_title: selectedAnime.title,
-    episode_number: Number(episodeNumber),  
-    episode_title: episodeTitle || "Episode " + episodeNumber,
-    release_at: new Date(releaseAt).toISOString()  
-  }]);  
-  displaySchedules();  
-}  
-
-async function displaySchedules(){  
-  if(!selectedAnime) return;  
-  const container = document.getElementById("scheduleContainer");
-  container.innerHTML = '<div class="empty">Loading schedules...</div>';  
-  const {data} = await supabaseClient.from("schedule").select("*").eq("anime_id",selectedAnime.id).order("release_at",{ascending:true});  
-  if(!data?.length){container.innerHTML='<div class="empty">Abhi koi schedule add nahi hua.</div>';return;}  
-  container.innerHTML = "";  
-  data.forEach(schedule => {  
-    const div = document.createElement("div");
-    div.className = "schedule-item";  
-    div.innerHTML = "<b>Release #"+escapeHtml(String(schedule.episode_number))+"</b><p>📅 "+new Date(schedule.release_at).toLocaleString()+"</p>"+  
-      "<button class='delete-btn' onclick='deleteSchedule("+JSON.stringify(schedule.id)+")'>🗑️ Delete</button>";  
-    container.appendChild(div);  
-  });  
-}  
-
-async function deleteSchedule(id){  
-  if(!confirm("Delete schedule?")) return;  
-  await supabaseClient.from("schedule").delete().eq("id",id);  
-  displaySchedules();  
-}  
-
-document.getElementById("animeLibrarySearch").addEventListener("input", applyLibraryFilter);  
-function escapeHtml(value){ return String(value??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;"); }  
-
-supabaseClient.auth.getSession().then(({data}) => { if(data?.session) showAdminPanel(); });  
-supabaseClient.auth.onAuthStateChange((event,session) => { if(session) showAdminPanel(); });  
-</script>  
-</body>  
+window.addEventListener("DOMContentLoaded", refreshAll);
+</script>
+</body>
 </html>
