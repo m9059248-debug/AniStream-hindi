@@ -4,22 +4,22 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090d">
-<title>AniStream — Admin Dashboard</title>
+<title>AniStream Admin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  --bg: #08090d;
+  --bg: #090a0f;
   --surface: #10121a;
   --surface-card: #131520;
   --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
+  --line-strong: rgba(255, 255, 255, 0.14);
   --text: #f8f9fd;
-  --muted: #9ba1b6;
+  --muted: #8b92a7;
   --accent: #ff2a6d;
-  --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
+  --accent-hover: #ff4781;
   --danger: #ef4444;
   --danger-hover: #dc2626;
   --radius-sm: 6px;
@@ -27,14 +27,14 @@
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
-  padding-bottom: 60px;
+  padding-bottom: 70px;
 }
 header {
-  background: rgba(16, 18, 26, 0.95);
+  background: rgba(13, 15, 22, 0.95);
   border-bottom: 1px solid var(--line);
   padding: 14px 20px;
   position: sticky;
@@ -44,101 +44,133 @@ header {
   justify-content: space-between;
   align-items: center;
 }
-.logo { font-size: 18px; font-weight: 900; }
+.logo { font-size: 17px; font-weight: 900; letter-spacing: -0.5px; }
 .logo span { color: var(--accent); }
 .back-btn {
-  background: rgba(255,255,255,0.06);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  color: #d1d5db;
   border: 1px solid var(--line);
   padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 11.5px;
   text-decoration: none;
   font-weight: 700;
 }
 .container {
-  max-width: 1100px;
-  margin: 20px auto;
+  max-width: 1200px;
+  margin: 18px auto;
   padding: 0 16px;
 }
 .grid-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
 }
 .stat-box {
   background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 14px 18px;
 }
-.stat-box h4 { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
-.stat-box p { font-size: 24px; font-weight: 900; color: #fff; }
+.stat-box h4 {
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+.stat-box p { font-size: 26px; font-weight: 900; color: #fff; }
+
 .card {
   background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
-  padding: 20px;
-  margin-bottom: 24px;
+  padding: 18px;
+  margin-bottom: 20px;
 }
-.card h2 {
-  font-size: 16px;
+.card-header {
+  font-size: 14px;
   font-weight: 800;
-  margin-bottom: 16px;
-  border-bottom: 1px solid var(--line);
-  padding-bottom: 10px;
+  margin-bottom: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
-.form-grid {
+.form-grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 12px;
+}
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
 }
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
-label { font-size: 11px; font-weight: 700; color: var(--muted); }
+label { font-size: 10.5px; font-weight: 700; color: var(--muted); }
 input, select, textarea {
-  background: var(--surface);
+  width: 100%;
+  background: #0d0f17;
   border: 1px solid var(--line-strong);
   color: #fff;
-  padding: 10px 12px;
+  padding: 9px 12px;
   border-radius: var(--radius-sm);
   font-size: 12px;
   font-family: inherit;
 }
-input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; }
-textarea { resize: vertical; min-height: 70px; }
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+input::placeholder, textarea::placeholder { color: #52586d; }
+textarea { resize: vertical; min-height: 65px; }
+
 .btn {
-  background: var(--accent-gradient);
+  background: var(--accent);
   color: #fff;
   border: none;
-  padding: 10px 18px;
+  padding: 9px 16px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-.btn:hover { opacity: 0.9; }
-.btn-danger {
-  background: var(--danger);
+.btn:hover { background: var(--accent-hover); }
+.btn-danger { background: var(--danger); }
+.btn-danger:hover { background: var(--danger-hover); }
+
+.sub-box {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px dashed var(--line-strong);
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  margin-top: 12px;
 }
-.btn-danger:hover {
-  background: var(--danger-hover);
+.sub-title {
+  font-size: 12px;
+  font-weight: 800;
+  color: #d1d5db;
+  margin-bottom: 10px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
 }
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 14px;
+  margin-top: 10px;
   font-size: 12px;
 }
 th, td {
@@ -146,45 +178,66 @@ th, td {
   text-align: left;
   border-bottom: 1px solid var(--line);
 }
-th { color: var(--muted); font-size: 11px; font-weight: 700; }
-.action-btns { display: flex; gap: 6px; }
+th { color: var(--muted); font-size: 10.5px; font-weight: 700; text-transform: uppercase; }
+.poster-thumb {
+  width: 38px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #191b26;
+  display: block;
+}
+.anime-title-cell strong { font-size: 12px; color: #fff; display: block; }
+.anime-title-cell small { font-size: 10px; color: var(--muted); }
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 7px;
+  border-radius: 4px;
+  font-size: 9.5px;
+  font-weight: 800;
+}
+.status-badge.ongoing {
+  background: rgba(0, 209, 116, 0.12);
+  color: #00d174;
+  border: 1px solid rgba(0, 209, 116, 0.3);
+}
+.status-badge.completed {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
 .btn-small {
   padding: 5px 9px;
-  font-size: 10.5px;
+  font-size: 10px;
   border-radius: 4px;
   border: none;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 800;
 }
-.poster-thumb {
-  width: 36px;
-  height: 48px;
-  object-fit: cover;
-  border-radius: 4px;
-  background: #1a1d2d;
-}
-.status-badge {
-  display: inline-block;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-size: 10px;
-  font-weight: 700;
-}
-.status-badge.ongoing { background: rgba(0, 168, 107, 0.2); color: #00e691; }
-.status-badge.completed { background: rgba(139, 92, 246, 0.2); color: #c084fc; }
-.alert-box {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 12px;
-  border-radius: var(--radius-sm);
-  margin-top: 14px;
+
+.delete-all-bar {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: center;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  margin-top: 16px;
+  margin-bottom: 10px;
 }
-.alert-box span { font-size: 11.5px; color: #fca5a5; font-weight: 600; }
+.delete-all-bar span {
+  font-size: 11px;
+  color: #fca5a5;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; }
+  .grid-stats { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
@@ -196,7 +249,7 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
 
 <div class="container">
 
-  <!-- TOP STATS (INCLUDES VIEWS) -->
+  <!-- TOP STATS (VIEWS REMOVED) -->
   <div class="grid-stats">
     <div class="stat-box">
       <h4>Total Anime</h4>
@@ -206,17 +259,13 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
       <h4>Total Episodes</h4>
       <p id="totalEpisodeCount">0</p>
     </div>
-    <div class="stat-box">
-      <h4>Total Views</h4>
-      <p id="totalViewsCount">0</p>
-    </div>
   </div>
 
   <!-- SECTION 1: ADD NEW ANIME -->
   <div class="card">
-    <h2>➕ Naya Anime Add Karein</h2>
+    <div class="card-header">➕ Naya Anime Add Karein</div>
     <form id="addAnimeForm">
-      <div class="form-grid">
+      <div class="form-grid-3">
         <div class="form-group">
           <label>Anime Title *</label>
           <input type="text" id="animeTitle" placeholder="e.g. Solo Leveling Season 2" required>
@@ -224,8 +273,8 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
         <div class="form-group">
           <label>Category / Type *</label>
           <select id="animeType">
-            <option value="Series">Anime Series</option>
-            <option value="Movie">Anime Movie</option>
+            <option value="Anime Series">Anime Series</option>
+            <option value="Anime Movie">Anime Movie</option>
           </select>
         </div>
         <div class="form-group">
@@ -235,6 +284,9 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
             <option value="Completed">Completed</option>
           </select>
         </div>
+      </div>
+
+      <div class="form-grid-3">
         <div class="form-group">
           <label>Genre (comma separated)</label>
           <input type="text" id="animeGenre" placeholder="Action, Fantasy, Adventure">
@@ -247,34 +299,37 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
           <label>Poster Image URL *</label>
           <input type="url" id="animeThumb" placeholder="https://..." required>
         </div>
-        <div class="form-group">
-          <label>Banner URL (Hero background)</label>
-          <input type="url" id="animeBanner" placeholder="https://...">
-        </div>
       </div>
+
       <div class="form-group" style="margin-bottom: 12px;">
+        <label>Banner URL (Hero background)</label>
+        <input type="url" id="animeBanner" placeholder="https://...">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 14px;">
         <label>Description</label>
         <textarea id="animeDesc" placeholder="Storyline..."></textarea>
       </div>
+
       <button type="submit" class="btn">💾 Save Anime</button>
     </form>
   </div>
 
-  <!-- SECTION 2: MANAGE EPISODES -->
+  <!-- SECTION 2: EPISODES MANAGEMENT -->
   <div class="card">
-    <h2>🎬 Episodes Management</h2>
-    
-    <div class="form-group" style="margin-bottom: 16px;">
+    <div class="card-header">🎬 Episodes Management</div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
       <label>Pehle Anime Select Karein:</label>
       <select id="selectAnimeForEp" onchange="loadEpisodesForSelectedAnime()">
         <option value="">-- Anime Chunein --</option>
       </select>
     </div>
 
-    <!-- ADD EPISODE FORM -->
-    <form id="addEpForm" style="border: 1px dashed var(--line-strong); padding: 14px; border-radius: var(--radius-sm); margin-bottom: 20px;">
-      <h3 style="font-size: 13px; margin-bottom: 10px;">Is Anime Me Naya Episode Jodein:</h3>
-      <div class="form-grid">
+    <!-- ADD EPISODE FORM (ORIGINAL PHOTO SYSTEM) -->
+    <form id="addEpForm" class="sub-box">
+      <div class="sub-title">Is Anime Me Naya Episode Jodein:</div>
+      <div class="form-grid-3">
         <div class="form-group">
           <label>Episode Number *</label>
           <input type="number" id="epNumber" placeholder="1, 2, 3..." required>
@@ -282,53 +337,57 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
         <div class="form-group">
           <label>Quality</label>
           <select id="epQuality">
-            <option value="720p">720p HD</option>
-            <option value="1080p">1080p FHD</option>
-            <option value="480p">480p SD</option>
+            <option value="720p HD">720p HD</option>
+            <option value="1080p FHD">1080p FHD</option>
+            <option value="480p SD">480p SD</option>
           </select>
         </div>
         <div class="form-group">
           <label>Stream Embed URL * (Streamwish/Filemoon/etc)</label>
           <input type="url" id="epStreamUrl" placeholder="https://streamwish.to/e/..." required>
         </div>
-        <div class="form-group">
-          <label>Direct Download URL (Optional)</label>
-          <input type="url" id="epDownloadUrl" placeholder="https://...">
-        </div>
       </div>
+
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label>Direct Download URL (Optional)</label>
+        <input type="url" id="epDownloadUrl" placeholder="https://...">
+      </div>
+
       <button type="submit" class="btn">➕ Episode Add Karein</button>
     </form>
 
     <!-- EPISODES LIST & BULK DELETE -->
     <div id="episodesContainer" style="display: none;">
-      <div class="alert-box">
+      <div class="delete-all-bar">
         <span>⚠️ Is Anime Ke Sabhi Episodes Ek Sath Remove Karein?</span>
         <button type="button" class="btn btn-danger" onclick="deleteAllEpisodesForCurrentAnime()">
           🗑️ Delete All Episodes
         </button>
       </div>
 
-      <table id="episodesTable">
-        <thead>
-          <tr>
-            <th>Episode</th>
-            <th>Quality</th>
-            <th>Stream Link</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="episodesTableBody"></tbody>
-      </table>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Episode</th>
+              <th>Quality</th>
+              <th>Stream Link</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="episodesTableBody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <!-- SECTION 3: ALL ANIME LIST & VIEWS MONITOR -->
+  <!-- SECTION 3: REGISTERED ANIME LIST -->
   <div class="card">
-    <h2>
-      <span>📚 Registered Anime & Views Status</span>
-      <button onclick="refreshAll()" class="btn-small" style="background: rgba(255,255,255,0.08); color: #fff;">🔄 Refresh</button>
-    </h2>
-    <div style="overflow-x: auto;">
+    <div class="card-header">
+      <span>📚 Registered Anime</span>
+      <button onclick="refreshAll()" class="btn-small" style="background: rgba(255,255,255,0.06); color: #fff;">🔄 Refresh</button>
+    </div>
+    <div class="table-responsive">
       <table>
         <thead>
           <tr>
@@ -336,12 +395,11 @@ th { color: var(--muted); font-size: 11px; font-weight: 700; }
             <th>Title</th>
             <th>Type</th>
             <th>Status</th>
-            <th>👁 Views</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody id="animeTableBody">
-          <tr><td colspan="6" style="text-align: center; color: var(--muted);">Anime load ho rahe hain...</td></tr>
+          <tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 18px;">Anime load ho rahe hain...</td></tr>
         </tbody>
       </table>
     </div>
@@ -357,41 +415,11 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 let animeList = [];
-let viewCounts = {};
 
-// Helper: Safely get Anime ID (matches anime_id or id)
 function getAnimeId(a) {
   return String(a.anime_id || a.id || "");
 }
 
-// 1. Load View Counts
-async function loadViewCounts() {
-  try {
-    // Attempt 1: Call RPC if configured
-    const { data, error } = await supabaseClient.rpc("get_anime_view_counts");
-    if (!error && Array.isArray(data)) {
-      viewCounts = {};
-      data.forEach(x => { viewCounts[String(x.anime_id)] = Number(x.view_count || 0); });
-      return;
-    }
-  } catch (e) {}
-
-  // Attempt 2: Fallback query directly from anime_views table
-  try {
-    const { data: viewsData, error: vErr } = await supabaseClient.from("anime_views").select("anime_id");
-    if (!vErr && Array.isArray(viewsData)) {
-      viewCounts = {};
-      viewsData.forEach(row => {
-        const id = String(row.anime_id);
-        viewCounts[id] = (viewCounts[id] || 0) + 1;
-      });
-    }
-  } catch (e) {
-    viewCounts = {};
-  }
-}
-
-// 2. Load All Anime
 async function loadAnime() {
   const { data, error } = await supabaseClient
     .from("anime")
@@ -399,7 +427,7 @@ async function loadAnime() {
     .order("id", { ascending: false });
 
   if (error) {
-    console.error("Error loading anime:", error);
+    console.error("Anime load error:", error);
     return;
   }
 
@@ -409,39 +437,36 @@ async function loadAnime() {
   updateStats();
 }
 
-// 3. Render Anime Table
 function renderAnimeTable() {
   const tbody = document.getElementById("animeTableBody");
   tbody.innerHTML = "";
 
   if (!animeList.length) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--muted);">Koi anime nahi mila. Upar se naya anime add karein.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--muted); padding: 18px;">Koi anime nahi mila. Upar se naya anime add karein.</td></tr>`;
     return;
   }
 
   animeList.forEach(anime => {
     const id = getAnimeId(anime);
-    const views = viewCounts[id] || 0;
     const isOngoing = String(anime.status || "").toLowerCase() === "ongoing";
 
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><img src="${anime.thumbnail_url || ''}" class="poster-thumb" onerror="this.src=''"></td>
-      <td><strong>${anime.title}</strong><br><small style="color:var(--muted);">ID: ${id}</small></td>
+      <td><img src="${anime.thumbnail_url || ''}" class="poster-thumb" onerror="this.style.opacity='0.2'"></td>
+      <td class="anime-title-cell">
+        <strong>${anime.title}</strong>
+        <small>ID: ${id}</small>
+      </td>
       <td>${anime.season || 'Series'}</td>
-      <td><span class="status-badge ${isOngoing ? 'ongoing' : 'completed'}">${anime.status || 'Available'}</span></td>
-      <td><span style="font-weight:800; color: #ff2a6d;">👁 ${views}</span></td>
+      <td><span class="status-badge ${isOngoing ? 'ongoing' : 'completed'}">${anime.status || 'Ongoing'}</span></td>
       <td>
-        <div class="action-btns">
-          <button class="btn-small btn-danger" onclick="deleteAnime('${id}', '${anime.title.replace(/'/g, "\\'")}')">🗑 Delete</button>
-        </div>
+        <button class="btn-small btn-danger" onclick="deleteAnime('${id}', '${anime.title.replace(/'/g, "\\'")}')">🗑 Delete</button>
       </td>
     `;
     tbody.appendChild(tr);
   });
 }
 
-// 4. Populate Dropdown for Episode Selector
 function populateAnimeDropdown() {
   const select = document.getElementById("selectAnimeForEp");
   const currentVal = select.value;
@@ -457,13 +482,8 @@ function populateAnimeDropdown() {
   if (currentVal) select.value = currentVal;
 }
 
-// 5. Update Stat Numbers
 async function updateStats() {
   document.getElementById("totalAnimeCount").textContent = animeList.length;
-
-  let totalViews = 0;
-  Object.values(viewCounts).forEach(v => { totalViews += v; });
-  document.getElementById("totalViewsCount").textContent = totalViews;
 
   const { count, error } = await supabaseClient
     .from("episodes")
@@ -471,7 +491,6 @@ async function updateStats() {
   document.getElementById("totalEpisodeCount").textContent = (!error && count !== null) ? count : "0";
 }
 
-// 6. Add Anime Form Submit
 document.getElementById("addAnimeForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = document.getElementById("animeTitle").value.trim();
@@ -503,22 +522,19 @@ document.getElementById("addAnimeForm").addEventListener("submit", async (e) => 
   }
 });
 
-// 7. Delete Whole Anime
 async function deleteAnime(id, title) {
-  if (!confirm(`Kya aap sach me "${title}" aur iske sabhi data ko delete karna chahte hain?`)) return;
+  if (!confirm(`Kya aap sach me "${title}" aur iske sabhi episodes ko delete karna chahte hain?`)) return;
 
   await supabaseClient.from("episodes").delete().eq("anime_id", id);
   const { error } = await supabaseClient.from("anime").delete().eq("id", id);
 
   if (error) {
-    // Agar id column uuid ya anime_id hai
     await supabaseClient.from("anime").delete().eq("anime_id", id);
   }
   alert("Anime delete ho gaya!");
   refreshAll();
 }
 
-// 8. Load Episodes for Selected Anime
 async function loadEpisodesForSelectedAnime() {
   const animeId = document.getElementById("selectAnimeForEp").value;
   const container = document.getElementById("episodesContainer");
@@ -530,7 +546,7 @@ async function loadEpisodesForSelectedAnime() {
   }
 
   container.style.display = "block";
-  tbody.innerHTML = '<tr><td colspan="4">Loading episodes...</td></tr>';
+  tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted); text-align:center; padding:12px;">Loading episodes...</td></tr>';
 
   const { data, error } = await supabaseClient
     .from("episodes")
@@ -545,7 +561,7 @@ async function loadEpisodesForSelectedAnime() {
 
   tbody.innerHTML = "";
   if (!data || !data.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted);">Is anime me abhi koi episode nahi hai. Upar se add karein.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4" style="color:var(--muted); text-align:center; padding:12px;">Is anime me abhi koi episode nahi hai. Upar se add karein.</td></tr>';
     return;
   }
 
@@ -553,9 +569,9 @@ async function loadEpisodesForSelectedAnime() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><strong>Episode ${ep.episode_number || ep.episode || '1'}</strong></td>
-      <td>${ep.quality || '720p'}</td>
-      <td style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-        <a href="${ep.stream_url}" target="_blank" style="color:#ff2a6d;">${ep.stream_url}</a>
+      <td>${ep.quality || '720p HD'}</td>
+      <td style="max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+        <a href="${ep.stream_url}" target="_blank" style="color:#ff2a6d; text-decoration:none;">${ep.stream_url}</a>
       </td>
       <td>
         <button class="btn-small btn-danger" onclick="deleteSingleEpisode('${ep.id}')">Delete</button>
@@ -565,7 +581,6 @@ async function loadEpisodesForSelectedAnime() {
   });
 }
 
-// 9. Add Episode Form Submit
 document.getElementById("addEpForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const animeId = document.getElementById("selectAnimeForEp").value;
@@ -599,7 +614,6 @@ document.getElementById("addEpForm").addEventListener("submit", async (e) => {
   }
 });
 
-// 10. Delete Single Episode
 async function deleteSingleEpisode(epId) {
   if (!confirm("Kya aap is episode ko delete karna chahte hain?")) return;
   const { error } = await supabaseClient.from("episodes").delete().eq("id", epId);
@@ -611,7 +625,6 @@ async function deleteSingleEpisode(epId) {
   }
 }
 
-// 11. BULK DELETE: Delete All Episodes for Selected Anime
 async function deleteAllEpisodesForCurrentAnime() {
   const animeSelect = document.getElementById("selectAnimeForEp");
   const selectedAnimeId = animeSelect.value;
@@ -622,7 +635,7 @@ async function deleteAllEpisodesForCurrentAnime() {
     return;
   }
 
-  const confirmDelete = confirm(`⚠️ DHYAN DEIN:\nKya aap sach me "${selectedAnimeName}" ke SARE EPISODES ek sath delete karna chahte hain?\nYeh action wapas nahi liya ja sakega!`);
+  const confirmDelete = confirm(`⚠️ DHYAN DEIN:\nKya aap sach me "${selectedAnimeName}" ke SARE EPISODES ek sath delete karna chahte hain?\nYeh action wapas nahi kiya ja sakega!`);
   if (!confirmDelete) return;
 
   try {
@@ -638,12 +651,11 @@ async function deleteAllEpisodesForCurrentAnime() {
     updateStats();
   } catch (err) {
     console.error("Delete Error:", err);
-    alert("❌ Episodes delete karne me error aaya: " + err.message);
+    alert("❌ Error: " + err.message);
   }
 }
 
 async function refreshAll() {
-  await loadViewCounts();
   await loadAnime();
 }
 
