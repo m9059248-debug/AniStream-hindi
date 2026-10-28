@@ -1,15 +1,13 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Watch Anime - AniStream</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
-
-<style>
+ <head> 
+  <meta charset="UTF-8"> 
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+  <title>Watch Anime - AniStream</title> 
+  <link rel="preconnect" href="https://fonts.googleapis.com"> 
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""> 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script> 
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"> 
+  <style>
 :root {
   --bg: #08090d;
   --surface: #10121a;
@@ -290,71 +288,74 @@ video, iframe {
     grid-template-columns: 1fr 1fr;
   }
 }
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="nav">
-    <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a>
-    <div>
-      <a href="index.html">Home</a>
-      <a href="admin.html">Admin</a>
-    </div>
-  </div>
-</header>
-
-<div class="container">
-  <a href="index.html" class="back">‹ Back to Home</a>
-
-  <!-- VIDEO PLAYER CARD -->
-  <div class="video-box">
-    <div id="videoContainer" class="video-wrapper">
-      <div class="message">Video load ho raha hai...</div>
-    </div>
-    <div class="info-bar">
-      <h1 id="episodeTitle">Loading...</h1>
-      <div class="meta-row">
-        <div id="episodeMeta" class="meta"></div>
-        <div id="viewInfo" class="view-info"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CONTROLS & QUALITIES -->
-  <div id="controlsSection" class="section-box">
-    <div class="audio-card">
-      <div class="audio-header">
-        <span class="audio-label">🌐 Audio:</span>
-        <div id="languageTags" class="lang-tags">
-          <span class="lang-pill">🇮🇳 Hindi</span>
-        </div>
-      </div>
-      <p class="download-instruction">
-        ⚠️ <b>Note:</b> Audio bhasha badalne ke liye video download karke VLC/MX Player mein play karein.
-      </p>
-    </div>
-
-    <div class="section-title">🎥 Video Quality</div>
-    <div id="qualityButtons" class="quality-buttons"></div>
-    <div id="currentStatus" class="current-status"></div>
-    <div id="linkButtons" class="link-buttons"></div>
-  </div>
-
-  <!-- EPISODES LIST -->
-  <div class="section-box">
-    <div class="section-title">📺 Select Episode</div>
-    <div id="episodeNav">
-      <div class="message">Episodes load ho rahe hain...</div>
-    </div>
-  </div>
-</div>
-
-<script>
+</style> 
+ </head> 
+ <body> 
+  <header> 
+   <div class="nav"> 
+    <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a> 
+    <div> 
+     <a href="index.html">Home</a> 
+     <a href="admin.html">Admin</a> 
+    </div> 
+   </div> 
+  </header> 
+  <div class="container"> 
+   <a href="index.html" class="back">‹ Back to Home</a> 
+   <!-- VIDEO PLAYER CARD --> 
+   <div class="video-box"> 
+    <div id="videoContainer" class="video-wrapper"> 
+     <div class="message">
+      Video load ho raha hai...
+     </div> 
+    </div> 
+    <div class="info-bar"> 
+     <h1 id="episodeTitle">Loading...</h1> 
+     <div class="meta-row"> 
+      <div id="episodeMeta" class="meta"></div> 
+      <div id="viewInfo" class="view-info"></div> 
+     </div> 
+    </div> 
+   </div> 
+   <!-- CONTROLS & QUALITIES --> 
+   <div id="controlsSection" class="section-box"> 
+    <div class="audio-card"> 
+     <div class="audio-header"> 
+      <span class="audio-label">🌐 Audio:</span> 
+      <div id="languageTags" class="lang-tags"> 
+       <span class="lang-pill">🇮🇳 Hindi</span> 
+      </div> 
+     </div> 
+     <p class="download-instruction"> ⚠️ <b>Note:</b> Audio bhasha badalne ke liye video download karke VLC/MX Player mein play karein. </p> 
+    </div> 
+    <div class="section-title">
+     🎥 Video Quality
+    </div> 
+    <div id="qualityButtons" class="quality-buttons"></div> 
+    <div id="currentStatus" class="current-status"></div> 
+    <div id="linkButtons" class="link-buttons"></div> 
+   </div> 
+   <!-- EPISODES LIST --> 
+   <div class="section-box"> 
+    <div class="section-title">
+     📺 Select Episode
+    </div> 
+    <div id="episodeNav"> 
+     <div class="message">
+      Episodes load ho rahe hain...
+     </div> 
+    </div> 
+   </div> 
+  </div> 
+  <script>
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+// ── Stream server (bot wala Render URL). Purane links ka host isse automatically badal jata hai ──
+const STREAM_BASE_URL = "https://verse756.onrender.com";   // end mein "/" nahi
+const STREAM_ROUTE_PREFIX = "toonflix";
+const STREAM_PATH_RE = new RegExp("^/" + STREAM_ROUTE_PREFIX + "/(dl|watch)/", "i");
 
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
@@ -387,7 +388,14 @@ function safeUrl(value){
   if(!value) return "";
   try{
     const parsed = new URL(value);
-    return ["http:","https:"].includes(parsed.protocol) ? parsed.href : "";
+    if(!["http:","https:"].includes(parsed.protocol)) return "";
+    // Purana link (kisi bhi purane host ka) -> naye stream server par point karo
+    if(STREAM_PATH_RE.test(parsed.pathname)){
+      const base = new URL(STREAM_BASE_URL);
+      parsed.protocol = base.protocol;
+      parsed.host = base.host;
+    }
+    return parsed.href;
   }catch{
     return "";
   }
@@ -600,7 +608,9 @@ function loadVideo(url){
                        safe.includes("mega.nz") ||
                        safe.includes("streamwish");
 
-  const isDirectFile = /\.(mp4|webm|ogg)$/.test(path) && !isEmbedHost;
+  const isOwnStream = /^\/[^/]+\/dl\//.test(path) && STREAM_PATH_RE.test(parsed.pathname);
+  const isOwnWatch  = /^\/[^/]+\/watch\//.test(path) && STREAM_PATH_RE.test(parsed.pathname);
+  const isDirectFile = isOwnStream || (/\.(mp4|webm|ogg)$/.test(path) && !isEmbedHost && !isOwnWatch);
 
   if(isDirectFile){
     const video = document.createElement("video");
@@ -681,8 +691,44 @@ async function loadEpisodeList(){
   episodeNav.appendChild(episodeButtons);
 }
 
-loadEpisode();
-loadEpisodeList();
-</script>
-</body>
+/* ── TEST MODE: animezen.html?test=<koi bhi link> ──
+   Supabase ke bina ek link seedha chalane ke liye. Sirf apne stream server ke
+   (/toonflix/dl/ ya /toonflix/watch/) links accept hote hain. Purana host ho to bhi chalega. */
+function runTestMode(){
+  const m = location.search.match(/[?&]test=(.*)$/);
+  let raw = m ? m[1] : "";
+  if(/^https?%3A/i.test(raw)){
+    try{ raw = decodeURIComponent(raw); }catch{}
+  }
+  const safe = safeUrl(raw);
+  let ok = false;
+  try{ ok = !!safe && STREAM_PATH_RE.test(new URL(safe).pathname); }catch{}
+
+  document.title = "Link Test";
+  episodeTitle.textContent = "🧪 Link Test Mode";
+  if(!ok){
+    showError("Test mode mein sirf apne stream server ka link chalta hai (/" + STREAM_ROUTE_PREFIX + "/dl/... ya /watch/...).");
+    episodeNav.innerHTML = "";
+    return;
+  }
+  episodeMeta.textContent = "Supabase use nahi ho raha";
+  currentStatus.innerHTML = "<b>Final URL:</b><br><span style=\"word-break:break-all\">" + escapeHtml(safe) + "</span>";
+  linkButtons.innerHTML = "";
+  const open = document.createElement("a");
+  open.className = "stream-btn";
+  open.href = safe; open.target = "_blank"; open.rel = "noopener noreferrer";
+  open.textContent = "▶ Direct Open";
+  linkButtons.appendChild(open);
+  episodeNav.innerHTML = "";
+  loadVideo(safe);
+}
+
+if(/[?&]test=/.test(location.search)){
+  runTestMode();
+}else{
+  loadEpisode();
+  loadEpisodeList();
+}
+</script> 
+ </body>
 </html>
