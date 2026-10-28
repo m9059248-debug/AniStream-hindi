@@ -97,15 +97,52 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+
+/* SEARCH AUTOFILL BOX */
+.search-autofill-box {
+  background: rgba(255, 42, 109, 0.05);
+  border: 1px solid rgba(255, 42, 109, 0.25);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 16px;
+  position: relative;
+}
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #141724;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 50;
+  margin-top: 4px;
+  display: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+.search-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.search-item:hover { background: rgba(255, 42, 109, 0.15); }
+.search-item img {
+  width: 32px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.search-item-info strong { font-size: 12px; color: #fff; display: block; }
+.search-item-info small { font-size: 10px; color: var(--muted); }
+
 .form-grid-3 {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.form-grid-2 {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -144,6 +181,7 @@ textarea { resize: vertical; min-height: 65px; }
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
 }
 .btn:hover { background: var(--accent-hover); }
 .btn-danger { background: var(--danger); }
@@ -235,7 +273,7 @@ th { color: var(--muted); font-size: 10.5px; font-weight: 700; text-transform: u
 }
 
 @media (max-width: 768px) {
-  .form-grid-3, .form-grid-2 { grid-template-columns: 1fr; }
+  .form-grid-3 { grid-template-columns: 1fr; }
   .grid-stats { grid-template-columns: 1fr 1fr; }
 }
 </style>
@@ -249,7 +287,7 @@ th { color: var(--muted); font-size: 10.5px; font-weight: 700; text-transform: u
 
 <div class="container">
 
-  <!-- TOP STATS (VIEWS REMOVED) -->
+  <!-- TOP STATS -->
   <div class="grid-stats">
     <div class="stat-box">
       <h4>Total Anime</h4>
@@ -264,6 +302,17 @@ th { color: var(--muted); font-size: 10.5px; font-weight: 700; text-transform: u
   <!-- SECTION 1: ADD NEW ANIME -->
   <div class="card">
     <div class="card-header">➕ Naya Anime Add Karein</div>
+
+    <!-- ANIME SEARCH & AUTO-FILL -->
+    <div class="search-autofill-box">
+      <label>🔍 Anime Search Karein (Online Auto-Fill):</label>
+      <div style="display: flex; gap: 8px; margin-top: 5px;">
+        <input type="text" id="apiSearchInput" placeholder="Anime ka naam type karein (e.g. Solo Leveling, Naruto)..." onkeydown="if(event.key==='Enter'){event.preventDefault();searchAnimeFromAPI();}">
+        <button type="button" class="btn" id="apiSearchBtn" onclick="searchAnimeFromAPI()">Search</button>
+      </div>
+      <div id="apiSearchResults" class="search-results-dropdown"></div>
+    </div>
+
     <form id="addAnimeForm">
       <div class="form-grid-3">
         <div class="form-group">
@@ -326,7 +375,7 @@ th { color: var(--muted); font-size: 10.5px; font-weight: 700; text-transform: u
       </select>
     </div>
 
-    <!-- ADD EPISODE FORM (ORIGINAL PHOTO SYSTEM) -->
+    <!-- ADD EPISODE FORM -->
     <form id="addEpForm" class="sub-box">
       <div class="sub-title">Is Anime Me Naya Episode Jodein:</div>
       <div class="form-grid-3">
@@ -420,6 +469,98 @@ function getAnimeId(a) {
   return String(a.anime_id || a.id || "");
 }
 
+/* JIKAN (MAL) API AUTO-FILL SEARCH */
+async function searchAnimeFromAPI() {
+  const query = document.getElementById("apiSearchInput").value.trim();
+  const resultsDiv = document.getElementById("apiSearchResults");
+  const btn = document.getElementById("apiSearchBtn");
+
+  if (!query) {
+    alert("Kripya search karne ke liye anime ka naam daalein!");
+    return;
+  }
+
+  btn.textContent = "Searching...";
+  btn.disabled = true;
+  resultsDiv.innerHTML = '<div style="padding:10px; color:var(--muted); font-size:12px;">Anime dhoonda ja raha hai...</div>';
+  resultsDiv.style.display = "block";
+
+  try {
+    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(query)}&limit=6`);
+    const data = await res.json();
+
+    if (!data.data || !data.data.length) {
+      resultsDiv.innerHTML = '<div style="padding:10px; color:var(--muted); font-size:12px;">Koi result nahi mila. Naam check karein.</div>';
+      return;
+    }
+
+    resultsDiv.innerHTML = "";
+    data.data.forEach(anime => {
+      const item = document.createElement("div");
+      item.className = "search-item";
+      const title = anime.title_english || anime.title;
+      const poster = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || "";
+      const year = anime.year ? `(${anime.year})` : "";
+
+      item.innerHTML = `
+        <img src="${poster}" onerror="this.style.opacity='0.2'">
+        <div class="search-item-info">
+          <strong>${title} ${year}</strong>
+          <small>${anime.type || 'Series'} · ${anime.status || ''}</small>
+        </div>
+      `;
+
+      item.addEventListener("click", () => {
+        applyAnimeData(anime);
+        resultsDiv.style.display = "none";
+      });
+
+      resultsDiv.appendChild(item);
+    });
+  } catch (err) {
+    resultsDiv.innerHTML = `<div style="padding:10px; color:var(--danger); font-size:12px;">Search failed: ${err.message}</div>`;
+  } finally {
+    btn.textContent = "Search";
+    btn.disabled = false;
+  }
+}
+
+function applyAnimeData(anime) {
+  document.getElementById("animeTitle").value = anime.title_english || anime.title || "";
+  
+  if (String(anime.type).toLowerCase() === "movie") {
+    document.getElementById("animeType").value = "Anime Movie";
+  } else {
+    document.getElementById("animeType").value = "Anime Series";
+  }
+
+  if (String(anime.status).toLowerCase().includes("currently") || String(anime.status).toLowerCase().includes("airing")) {
+    document.getElementById("animeStatus").value = "Ongoing";
+  } else {
+    document.getElementById("animeStatus").value = "Completed";
+  }
+
+  const genres = (anime.genres || []).map(g => g.name).join(", ");
+  document.getElementById("animeGenre").value = genres || "Action, Anime";
+
+  const poster = anime.images?.jpg?.large_image_url || anime.images?.jpg?.image_url || "";
+  document.getElementById("animeThumb").value = poster;
+  document.getElementById("animeBanner").value = poster;
+
+  document.getElementById("animeDesc").value = anime.synopsis ? anime.synopsis.replace(/\[Written by MAL Rewrite\]/g, "").trim() : "";
+  alert(`✅ "${anime.title_english || anime.title}" ki details auto-fill ho gayi hain!`);
+}
+
+// Close search dropdown on click outside
+document.addEventListener("click", (e) => {
+  const box = document.querySelector(".search-autofill-box");
+  const dropdown = document.getElementById("apiSearchResults");
+  if (box && !box.contains(e.target)) {
+    dropdown.style.display = "none";
+  }
+});
+
+/* LOAD ALL ANIME */
 async function loadAnime() {
   const { data, error } = await supabaseClient
     .from("anime")
@@ -491,6 +632,7 @@ async function updateStats() {
   document.getElementById("totalEpisodeCount").textContent = (!error && count !== null) ? count : "0";
 }
 
+/* ADD ANIME */
 document.getElementById("addAnimeForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = document.getElementById("animeTitle").value.trim();
@@ -518,10 +660,12 @@ document.getElementById("addAnimeForm").addEventListener("submit", async (e) => 
   } else {
     alert("Anime successfully save ho gaya!");
     document.getElementById("addAnimeForm").reset();
+    document.getElementById("apiSearchInput").value = "";
     refreshAll();
   }
 });
 
+/* DELETE WHOLE ANIME */
 async function deleteAnime(id, title) {
   if (!confirm(`Kya aap sach me "${title}" aur iske sabhi episodes ko delete karna chahte hain?`)) return;
 
@@ -535,6 +679,7 @@ async function deleteAnime(id, title) {
   refreshAll();
 }
 
+/* LOAD EPISODES FOR SELECTED ANIME */
 async function loadEpisodesForSelectedAnime() {
   const animeId = document.getElementById("selectAnimeForEp").value;
   const container = document.getElementById("episodesContainer");
@@ -581,6 +726,7 @@ async function loadEpisodesForSelectedAnime() {
   });
 }
 
+/* ADD EPISODE */
 document.getElementById("addEpForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   const animeId = document.getElementById("selectAnimeForEp").value;
@@ -614,6 +760,7 @@ document.getElementById("addEpForm").addEventListener("submit", async (e) => {
   }
 });
 
+/* DELETE SINGLE EPISODE */
 async function deleteSingleEpisode(epId) {
   if (!confirm("Kya aap is episode ko delete karna chahte hain?")) return;
   const { error } = await supabaseClient.from("episodes").delete().eq("id", epId);
@@ -625,6 +772,7 @@ async function deleteSingleEpisode(epId) {
   }
 }
 
+/* BULK DELETE: ALL EPISODES */
 async function deleteAllEpisodesForCurrentAnime() {
   const animeSelect = document.getElementById("selectAnimeForEp");
   const selectedAnimeId = animeSelect.value;
