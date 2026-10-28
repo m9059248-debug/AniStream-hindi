@@ -22,6 +22,7 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
 .secondary{background:#33333f;color:#fff}.secondary:hover{background:#444452}  
 .green{background:#00a86b;color:#fff}.green:hover{background:#00c77d}  
 .delete-btn{background:#d50000;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
+.delete-btn:hover{background:#b70000}
 .edit-btn{background:#00a86b;color:#fff;padding:8px 12px;border-radius:6px;font-size:12px}  
 .search-btn{width:100%;margin-top:5px}  
 .message{padding:12px;margin-top:10px;border-radius:8px;overflow-wrap:anywhere}  
@@ -230,7 +231,16 @@ button{border:none;padding:11px 16px;border-radius:8px;cursor:pointer;font-weigh
       <div id="episodeMessage"></div>  
     </div>    
 
-    <div id="episodeList" class="box" style="display:none;"><h2>📺 Episodes / Movie Links</h2><div id="episodesContainer"></div></div>    
+    <!-- EPISODES LIST & BULK DELETE BUTTON -->
+    <div id="episodeList" class="box" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px;">
+        <h2 style="margin-bottom:0;">📺 Episodes / Movie Links</h2>
+        <button type="button" class="delete-btn" style="padding:10px 16px;font-size:13px;font-weight:bold;" onclick="deleteAllEpisodes()">
+          🗑️ Delete All Episodes
+        </button>
+      </div>
+      <div id="episodesContainer"></div>
+    </div>    
 
     <div id="scheduleForm" class="box" style="display:none;">  
       <h2>📅 Add Anime Schedule</h2>  
@@ -584,7 +594,6 @@ function fillAnimeForm(anime){
   setMessage(document.getElementById("animeMessage"), "success", "✅ Anime details fill ho gayi. Format: " + (isMov ? "Movie" : "Series"));  
 }  
 
-/* TIMESTAMP INCLUDED DURING INSERT */
 async function addAnime(){  
   const animeId = document.getElementById("animeId").value.trim();
   const title = document.getElementById("animeTitle").value.trim();  
@@ -963,6 +972,39 @@ async function deleteEpisode(id){
   alert("✅ Successfully deleted!");
   displayEpisodes();  
 }  
+
+/* BULK DELETE FUNCTION: SAARE EPISODES EK CLICK MEIN DELETE KARNE KE LIYE */
+async function deleteAllEpisodes(){
+  if(!selectedAnime){
+    alert("Pehle koi anime select karo jiske episodes delete karne hain.");
+    return;
+  }
+
+  const confirmDelete = confirm(`⚠️ DHYAN DEIN:\nKya aap sach me "${selectedAnime.title}" ke SARE EPISODES aur unke links ek sath delete karna chahte hain?\nYeh wapas nahi aa sakega!`);
+  if(!confirmDelete) return;
+
+  try {
+    // 1. Episode links table se saare qualities ke links delete karein
+    await supabaseClient
+      .from("episode_links")
+      .delete()
+      .eq("anime_name", selectedAnime.title);
+
+    // 2. Episodes main table se saare episodes delete karein
+    const { error } = await supabaseClient
+      .from("episodes")
+      .delete()
+      .eq("anime_id", selectedAnime.id);
+
+    if(error) throw error;
+
+    alert(`✅ "${selectedAnime.title}" ke sabhi episodes safaltapoorvak delete ho gaye!`);
+    displayEpisodes();
+  } catch(err) {
+    console.error("Bulk Delete Error:", err);
+    alert("❌ Error: " + err.message);
+  }
+}
 
 async function addSchedule(){  
   if(!selectedAnime){alert("Pehle anime select karo.");return;}  
