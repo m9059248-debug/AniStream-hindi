@@ -529,7 +529,6 @@ header {
   animation: newEpGlowPulse 1.4s infinite ease-in-out;
   text-transform: uppercase;
 }
-/* ========================================================================= */
 
 .view-badge {
   position: absolute;
@@ -906,7 +905,6 @@ async function loadRecentEpisodes(){
         if(!aid) return;
         const epTime = ep.created_at ? new Date(ep.created_at).getTime() : 0;
         
-        // 2 ghante ke andar add hua episode
         if(epTime && (now - epTime) <= TWO_HOURS_MS && (now - epTime) >= 0){
           if(!map[aid] || epTime > map[aid].time){
             map[aid] = {
@@ -1043,7 +1041,6 @@ function createAnimeCard(anime){
   const isMov = isMovie(anime);
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   
-  // Check if this anime has an episode added within the last 2 hours
   const recentEp = recentEpisodesMap[id] || (anime.id ? recentEpisodesMap[String(anime.id)] : null);
 
   const card=document.createElement("article");
@@ -1068,7 +1065,6 @@ function createAnimeCard(anime){
   status.textContent=isMov ? "🎬 Movie" : (anime.status||"Series");
   posterWrap.appendChild(status);
 
-  // 🔥 NEW EPISODE GLOWING BADGE (Active for 2 hours)
   if(recentEp){
     const newEpBadge = document.createElement("span");
     newEpBadge.className = "new-ep-badge";
@@ -1134,8 +1130,6 @@ function renderGrid(el,list,empty){
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
-  // ONGOING ANIME SORTING:
-  // 2 ghante ke andar naye episode wala anime first priority par
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   ongoingList.sort((a,b)=>{
     const idA = getAnimeId(a), idB = getAnimeId(b);
@@ -1263,7 +1257,34 @@ setInterval(() => {
   if(changed) renderAll();
 }, 60000);
 
+/* ================= WEBSITE VISITOR TRACKER ================= */
+async function trackSiteVisit(){
+  try {
+    const key = "anistream_visitor_id";
+    let visitorId = localStorage.getItem(key);
+    
+    if(!visitorId){
+      visitorId = "user_" + (window.crypto?.randomUUID?.() || Date.now() + "_" + Math.random().toString(36).slice(2));
+      localStorage.setItem(key, visitorId);
+    }
+
+    // Ek session mein baar-baar duplicate entry insert na ho
+    if(sessionStorage.getItem("visited_session")) return;
+
+    const { error } = await supabaseClient.from("site_visitors").insert([{
+      visitor_id: visitorId
+    }]);
+
+    if(!error){
+      sessionStorage.setItem("visited_session", "true");
+    }
+  } catch(err) {
+    console.warn("Visitor track failed:", err);
+  }
+}
+
 async function startApp(){
+  trackSiteVisit();
   await loadAnime();
   await Promise.allSettled([loadViewCounts(), loadAnimeLikes(), loadRecentEpisodes()]);
   updateHero();
