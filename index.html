@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#08090d">
+<meta name="theme-color" content="#040508">
 <title>AniStream — Anime Series & Movies in Hindi</title>
 <meta name="title" content="AniStream — Anime Series & Movies in Hindi">
 <meta name="description" content="Stream high-quality Anime Series and Anime Movies with Hindi audio on demand.">
@@ -34,26 +34,29 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
+/* ================= NEON CRIMSON THEME (DEEP BLACK + GLOWING RED + WHITE) ================= */
 :root {
-  --bg: #08090d;
-  --surface: #10121a;
-  --surface-2: #161925;
-  --surface-card: #131520;
-  --surface-card-hover: #191c2b;
+  --bg: #040508;
+  --surface: #0a0c14;
+  --surface-2: #101322;
+  --surface-card: #0d0f1a;
+  --surface-card-hover: #141728;
   --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --text: #f8f9fd;
-  --muted: #9ba1b6;
-  --accent: #ff2a6d;
-  --accent-2: #ff5e62;
-  --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
-  --accent-glow: rgba(255, 42, 109, 0.35);
+  --line-strong: rgba(255, 0, 60, 0.35);
+  --text: #ffffff;
+  --muted: #8e94a9;
+  --accent: #ff003c;
+  --accent-2: #ff2a5f;
+  --accent-gradient: linear-gradient(135deg, #ff003c 0%, #ff2a5f 100%);
+  --accent-glow: rgba(255, 0, 60, 0.45);
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 12px;
   --radius-full: 9999px;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-padding-top: 75px; }
 body {
@@ -71,16 +74,11 @@ header {
   position: sticky;
   top: 0;
   z-index: 1000;
-  background: rgba(8, 9, 13, 0.95);
-  border-bottom: 1px solid var(--line);
+  background: rgba(4, 5, 8, 0.92);
+  border-bottom: 1px solid rgba(255, 0, 60, 0.18);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transform: translateZ(0);
-}
-@supports (backdrop-filter: blur(15px)) {
-  header {
-    background: rgba(8, 9, 13, 0.85);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-  }
 }
 .nav {
   max-width: 1320px;
@@ -95,7 +93,7 @@ header {
 .logo {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 18px;
   font-weight: 900;
   letter-spacing: -0.5px;
@@ -103,12 +101,14 @@ header {
 .logo-badge {
   background: var(--accent-gradient);
   color: #fff;
-  font-size: 11px;
+  font-size: 10.5px;
+  font-weight: 900;
   padding: 3px 6px;
   border-radius: var(--radius-sm);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 .logo span { color: #fff; }
-.logo b { color: var(--accent); }
+.logo b { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 .nav-links {
   display: flex;
   align-items: center;
@@ -118,16 +118,22 @@ header {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
 }
-.nav-links a:hover { color: #fff; }
+.nav-links a:hover { color: #fff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
 .nav-links .admin-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--line-strong);
-  padding: 6px 11px;
+  background: rgba(255, 0, 60, 0.08);
+  border: 1px solid rgba(255, 0, 60, 0.35);
+  padding: 6px 12px;
   border-radius: var(--radius-md);
   color: #fff;
   font-size: 12px;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+.nav-links .admin-btn:hover {
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .hero {
@@ -136,8 +142,8 @@ header {
   display: flex;
   align-items: center;
   overflow: hidden;
-  border-bottom: 1px solid var(--line);
-  background: linear-gradient(135deg, #11131c 0%, #08090d 70%);
+  border-bottom: 1px solid rgba(255, 0, 60, 0.15);
+  background: linear-gradient(135deg, #0e101c 0%, #040508 70%);
   transform: translateZ(0);
 }
 .hero.has-image {
@@ -148,8 +154,8 @@ header {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(8, 9, 13, 0.98) 0%, rgba(8, 9, 13, 0.85) 50%, rgba(8, 9, 13, 0.35) 100%),
-              linear-gradient(0deg, rgba(8, 9, 13, 0.95) 0%, transparent 40%);
+  background: linear-gradient(90deg, rgba(4, 5, 8, 0.98) 0%, rgba(4, 5, 8, 0.85) 50%, rgba(4, 5, 8, 0.35) 100%),
+              linear-gradient(0deg, rgba(4, 5, 8, 0.95) 0%, transparent 40%);
 }
 .hero-content {
   position: relative;
@@ -168,15 +174,16 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: rgba(255, 42, 109, 0.12);
-  border: 1px solid rgba(255, 42, 109, 0.3);
-  color: #ff759f;
+  background: rgba(255, 0, 60, 0.12);
+  border: 1px solid rgba(255, 0, 60, 0.35);
+  color: #ff3b68;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 1px;
-  padding: 4px 9px;
+  padding: 4px 10px;
   border-radius: var(--radius-full);
   margin-bottom: 10px;
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.15);
 }
 .hero h1 {
   font-size: clamp(24px, 4vw, 42px);
@@ -192,7 +199,7 @@ header {
   -webkit-text-fill-color: transparent;
 }
 .hero p {
-  color: #a7adb9;
+  color: #a4a9be;
   max-width: 500px;
   line-height: 1.5;
   font-size: 12.5px;
@@ -225,20 +232,29 @@ header {
   gap: 6px;
   border: 0;
   border-radius: var(--radius-md);
-  padding: 9px 16px;
+  padding: 9px 18px;
   font-weight: 800;
   font-size: 11.5px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 .btn-primary {
   background: var(--accent-gradient);
-  color: white;
-  box-shadow: 0 3px 12px var(--accent-glow);
+  color: #fff;
+  box-shadow: 0 4px 18px var(--accent-glow);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 0, 60, 0.7);
 }
 .btn-secondary {
   background: rgba(255, 255, 255, 0.06);
-  color: white;
+  color: #fff;
   border: 1px solid var(--line-strong);
+}
+.btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: var(--accent);
 }
 .hero-controls {
   position: absolute;
@@ -250,17 +266,23 @@ header {
   gap: 8px;
 }
 .hero-arrow {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid var(--line-strong);
-  background: rgba(16, 18, 26, 0.85);
+  background: rgba(10, 12, 20, 0.85);
   color: #fff;
   cursor: pointer;
   font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
+}
+.hero-arrow:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 .hero-dots { display: flex; align-items: center; gap: 5px; }
 .hero-dot {
@@ -270,8 +292,9 @@ header {
   border-radius: var(--radius-full);
   background: rgba(255, 255, 255, 0.25);
   cursor: pointer;
+  transition: all 0.2s ease;
 }
-.hero-dot.active { width: 18px; background: var(--accent); }
+.hero-dot.active { width: 18px; background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
 
 .container {
   max-width: 1320px;
@@ -289,15 +312,17 @@ header {
   width: 100%;
   background: var(--surface);
   border: 1px solid var(--line);
-  color: white;
-  padding: 10px 12px;
+  color: #fff;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   font-size: 12px;
+  transition: all 0.2s ease;
 }
 .search-row input:focus, .search-row select:focus {
   border-color: var(--accent);
+  box-shadow: 0 0 12px rgba(255, 0, 60, 0.25);
 }
-.search-row input::placeholder { color: #696f84; }
+.search-row input::placeholder { color: #646a7e; }
 
 .genre-list {
   display: flex;
@@ -312,21 +337,27 @@ header {
   background: var(--surface);
   color: var(--muted);
   border: 1px solid var(--line);
-  padding: 5px 11px;
+  padding: 6px 12px;
   border-radius: var(--radius-full);
   font-size: 11px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease;
+}
+.genre-chip:hover {
+  color: #fff;
+  border-color: var(--accent);
 }
 .genre-chip.active {
   background: var(--accent);
   color: #fff;
   border-color: transparent;
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .telegram-banner {
-  background: linear-gradient(135deg, #0e273c 0%, #153e5e 100%);
-  border: 1px solid rgba(34, 158, 217, 0.3);
+  background: linear-gradient(135deg, #09101b 0%, #0d1a29 100%);
+  border: 1px solid rgba(34, 158, 217, 0.35);
   border-radius: var(--radius-md);
   padding: 12px 16px;
   display: flex;
@@ -356,7 +387,9 @@ header {
   font-weight: 800;
   font-size: 11px;
   white-space: nowrap;
+  transition: transform 0.15s ease;
 }
+.join-btn:hover { transform: translateY(-1px); }
 
 .section { margin-bottom: 28px; }
 .section-title {
@@ -371,7 +404,10 @@ header {
   font-weight: 800;
   letter-spacing: -0.5px;
 }
-.section-title h2 span { color: var(--accent); }
+.section-title h2 span { 
+  color: var(--accent); 
+  text-shadow: 0 0 12px var(--accent-glow); 
+}
 .section-title p {
   color: var(--muted);
   font-size: 11px;
@@ -385,7 +421,7 @@ header {
   gap: 10px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 2px 2px 10px;
+  padding: 4px 2px 14px;
   scrollbar-width: thin;
   scrollbar-color: var(--accent) var(--surface);
   scroll-snap-type: x proximity;
@@ -416,16 +452,17 @@ header {
   display: flex;
   flex-direction: column;
   transform: translateZ(0);
-  transition: transform 0.15s ease, border-color 0.15s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .anime-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255, 42, 109, 0.4);
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 6px 22px rgba(255, 0, 60, 0.28);
 }
 .poster-wrap {
   position: relative;
   aspect-ratio: 2/3;
-  background: #151824;
+  background: #090a12;
   overflow: hidden;
 }
 .poster-wrap img {
@@ -438,14 +475,14 @@ header {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 65%, rgba(19, 21, 32, 0.95) 100%);
+  background: linear-gradient(180deg, transparent 65%, rgba(13, 15, 26, 0.98) 100%);
   pointer-events: none;
 }
 .status {
   position: absolute;
   top: 5px;
   left: 5px;
-  background: rgba(16, 18, 26, 0.9);
+  background: rgba(4, 5, 8, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: #fff;
   font-size: 8.5px;
@@ -454,21 +491,21 @@ header {
   border-radius: var(--radius-sm);
   z-index: 1;
 }
-.status.ongoing { background: #00a86b; border-color: transparent; }
-.status.movie { background: #8b5cf6; border-color: transparent; }
+.status.ongoing { background: #00b862; border-color: transparent; }
+.status.movie { background: #ff003c; border-color: transparent; box-shadow: 0 0 8px rgba(255, 0, 60, 0.4); }
 
-/* ================= GLOWING NEW EPISODE BADGE ================= */
+/* ================= ULTRA-NEON GLOWING NEW EPISODE BADGE ================= */
 @keyframes newEpGlowPulse {
   0% {
-    box-shadow: 0 0 6px rgba(255, 42, 109, 0.7), 0 0 12px rgba(255, 42, 109, 0.4);
+    box-shadow: 0 0 6px rgba(255, 0, 60, 0.8), 0 0 12px rgba(255, 0, 60, 0.5);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 14px rgba(255, 42, 109, 1), 0 0 24px rgba(255, 42, 109, 0.8);
-    transform: scale(1.04);
+    box-shadow: 0 0 15px rgba(255, 0, 60, 1), 0 0 25px rgba(255, 0, 60, 0.8);
+    transform: scale(1.05);
   }
   100% {
-    box-shadow: 0 0 6px rgba(255, 42, 109, 0.7), 0 0 12px rgba(255, 42, 109, 0.4);
+    box-shadow: 0 0 6px rgba(255, 0, 60, 0.8), 0 0 12px rgba(255, 0, 60, 0.5);
     transform: scale(1);
   }
 }
@@ -477,7 +514,7 @@ header {
   position: absolute;
   top: 5px;
   right: 5px;
-  background: linear-gradient(135deg, #ff2a6d 0%, #ff5e62 100%);
+  background: linear-gradient(135deg, #ff003c 0%, #ff2a5f 100%);
   color: #ffffff;
   font-size: 8px;
   font-weight: 900;
@@ -488,18 +525,18 @@ header {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  animation: newEpGlowPulse 1.5s infinite ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  animation: newEpGlowPulse 1.4s infinite ease-in-out;
   text-transform: uppercase;
 }
-/* ============================================================== */
+/* ========================================================================= */
 
 .view-badge {
   position: absolute;
   right: 5px;
   bottom: 5px;
-  background: rgba(8, 9, 13, 0.85);
-  padding: 2px 4px;
+  background: rgba(4, 5, 8, 0.85);
+  padding: 2px 5px;
   border-radius: var(--radius-sm);
   font-size: 8.5px;
   font-weight: 600;
@@ -507,7 +544,7 @@ header {
   z-index: 1;
 }
 .card-body {
-  padding: 7px 6px;
+  padding: 8px 7px;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -537,9 +574,9 @@ header {
 .watch-btn {
   flex: 1;
   min-width: 0;
-  background: rgba(255, 42, 109, 0.15);
-  border: 1px solid rgba(255, 42, 109, 0.3);
-  color: #ff6893;
+  background: rgba(255, 0, 60, 0.12);
+  border: 1px solid rgba(255, 0, 60, 0.35);
+  color: #ff3b68;
   text-align: center;
   padding: 5px 3px;
   border-radius: var(--radius-sm);
@@ -548,8 +585,13 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.15s ease;
 }
-.watch-btn:hover { background: var(--accent); color: #fff; }
+.watch-btn:hover { 
+  background: var(--accent); 
+  color: #fff; 
+  box-shadow: 0 0 10px var(--accent-glow); 
+}
 .like-btn {
   background: rgba(255, 255, 255, 0.05);
   color: #fff;
@@ -559,11 +601,13 @@ header {
   cursor: pointer;
   font-size: 9.5px;
   font-weight: 600;
+  transition: all 0.15s ease;
 }
 .like-btn.liked {
   color: var(--accent);
-  background: rgba(255, 42, 109, 0.15);
+  background: rgba(255, 0, 60, 0.15);
   border-color: var(--accent);
+  box-shadow: 0 0 8px rgba(255, 0, 60, 0.3);
 }
 .message {
   background: var(--surface);
@@ -576,8 +620,8 @@ header {
 }
 
 footer {
-  border-top: 1px solid var(--line);
-  padding: 20px 16px;
+  border-top: 1px solid rgba(255, 0, 60, 0.15);
+  padding: 22px 16px;
   text-align: center;
   color: var(--muted);
   font-size: 11px;
@@ -587,7 +631,7 @@ footer {
   left: 50%;
   bottom: 75px;
   transform: translateX(-50%) translateY(20px);
-  background: rgba(22, 25, 37, 0.95);
+  background: rgba(16, 18, 31, 0.95);
   border: 1px solid var(--line-strong);
   color: #fff;
   padding: 8px 16px;
@@ -629,8 +673,9 @@ footer {
     right: 10px;
     bottom: 10px;
     height: 48px;
-    background: rgba(16, 18, 26, 0.95);
-    border: 1px solid var(--line-strong);
+    background: rgba(10, 12, 20, 0.92);
+    border: 1px solid rgba(255, 0, 60, 0.25);
+    backdrop-filter: blur(14px);
     border-radius: var(--radius-full);
     display: flex;
     align-items: center;
@@ -647,7 +692,7 @@ footer {
     align-items: center;
     gap: 1px;
   }
-  .bottom-nav a.active { color: var(--accent); }
+  .bottom-nav a.active { color: var(--accent); text-shadow: 0 0 8px var(--accent-glow); }
   .bottom-nav span { font-size: 14px; }
 }
 </style>
@@ -994,7 +1039,7 @@ function getFilteredAnime(){
 }
 
 function createAnimeCard(anime){
-  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", genre=anime.genre||"Anime", views=viewCounts[id]||0;
+  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", views=viewCounts[id]||0;
   const isMov = isMovie(anime);
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   
@@ -1090,8 +1135,7 @@ function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
   // ONGOING ANIME SORTING:
-  // Jis anime ka naya episode 2 ghante me aaya hai, wo sabse top / first me aayega.
-  // 2 ghante baad wo wapas apni normal position par chala jayega.
+  // 2 ghante ke andar naye episode wala anime first priority par
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   ongoingList.sort((a,b)=>{
     const idA = getAnimeId(a), idB = getAnimeId(b);
@@ -1099,10 +1143,9 @@ function renderAll(){
     const epTimeB = recentEpisodesMap[idB]?.time || (b.id ? recentEpisodesMap[String(b.id)]?.time : 0) || 0;
 
     if(epTimeA && epTimeB) return epTimeB - epTimeA;
-    if(epTimeA && !epTimeB) return -1; // New episode wala first position par
+    if(epTimeA && !epTimeB) return -1;
     if(!epTimeA && epTimeB) return 1;
 
-    // Normal position fallback
     const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
     const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
     if(timeA && timeB && timeA !== timeB) return timeB - timeA;
@@ -1154,7 +1197,7 @@ function renderHero(index, animate=true){
   
   const banner=safeImageUrl(featured.banner_url||featured.thumbnail_url);
   hero.style.backgroundImage=banner
-    ? "linear-gradient(90deg,rgba(8,9,13,0.98) 0%,rgba(8,9,13,0.85) 50%,rgba(8,9,13,0.3) 100%),url("+JSON.stringify(banner)+")"
+    ? "linear-gradient(90deg,rgba(4,5,8,0.98) 0%,rgba(4,5,8,0.85) 50%,rgba(4,5,8,0.3) 100%),url("+JSON.stringify(banner)+")"
     : "";
   hero.classList.toggle("has-image",Boolean(banner));
   $("heroDots").querySelectorAll(".hero-dot").forEach((dot,i)=>{
