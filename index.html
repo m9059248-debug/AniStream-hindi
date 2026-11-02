@@ -36,7 +36,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-/* ================= NEON CRIMSON THEME (DEEP BLACK + GLOWING RED + WHITE) ================= */
+/* ================= NEON CRIMSON THEME ================= */
 :root {
   --bg: #040508;
   --surface: #0a0c14;
@@ -792,7 +792,7 @@ const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set();
+let animeList=[], animeLikeCounts={}, likedAnimeIds=new Set(), likeBusyIds=new Set();
 let selectedGenre="all", toastTimer=null, searchDebounceTimer=null;
 let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
 
@@ -910,17 +910,6 @@ async function loadRecentEpisodes(){
   }
 }
 
-async function loadViewCounts(){
-  try{
-    const {data,error}=await supabaseClient.rpc("get_anime_view_counts");
-    if(error)throw error;
-    viewCounts={};
-    (data||[]).forEach(x=>viewCounts[String(x.anime_id)]=Number(x.view_count||0));
-  }catch(e){
-    viewCounts={};
-  }
-}
-
 async function loadAnimeLikes(){
   const counts={},mine=new Set(),pageSize=1000;
   let offset=0;
@@ -1029,7 +1018,6 @@ function createAnimeCard(anime){
   const isMov = isMovie(anime);
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   
-  // Check if this anime has an episode added within the last 2 hours
   const recentEp = recentEpisodesMap[id] || (anime.id ? recentEpisodesMap[String(anime.id)] : null);
 
   const card=document.createElement("article");
@@ -1115,8 +1103,6 @@ function renderGrid(el,list,empty){
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
-  // ONGOING ANIME SORTING:
-  // 2 ghante ke andar naye episode wala anime first priority par
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   ongoingList.sort((a,b)=>{
     const idA = getAnimeId(a), idB = getAnimeId(b);
@@ -1189,7 +1175,6 @@ function renderHero(index, animate=true){
 function updateHero(){
   heroItems=[...animeList].sort((a,b)=>
     Number(Boolean(b.banner_url))-Number(Boolean(a.banner_url)) ||
-    Number(viewCounts[getAnimeId(b)]||0)-Number(viewCounts[getAnimeId(a)]||0) ||
     new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()
   ).slice(0,8);
   const dots=$("heroDots");
@@ -1244,7 +1229,7 @@ setInterval(() => {
   if(changed) renderAll();
 }, 60000);
 
-/* ================= WEBSITE VISITOR TRACKER ================= */
+/* ================= RELIABLE VISITOR TRACKER ================= */
 async function trackSiteVisit(){
   try {
     const key = "anistream_visitor_id";
@@ -1255,14 +1240,15 @@ async function trackSiteVisit(){
       localStorage.setItem(key, visitorId);
     }
 
-    if(sessionStorage.getItem("visited_session")) return;
-
+    // Direct insert to Supabase
     const { error } = await supabaseClient.from("site_visitors").insert([{
       visitor_id: visitorId
     }]);
 
-    if(!error){
-      sessionStorage.setItem("visited_session", "true");
+    if(error){
+      console.warn("Visitor insert warning:", error.message);
+    } else {
+      console.log("✅ Visitor logged:", visitorId);
     }
   } catch(err) {
     console.warn("Visitor track failed:", err);
@@ -1272,7 +1258,7 @@ async function trackSiteVisit(){
 async function startApp(){
   trackSiteVisit();
   await loadAnime();
-  await Promise.allSettled([loadViewCounts(), loadAnimeLikes(), loadRecentEpisodes()]);
+  await Promise.allSettled([loadAnimeLikes(), loadRecentEpisodes()]);
   updateHero();
   renderAll();
 }
