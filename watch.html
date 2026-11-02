@@ -251,6 +251,78 @@ video, iframe {
   color: #fff;
 }
 
+/* ================= MORE LIKE THIS SECTION ================= */
+.more-anime-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+.rec-card {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+.rec-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+.rec-thumb-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #141724;
+  overflow: hidden;
+}
+.rec-thumb-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.rec-badge {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  background: #00a86b;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.rec-badge.completed {
+  background: #8b5cf6;
+}
+.rec-info {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.rec-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rec-meta {
+  font-size: 10.5px;
+  color: var(--muted);
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+/* ========================================================== */
+
 .message {
   text-align: center;
   padding: 24px 10px;
@@ -287,6 +359,10 @@ video, iframe {
     display: grid;
     grid-template-columns: 1fr 1fr;
   }
+  .more-anime-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
 }
 </style>
  </head>
@@ -302,6 +378,7 @@ video, iframe {
   </header>
   <div class="container">
    <a href="index.html" class="back">‹ Back to Home</a>
+   
    <!-- VIDEO PLAYER CARD -->
    <div class="video-box">
     <div id="videoContainer" class="video-wrapper">
@@ -317,6 +394,7 @@ video, iframe {
      </div>
     </div>
    </div>
+   
    <!-- CONTROLS & QUALITIES -->
    <div id="controlsSection" class="section-box">
     <div class="audio-card">
@@ -335,6 +413,7 @@ video, iframe {
     <div id="currentStatus" class="current-status"></div>
     <div id="linkButtons" class="link-buttons"></div>
    </div>
+   
    <!-- EPISODES LIST -->
    <div class="section-box">
     <div class="section-title">
@@ -344,6 +423,16 @@ video, iframe {
      <div class="message">
       Episodes load ho rahe hain...
      </div>
+    </div>
+   </div>
+
+   <!-- MORE LIKE THIS (RECOMMENDED ANIME) -->
+   <div class="section-box">
+    <div class="section-title">
+     ✨ More like this
+    </div>
+    <div id="moreAnimeGrid" class="more-anime-grid">
+     <div class="message">Anime recommendations load ho rahe hain...</div>
     </div>
    </div>
   </div>
@@ -568,7 +657,7 @@ async function loadQualityLinks(animeTitle){
     const chosen = hasTarget ? selectedQuality : qualityLinks[0].quality;
     await selectQuality(chosen);
   } else if(fallbackVideoUrl){
-    loadVideo(await convertLink(fallbackVideoUrl));   // old link ho to convert hoga
+    loadVideo(await convertLink(fallbackVideoUrl));
     updateStatusDisplay();
   } else {
     showError("Is episode ka koi video link nahi mila.");
@@ -587,13 +676,11 @@ async function selectQuality(quality){
 
   updateStatusDisplay();
 
-  // Play / open karne se pehle old link ko new link mein convert karo
   const [streamUrl, downloadUrl] = await Promise.all([
     convertLink(selected.stream_url),
     convertLink(selected.download_url)
   ]);
 
-  // Agar is beech user ne dusri quality chun li to ye result ignore karo
   if(myToken !== selectToken) return;
 
   if(streamUrl){
@@ -642,7 +729,6 @@ function loadVideo(url){
   const parsed = new URL(safe);
   const path = parsed.pathname.toLowerCase();
 
-  // Hosts that require iframe directly
   const isEmbedHost = safe.includes("drive.google.com") ||
                        safe.includes("dood") ||
                        safe.includes("streamtape") ||
@@ -650,9 +736,7 @@ function loadVideo(url){
                        safe.includes("mega.nz") ||
                        safe.includes("streamwish");
 
-  // Bot ka /dl/ stream link seedha video file hai (filename mein .mp4 na ho tab bhi)
   const isBotStream = path.includes("/" + ROUTE_PREFIX.toLowerCase() + "/dl/");
-
   const isDirectFile = (/\.(mp4|webm|ogg)$/.test(path) || isBotStream) && !isEmbedHost;
 
   if(isDirectFile){
@@ -662,7 +746,6 @@ function loadVideo(url){
     video.preload = "metadata";
     video.src = safe;
 
-    // Auto fallback to iframe on error
     video.onerror = () => {
       renderIframe(safe);
     };
@@ -736,8 +819,68 @@ async function loadEpisodeList(){
   episodeNav.appendChild(episodeButtons);
 }
 
+/* ---------- MORE LIKE THIS RECOMMENDATIONS ---------- */
+
+async function loadMoreAnime(){
+  const container = document.getElementById("moreAnimeGrid");
+  if(!container) return;
+
+  try {
+    let query = supabaseClient
+      .from("anime")
+      .select("id, anime_id, title, thumbnail_url, banner_url, season, status, language")
+      .order("id", { ascending: false })
+      .limit(8);
+
+    if(animeId){
+      query = query.neq("anime_id", animeId);
+    }
+
+    const { data, error } = await query;
+
+    if(error || !data || !data.length){
+      container.innerHTML = '<div class="message" style="grid-column:1/-1;">Koi aur anime available nahi hai.</div>';
+      return;
+    }
+
+    container.innerHTML = "";
+
+    data.forEach(anime => {
+      const aid = anime.anime_id || anime.id;
+      const title = anime.title || "Anime";
+      const image = anime.banner_url || anime.thumbnail_url || "";
+      const isCompleted = String(anime.status || "").toLowerCase().includes("complete");
+      const statusText = isCompleted ? "Completed" : "Ongoing";
+      const format = anime.season || "Series";
+      const lang = anime.language || "Hindi";
+
+      const card = document.createElement("a");
+      card.className = "rec-card";
+      card.href = "watch.html?id=" + encodeURIComponent(aid) + "&episode=1";
+
+      card.innerHTML = `
+        <div class="rec-thumb-box">
+          <img src="${escapeHtml(image)}" loading="lazy" alt="${escapeHtml(title)}" onerror="this.style.opacity='0.2'">
+          <span class="rec-badge ${isCompleted ? 'completed' : ''}">${statusText}</span>
+        </div>
+        <div class="rec-info">
+          <span class="rec-title" title="${escapeHtml(title)}">${escapeHtml(title)}</span>
+          <span class="rec-meta">📺 ${escapeHtml(format)} • 🌐 ${escapeHtml(lang)}</span>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch(err) {
+    console.error("Recommendations error:", err);
+    container.innerHTML = '<div class="message" style="grid-column:1/-1;">Recommendations load karne mein problem aayi.</div>';
+  }
+}
+
 loadEpisode();
 loadEpisodeList();
+loadMoreAnime();
 </script>
  </body>
 </html>
