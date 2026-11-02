@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#040508">
 <title>Anime Details - AniStream</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,18 +11,25 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
+/* ================= NEON CRIMSON PALETTE ================= */
 :root {
-  --bg: #08090d;
-  --surface: #10121a;
-  --surface-card: #131520;
+  --bg: #040508;
+  --surface: #0a0c14;
+  --surface-2: #101322;
+  --surface-card: #0d0f1a;
+  --surface-card-hover: #141728;
   --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
-  --text: #f8f9fd;
-  --muted: #9ba1b6;
-  --accent: #ff2a6d;
-  --accent-gradient: linear-gradient(135deg, #ff2a6d 0%, #ff6b8b 100%);
+  --line-strong: rgba(255, 0, 60, 0.35);
+  --text: #ffffff;
+  --muted: #8e94a9;
+  --accent: #ff003c;
+  --accent-2: #ff2a5f;
+  --accent-gradient: linear-gradient(135deg, #ff003c 0%, #ff2a5f 100%);
+  --accent-glow: rgba(255, 0, 60, 0.45);
   --radius-sm: 6px;
   --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,13 +44,14 @@ a { color: inherit; text-decoration: none; }
 button, input, textarea { font: inherit; outline: none; }
 
 header {
-  background: rgba(17, 17, 24, 0.95);
-  border-bottom: 1px solid var(--line);
+  background: rgba(4, 5, 8, 0.92);
+  border-bottom: 1px solid rgba(255, 0, 60, 0.18);
   padding: 10px 16px;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .nav {
   max-width: 1100px;
@@ -52,18 +61,32 @@ header {
   justify-content: space-between;
 }
 .logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: 17px;
   font-weight: 900;
   letter-spacing: -0.5px;
 }
-.logo b { color: var(--accent); }
+.logo-badge {
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 900;
+  padding: 3px 6px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.logo span { color: #fff; }
+.logo b { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
 .nav a {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
   margin-left: 12px;
+  transition: all 0.15s ease;
 }
-.nav a:hover { color: #fff; }
+.nav a:hover { color: #fff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.4); }
 
 .container {
   max-width: 1100px;
@@ -79,6 +102,11 @@ header {
   font-size: 11.5px;
   font-weight: 800;
   margin-bottom: 10px;
+  transition: transform 0.15s ease;
+}
+.back:hover {
+  transform: translateX(-2px);
+  color: #ff3b68;
 }
 
 /* COMPACT HERO */
@@ -86,9 +114,10 @@ header {
   border-radius: var(--radius-md);
   overflow: hidden;
   position: relative;
-  background: #14141c;
-  border: 1px solid var(--line);
+  background: var(--surface);
+  border: 1px solid rgba(255, 0, 60, 0.18);
   margin-bottom: 14px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 .hero-bg {
   position: absolute;
@@ -101,7 +130,7 @@ header {
 .hero-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, #0b0b0f 8%, rgba(11,11,15,0.7) 60%, transparent);
+  background: linear-gradient(to top, #040508 10%, rgba(4, 5, 8, 0.78) 60%, transparent);
 }
 .hero-content {
   position: relative;
@@ -116,8 +145,9 @@ header {
   height: 140px;
   object-fit: cover;
   border-radius: var(--radius-sm);
-  background: #222;
+  background: #0d0f1a;
   border: 1px solid var(--line-strong);
+  box-shadow: 0 0 14px rgba(255, 0, 60, 0.2);
   flex-shrink: 0;
 }
 .info { flex: 1; min-width: 0; }
@@ -135,9 +165,9 @@ header {
   margin-bottom: 6px;
 }
 .tag {
-  background: rgba(255, 42, 109, 0.15);
-  border: 1px solid rgba(255, 42, 109, 0.3);
-  color: #ff759f;
+  background: rgba(255, 0, 60, 0.12);
+  border: 1px solid rgba(255, 0, 60, 0.35);
+  color: #ff3b68;
   padding: 2px 7px;
   border-radius: 4px;
   font-size: 9.5px;
@@ -149,7 +179,7 @@ header {
   margin: 3px 0 6px;
 }
 .description {
-  color: #c7cbd7;
+  color: #a4a9bd;
   line-height: 1.45;
   font-size: 11.5px;
   max-height: 58px;
@@ -169,6 +199,7 @@ header {
   font-size: 12.5px;
   font-weight: 800;
   margin-bottom: 8px;
+  text-shadow: 0 0 8px var(--accent-glow);
 }
 .share-buttons {
   display: flex;
@@ -179,7 +210,7 @@ header {
   border: none;
   cursor: pointer;
   color: #fff;
-  padding: 6px 11px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 700;
@@ -187,13 +218,30 @@ header {
   align-items: center;
   justify-content: center;
   gap: 4px;
+  transition: all 0.18s ease;
 }
-.share-main { background: var(--accent); }
-.copy-btn { background: #262938; }
+.share-main {
+  background: var(--accent-gradient);
+  box-shadow: 0 2px 10px var(--accent-glow);
+}
+.share-main:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255, 0, 60, 0.7);
+}
+.copy-btn {
+  background: #141728;
+  border: 1px solid var(--line);
+}
+.copy-btn:hover {
+  border-color: var(--accent);
+  color: #fff;
+}
 .whatsapp-btn { background: #128c7e; }
+.whatsapp-btn:hover { background: #0e7266; }
 .telegram-btn { background: #229ed9; }
+.telegram-btn:hover { background: #1b85b8; }
 .share-message {
-  color: #6dff91;
+  color: #00e676;
   font-size: 11px;
   margin-top: 6px;
   display: none;
@@ -212,6 +260,7 @@ header {
   font-size: 14.5px;
   font-weight: 800;
   margin-bottom: 10px;
+  text-shadow: 0 0 10px var(--accent-glow);
 }
 
 /* OVERVIEW & METRICS PILLS */
@@ -222,10 +271,14 @@ header {
   margin-top: 8px;
 }
 .info-pill {
-  background: #0e1017;
+  background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 8px 10px;
+  transition: border-color 0.15s ease;
+}
+.info-pill:hover {
+  border-color: rgba(255, 0, 60, 0.3);
 }
 .info-pill span {
   display: block;
@@ -248,7 +301,7 @@ header {
   gap: 10px;
 }
 .char-card {
-  background: #0e1017;
+  background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   display: flex;
@@ -256,10 +309,12 @@ header {
   align-items: center;
   padding: 8px 10px;
   gap: 8px;
-  transition: border-color 0.15s ease;
+  transition: all 0.2s ease;
 }
 .char-card:hover {
+  transform: translateY(-2px);
   border-color: var(--accent);
+  box-shadow: 0 4px 16px rgba(255, 0, 60, 0.25);
 }
 .char-part, .va-part {
   display: flex;
@@ -276,7 +331,8 @@ header {
   height: 56px;
   object-fit: cover;
   border-radius: 4px;
-  background: #141724;
+  background: #090a12;
+  border: 1px solid var(--line);
   flex-shrink: 0;
 }
 .actor-text {
@@ -308,7 +364,7 @@ header {
   gap: 6px;
 }
 .episode-btn {
-  background: #141622;
+  background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 8px 4px;
@@ -317,11 +373,13 @@ header {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s ease;
+  transition: all 0.18s ease;
 }
 .episode-btn:hover {
   background: var(--accent);
   border-color: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  transform: translateY(-2px);
 }
 .episode-btn .ep-num {
   font-size: 11px;
@@ -330,14 +388,14 @@ header {
 }
 .episode-btn .ep-tag {
   font-size: 8.5px;
-  color: #ff85a6;
+  color: #ff5e82;
   margin-top: 2px;
 }
 .episode-btn:hover .ep-tag { color: #fff; }
 
 /* COMPACT COMMENTS */
 .comment-form {
-  background: #0e1017;
+  background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 10px;
@@ -345,12 +403,17 @@ header {
 }
 .comment-input, .comment-textarea {
   width: 100%;
-  padding: 7px 10px;
-  background: #141724;
+  padding: 8px 12px;
+  background: #07080f;
   border: 1px solid var(--line);
   border-radius: 5px;
   color: #fff;
   font-size: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.comment-input:focus, .comment-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(255, 0, 60, 0.25);
 }
 .comment-textarea {
   min-height: 55px;
@@ -359,18 +422,24 @@ header {
   line-height: 1.35;
 }
 .comment-btn {
-  background: var(--accent);
+  background: var(--accent-gradient);
   color: #fff;
   border: none;
-  padding: 7px 14px;
+  padding: 8px 16px;
   border-radius: 5px;
   font-size: 11px;
   font-weight: 800;
   cursor: pointer;
   margin-top: 6px;
+  box-shadow: 0 2px 10px var(--accent-glow);
+  transition: all 0.2s ease;
+}
+.comment-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 0, 60, 0.6);
 }
 .comment-card {
-  background: #0e1017;
+  background: var(--surface-card);
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   padding: 9px 10px;
@@ -384,11 +453,11 @@ header {
 }
 .comment-author {
   font-weight: 800;
-  color: var(--accent);
+  color: #ff3b68;
   font-size: 11.5px;
 }
 .comment-date {
-  color: #6b7280;
+  color: var(--muted);
   font-size: 9.5px;
 }
 .comment-body {
@@ -400,11 +469,11 @@ header {
 
 .loading, .error, .empty {
   text-align: center;
-  color: #888;
+  color: var(--muted);
   padding: 16px 8px;
   font-size: 11.5px;
 }
-.error { color: #ff6b81; }
+.error { color: #ff3b68; }
 
 @media(max-width: 480px) {
   .hero-content { padding: 12px 10px; gap: 10px; }
@@ -421,7 +490,10 @@ header {
 
 <header>
   <div class="nav">
-    <a href="index.html" class="logo">🔥 Ani<b>Stream</b></a>
+    <a href="index.html" class="logo">
+      <span class="logo-badge">PRO</span>
+      <span>Ani<b>Stream</b></span>
+    </a>
     <div>
       <a href="index.html">Home</a>
       <a href="admin.html">Admin</a>
@@ -708,10 +780,8 @@ async function fetchFastCastAndDetails(animeTitle) {
 
   const clean = cleanSearchQuery(animeTitle) || animeTitle;
 
-  // 1. Pehle full cleaned title se search karein
   let media = await queryAniList(clean);
 
-  // 2. Agar lamba hone ki wajah se na mile, toh pehle 5 words se retry karein
   if (!media) {
     const words = clean.split(" ");
     if (words.length > 4) {
@@ -725,7 +795,6 @@ async function fetchFastCastAndDetails(animeTitle) {
     return;
   }
 
-  // Render Studio & Overview Pills
   const studio = media.studios?.nodes?.[0]?.name || "Original";
   const score = media.averageScore ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10` : "N/A";
   const source = media.source ? media.source.replace(/_/g, " ") : "N/A";
@@ -741,7 +810,6 @@ async function fetchFastCastAndDetails(animeTitle) {
   `;
   metaSection.style.display = "block";
 
-  // Render Characters & Voice Actors
   const edges = media.characters?.edges || [];
   if (!edges.length) {
     castGrid.innerHTML = '<div class="empty">Koi character list available nahi hai.</div>';
@@ -753,7 +821,6 @@ async function fetchFastCastAndDetails(animeTitle) {
     const char = edge.node;
     const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
 
-    // Japanese voice actor pehle chunein, nahi toh pehla available
     const vas = edge.voiceActors || [];
     const va = vas.find(v => v.languageV2 === "Japanese") || vas[0] || null;
 
@@ -824,7 +891,7 @@ async function postComment(){
   const commentText = textInput.value.trim();
 
   if(!userName || !commentText){
-    msg.style.color = "#ff6b81";
+    msg.style.color = "#ff003c";
     msg.textContent = "❌ Name aur comment dono zaroori hain.";
     return;
   }
@@ -839,12 +906,12 @@ async function postComment(){
   }]);
 
   if(error){
-    msg.style.color = "#ff6b81";
+    msg.style.color = "#ff003c";
     msg.textContent = "❌ Failed: " + error.message;
     return;
   }
 
-  msg.style.color = "#6dff91";
+  msg.style.color = "#00e676";
   msg.textContent = "✅ Comment posted!";
   textInput.value = "";
   loadComments(animeId);
