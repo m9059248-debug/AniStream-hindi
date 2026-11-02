@@ -640,6 +640,10 @@ button{
       
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; margin-bottom:18px;">
         <div class="stat-card">
+          <div class="stat-label">Total Unique Visitors</div>
+          <div id="statTotalVisitors" class="stat-value" style="color:#00e676; text-shadow:0 0 10px rgba(0,230,118,0.4);">0</div>
+        </div>
+        <div class="stat-card">
           <div class="stat-label">Total Anime Views</div>
           <div id="statTotalViews" class="stat-value" style="color:#ff003c; text-shadow:0 0 10px rgba(255,0,60,0.4);">0</div>
         </div>
@@ -653,7 +657,7 @@ button{
         </div>
         <div class="stat-card">
           <div class="stat-label">Total Listed Anime</div>
-          <div id="statTotalAnime" class="stat-value" style="color:#00e676;">0</div>
+          <div id="statTotalAnime" class="stat-value" style="color:#ffffff;">0</div>
         </div>
       </div>
 
@@ -791,17 +795,25 @@ function isMovieRecord(anime){
 
 async function loadAnalytics(){
   try{
-    const [animeRes, viewsRes, likesRes, commentsRes] = await Promise.all([
+    const [animeRes, viewsRes, likesRes, commentsRes, visitorsRes] = await Promise.all([
       supabaseClient.from("anime").select("anime_id, id, title, season, genre"),
       supabaseClient.from("anime_views").select("anime_id"),
       supabaseClient.from("anime_likes").select("anime_id"),
-      supabaseClient.from("anime_comments").select("anime_id")
+      supabaseClient.from("anime_comments").select("anime_id"),
+      supabaseClient.from("site_visitors").select("visitor_id")
     ]);
 
     const animes = animeRes.data || [];
     const views = viewsRes.data || [];
     const likes = likesRes.data || [];
     const comments = commentsRes.data || [];
+    const visitors = visitorsRes.data || [];
+
+    // Unique visitors count
+    const uniqueVisitors = new Set(visitors.map(v => v.visitor_id)).size;
+
+    const visitorEl = document.getElementById("statTotalVisitors");
+    if(visitorEl) visitorEl.textContent = uniqueVisitors;
 
     document.getElementById("statTotalViews").textContent = views.length;
     document.getElementById("statTotalLikes").textContent = likes.length;
