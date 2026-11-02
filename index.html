@@ -530,18 +530,6 @@ header {
   text-transform: uppercase;
 }
 
-.view-badge {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  background: rgba(4, 5, 8, 0.85);
-  padding: 2px 5px;
-  border-radius: var(--radius-sm);
-  font-size: 8.5px;
-  font-weight: 600;
-  color: #e5e7eb;
-  z-index: 1;
-}
 .card-body {
   padding: 8px 7px;
   display: flex;
@@ -1037,10 +1025,11 @@ function getFilteredAnime(){
 }
 
 function createAnimeCard(anime){
-  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", views=viewCounts[id]||0;
+  const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"";
   const isMov = isMovie(anime);
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
   
+  // Check if this anime has an episode added within the last 2 hours
   const recentEp = recentEpisodesMap[id] || (anime.id ? recentEpisodesMap[String(anime.id)] : null);
 
   const card=document.createElement("article");
@@ -1065,17 +1054,13 @@ function createAnimeCard(anime){
   status.textContent=isMov ? "🎬 Movie" : (anime.status||"Series");
   posterWrap.appendChild(status);
 
+  // 🔥 NEW EPISODE GLOWING BADGE (Active for 2 hours)
   if(recentEp){
     const newEpBadge = document.createElement("span");
     newEpBadge.className = "new-ep-badge";
     newEpBadge.innerHTML = `🔥 EP ${escapeHtml(String(recentEp.epNum || ""))} NEW`;
     posterWrap.appendChild(newEpBadge);
   }
-  
-  const badge=document.createElement("span");
-  badge.className="view-badge";
-  badge.textContent="👁 "+views;
-  posterWrap.appendChild(badge);
   
   const body=document.createElement("div");
   body.className="card-body";
@@ -1130,6 +1115,8 @@ function renderGrid(el,list,empty){
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
+  // ONGOING ANIME SORTING:
+  // 2 ghante ke andar naye episode wala anime first priority par
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
   ongoingList.sort((a,b)=>{
     const idA = getAnimeId(a), idB = getAnimeId(b);
@@ -1268,7 +1255,6 @@ async function trackSiteVisit(){
       localStorage.setItem(key, visitorId);
     }
 
-    // Ek session mein baar-baar duplicate entry insert na ho
     if(sessionStorage.getItem("visited_session")) return;
 
     const { error } = await supabaseClient.from("site_visitors").insert([{
