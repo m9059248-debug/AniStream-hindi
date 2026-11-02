@@ -355,8 +355,8 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
 /* ============ OLD LINK -> NEW LINK (bot server se convert hota hai) ============ */
-const BOT_API      = "https://verse746.onrender.com";   // bot server ka BASE_URL, end mein "/" nahi
-const ROUTE_PREFIX = "toonflix";                        // bot ka NAYA ROUTE_PREFIX (video detect ke liye)
+const BOT_API      = "https://tight-band-11f0.animemia533.workers.dev";   // <-- apne Cloudflare Worker ka URL (= bot ka BASE_URL), end mein "/" nahi
+const ROUTE_PREFIX = "toonflix";                          // bot ka ROUTE_PREFIX (default: toonflix)
 /* ================================================================================ */
 
 const params = new URLSearchParams(location.search);
@@ -401,28 +401,36 @@ function safeUrl(value){
 
 const convertCache = new Map();
 const BOT_LINK_RE = /\/(dl|watch)\/\d+\/[^\/?]+/;   // bot jaisa link lage to hi server ko bhejo
+const BOT_READY   = !BOT_API.includes("YOUR-WORKER");
+let convertFailed = false;                             // true ho to user ko batayenge ki purana link chal raha hai
 
 async function convertLink(url){
   const safe = safeUrl(url);
   if(!safe || !BOT_LINK_RE.test(new URL(safe).pathname)) return safe;   // dood, drive, etc. ko chhuo mat
+  if(!BOT_READY){ console.error("BOT_API abhi set nahi hai (watch.html ke upar apna Worker URL daalo)"); return safe; }
   if(convertCache.has(safe)) return convertCache.get(safe);
 
-  const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15000);   // Render free plan cold start ke liye
-  try{
-    const res = await fetch(BOT_API + "/api/convert?url=" + encodeURIComponent(safe), { signal: ctrl.signal });
-    if(res.ok){
-      const json = await res.json();
-      const out = safeUrl(json.url) || safe;
-      convertCache.set(safe, out);
-      return out;
+  // 1 retry: tunnel/Worker badalte waqt pehli request fail ho sakti hai
+  for(let attempt = 0; attempt < 2; attempt++){
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 10000);
+    try{
+      const res = await fetch(BOT_API + "/api/convert?url=" + encodeURIComponent(safe), { signal: ctrl.signal });
+      if(res.ok){
+        const json = await res.json();
+        const out = safeUrl(json.url) || safe;
+        convertCache.set(safe, out);
+        return out;
+      }
+      console.error("Convert API error:", res.status);
+    }catch(err){
+      console.error("Link convert failed:", err);
+    }finally{
+      clearTimeout(timer);
     }
-    console.error("Convert API error:", res.status);
-  }catch(err){
-    console.error("Link convert failed:", err);
-  }finally{
-    clearTimeout(timer);
+    if(attempt === 0) await new Promise(r => setTimeout(r, 1200));
   }
+  convertFailed = true;
   return safe;   // fail ho to original link se hi chalao
 }
 
@@ -595,6 +603,7 @@ async function selectQuality(quality){
 
   // Agar is beech user ne dusri quality chun li to ye result ignore karo
   if(myToken !== selectToken) return;
+  updateStatusDisplay();   // convert fail hua ho to note dikhao
 
   if(streamUrl){
     loadVideo(streamUrl);
@@ -626,7 +635,8 @@ async function selectQuality(quality){
 }
 
 function updateStatusDisplay(){
-  currentStatus.innerHTML = "<b>Playing:</b> " + escapeHtml(selectedQuality);
+  currentStatus.innerHTML = "<b>Playing:</b> " + escapeHtml(selectedQuality) +
+    (convertFailed ? ' <span style="color:#ff9f43">• server se link refresh nahi ho paya, purana link chal raha hai</span>' : "");
 }
 
 /* ---------- SMART VIDEO LOADER WITH AUTO-FALLBACK ---------- */
@@ -651,7 +661,7 @@ function loadVideo(url){
                        safe.includes("streamwish");
 
   // Bot ka /dl/ stream link seedha video file hai (filename mein .mp4 na ho tab bhi)
-  const isBotStream = path.includes("/" + ROUTE_PREFIX.toLowerCase() + "/dl/");
+  const isBotStream = path.includes("/" + ROUTE_PREFIX.toLowerCase() + "/dl/") || /\/dl\/\d+\//.test(path);
 
   const isDirectFile = (/\.(mp4|webm|ogg)$/.test(path) || isBotStream) && !isEmbedHost;
 
@@ -664,7 +674,8 @@ function loadVideo(url){
 
     // Auto fallback to iframe on error
     video.onerror = () => {
-      renderIframe(safe);
+      // bot ki file iframe me nahi chalegi -> seedha external open ka button
+      if(isBotStream) renderFallbackButton(safe); else renderIframe(safe);
     };
 
     videoContainer.appendChild(video);
