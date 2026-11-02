@@ -214,7 +214,94 @@ header {
   margin-bottom: 10px;
 }
 
-/* COMPACT EPISODES (DESKTOP-LIKE GRID) */
+/* OVERVIEW & METRICS PILLS */
+.info-pills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+}
+.info-pill {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+}
+.info-pill span {
+  display: block;
+  font-size: 9.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.info-pill strong {
+  font-size: 12px;
+  color: #fff;
+  font-weight: 800;
+}
+
+/* CHARACTERS & VOICE CAST GRID */
+.character-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 10px;
+}
+.char-card {
+  background: #0e1017;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  gap: 8px;
+  transition: border-color 0.15s ease;
+}
+.char-card:hover {
+  border-color: var(--accent);
+}
+.char-part, .va-part {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.va-part {
+  flex-direction: row-reverse;
+  text-align: right;
+}
+.actor-img {
+  width: 42px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #141724;
+  flex-shrink: 0;
+}
+.actor-text {
+  min-width: 0;
+}
+.actor-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 85px;
+}
+.actor-sub {
+  font-size: 9.5px;
+  color: var(--muted);
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 85px;
+}
+
+/* COMPACT EPISODES */
 .episodes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
@@ -325,6 +412,7 @@ header {
   .info h1 { font-size: 16px; }
   .share-buttons { display: grid; grid-template-columns: repeat(2, 1fr); }
   .episodes { grid-template-columns: repeat(4, 1fr); gap: 5px; }
+  .character-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -366,6 +454,20 @@ header {
     <h2>📺 Select Episode</h2>
     <div id="episodeContainer" class="episodes">
       <div class="loading">Episodes load ho rahe hain...</div>
+    </div>
+  </div>
+
+  <!-- AUTO-FETCHED ANIME DETAILS & METRICS -->
+  <div class="section" id="metaSection" style="display: none;">
+    <h2>ℹ️ Anime Overview & Studio Details</h2>
+    <div class="info-pills-grid" id="infoPillsGrid"></div>
+  </div>
+
+  <!-- AUTO-FETCHED CHARACTERS & VOICE CAST -->
+  <div class="section" id="castSection">
+    <h2>🎭 Characters & Voice Cast</h2>
+    <div id="characterGrid" class="character-grid">
+      <div class="loading">Characters & Voice Cast load ho rahe hain...</div>
     </div>
   </div>
 
@@ -481,6 +583,7 @@ async function loadAnime(){
   renderAnime(data);
   loadEpisodes(data.anime_id);
   loadComments(data.anime_id);
+  fetchOnlineCastAndDetails(data.title);
 }
 
 function renderAnime(anime){
@@ -537,6 +640,100 @@ async function loadEpisodes(targetAnimeId){
   });
 }
 
+/* ================= AUTO-FETCH JIKAN (MAL) CHARACTERS & CAST ================= */
+function cleanSearchTitle(rawTitle) {
+  return String(rawTitle || "")
+    .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+)\b/gi, "")
+    .replace(/\[.*?\]|\(.*?\)/g, "")
+    .trim();
+}
+
+async function fetchOnlineCastAndDetails(animeTitle) {
+  const castGrid = document.getElementById("characterGrid");
+  const metaSection = document.getElementById("metaSection");
+  const pillsGrid = document.getElementById("infoPillsGrid");
+
+  const cleanQuery = cleanSearchTitle(animeTitle) || animeTitle;
+
+  try {
+    // 1. Search anime on Jikan API
+    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(cleanQuery)}&limit=1`);
+    const searchData = await res.json();
+
+    if (!searchData.data || !searchData.data.length) {
+      castGrid.innerHTML = '<div class="empty">Cast details online database mein nahi mili.</div>';
+      return;
+    }
+
+    const malAnime = searchData.data[0];
+    const malId = malAnime.mal_id;
+
+    // 2. Render Overview Metadata Pills
+    const studio = (malAnime.studios && malAnime.studios.length > 0) ? malAnime.studios[0].name : "Unknown";
+    const score = malAnime.score ? `⭐ ${malAnime.score} / 10` : "N/A";
+    const source = malAnime.source || "Original";
+    const rating = malAnime.rating || "PG-13";
+    const aired = malAnime.aired?.string || "N/A";
+
+    pillsGrid.innerHTML = `
+      <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
+      <div class="info-pill"><span>MAL Score</span><strong>${escapeHtml(score)}</strong></div>
+      <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
+      <div class="info-pill"><span>Age Rating</span><strong>${escapeHtml(rating)}</strong></div>
+      <div class="info-pill" style="grid-column: span 2;"><span>Aired</span><strong>${escapeHtml(aired)}</strong></div>
+    `;
+    metaSection.style.display = "block";
+
+    // 3. Fetch Characters & Voice Actors
+    const charRes = await fetch(`https://api.jikan.moe/v4/anime/${malId}/characters`);
+    const charData = await charRes.json();
+
+    if (!charData.data || !charData.data.length) {
+      castGrid.innerHTML = '<div class="empty">Is anime ke characters list available nahi hai.</div>';
+      return;
+    }
+
+    castGrid.innerHTML = "";
+    // Display up to 8 top main and supporting cast members
+    const characters = charData.data.slice(0, 8);
+
+    characters.forEach(item => {
+      const char = item.character;
+      // Japanese voice actor or first available VA
+      const va = (item.voice_actors && item.voice_actors.length > 0) 
+        ? (item.voice_actors.find(v => v.language === "Japanese") || item.voice_actors[0]) 
+        : null;
+
+      const card = document.createElement("div");
+      card.className = "char-card";
+      card.innerHTML = `
+        <div class="char-part">
+          <img src="${char.images?.jpg?.image_url || ''}" class="actor-img" alt="${escapeHtml(char.name)}" onerror="this.style.opacity='0.2'">
+          <div class="actor-text">
+            <div class="actor-name" title="${escapeHtml(char.name)}">${escapeHtml(char.name)}</div>
+            <span class="actor-sub">${escapeHtml(item.role || 'Character')}</span>
+          </div>
+        </div>
+        ${va ? `
+        <div class="va-part">
+          <img src="${va.person?.images?.jpg?.image_url || ''}" class="actor-img" alt="${escapeHtml(va.person?.name)}" onerror="this.style.opacity='0.2'">
+          <div class="actor-text">
+            <div class="actor-name" title="${escapeHtml(va.person?.name)}">${escapeHtml(va.person?.name)}</div>
+            <span class="actor-sub">🎙️ ${escapeHtml(va.language || 'Voice')}</span>
+          </div>
+        </div>
+        ` : ''}
+      `;
+      castGrid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Cast fetch error:", err);
+    castGrid.innerHTML = '<div class="empty">Characters load karne mein problem aayi.</div>';
+  }
+}
+
+/* ================= COMMENTS SYSTEM ================= */
 async function loadComments(targetAnimeId){
   commentsContainer.innerHTML = '<div class="loading">Loading comments...</div>';
 
