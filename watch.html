@@ -242,6 +242,7 @@ video, iframe {
   text-align: center;
   font-size: 11px;
   font-weight: 800;
+  cursor: pointer;
   transition: all 0.15s ease;
 }
 #episodeNav .episode-nav a.active,
@@ -251,7 +252,7 @@ video, iframe {
   color: #fff;
 }
 
-/* ================= MORE LIKE THIS SECTION ================= */
+/* ================= MORE LIKE THIS (RECOMMENDATIONS) ================= */
 .more-anime-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -321,7 +322,7 @@ video, iframe {
   gap: 6px;
   align-items: center;
 }
-/* ========================================================== */
+/* ==================================================================== */
 
 .message {
   text-align: center;
@@ -435,6 +436,7 @@ video, iframe {
      <div class="message">Anime recommendations load ho rahe hain...</div>
     </div>
    </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -450,7 +452,7 @@ const ROUTE_PREFIX = "toonflix";                        // bot ka NAYA ROUTE_PRE
 
 const params = new URLSearchParams(location.search);
 const animeId = params.get("id");
-const episodeNumber = params.get("episode");
+let currentEpisodeNumber = params.get("episode") ? parseInt(params.get("episode"), 10) : null;
 
 const videoContainer = document.getElementById("videoContainer");
 const episodeTitle = document.getElementById("episodeTitle");
@@ -465,7 +467,7 @@ const languageTags = document.getElementById("languageTags");
 let qualityLinks = [];
 let selectedQuality = "720p";
 let fallbackVideoUrl = "";
-let selectToken = 0; // jaldi jaldi quality badalne par purana async result ignore karne ke liye
+let selectToken = 0;
 
 function escapeHtml(value){
   return String(value ?? "")
@@ -486,18 +488,17 @@ function safeUrl(value){
   }
 }
 
-/* ---------- LINK CONVERTER: bot server /api/convert ko call karta hai ---------- */
-
+/* ---------- LINK CONVERTER ---------- */
 const convertCache = new Map();
-const BOT_LINK_RE = /\/(dl|watch)\/\d+\/[^\/?]+/;   // bot jaisa link lage to hi server ko bhejo
+const BOT_LINK_RE = /\/(dl|watch)\/\d+\/[^\/?]+/;
 
 async function convertLink(url){
   const safe = safeUrl(url);
-  if(!safe || !BOT_LINK_RE.test(new URL(safe).pathname)) return safe;   // dood, drive, etc. ko chhuo mat
+  if(!safe || !BOT_LINK_RE.test(new URL(safe).pathname)) return safe;
   if(convertCache.has(safe)) return convertCache.get(safe);
 
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 15000);   // Render free plan cold start ke liye
+  const timer = setTimeout(() => ctrl.abort(), 15000);
   try{
     const res = await fetch(BOT_API + "/api/convert?url=" + encodeURIComponent(safe), { signal: ctrl.signal });
     if(res.ok){
@@ -512,11 +513,10 @@ async function convertLink(url){
   }finally{
     clearTimeout(timer);
   }
-  return safe;   // fail ho to original link se hi chalao
+  return safe;
 }
 
 /* ---------- VIEWS ---------- */
-
 function getViewerId(){
   const key = "anistream_viewer_id";
   let id = localStorage.getItem(key);
@@ -579,20 +579,52 @@ async function loadAnimeLanguage(){
   }
 }
 
-/* ---------- EPISODE LOAD ---------- */
-
-async function loadEpisode(){
-  if(!animeId || !episodeNumber || !Number.isInteger(Number(episodeNumber)) || Number(episodeNumber) < 1){
-    showError("Anime ID ya Episode number missing hai.");
+/* ---------- SMART EPISODE LOADER (AUTO-DETECT FIRST EPISODE) ---------- */
+async function loadEpisode(targetEpNum){
+  if(!animeId){
+    showError("Anime ID missing hai.");
     episodeTitle.textContent = "Episode unavailable";
     return;
   }
+
+  videoContainer.innerHTML = '<div class="message">Video load ho raha hai...</div>';
+
+  let epNum = targetEpNum || currentEpisodeNumber;
+
+  // Agar episode URL me nahi hai ya invalid hai, pehla available episode fetch karo
+  if(!epNum || isNaN(epNum) || epNum < 1){
+    const { data: firstEp, error: firstErr } = await supabaseClient
+      .from("episodes")
+      .select("episode_number")
+      .eq("anime_id", animeId)
+      .order("episode_number", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if(firstEp && firstEp.episode_number !== undefined && firstEp.episode_number !== null){
+      epNum = Number(firstEp.episode_number);
+    } else {
+      epNum = 1;
+    }
+  }
+
+  currentEpisodeNumber = epNum;
+
+  // Browser URL update karein bina page reload kiye
+  try {
+    const newUrl = new URL(window.location.href);
+    newUrl.searchParams.set("id", animeId);
+    newUrl.searchParams.set("episode", currentEpisodeNumber);
+    window.history.replaceState({}, "", newUrl.toString());
+  } catch(e) {}
+
+  highlightActiveEpisode(currentEpisodeNumber);
 
   const {data, error} = await supabaseClient
     .from("episodes")
     .select("*")
     .eq("anime_id", animeId)
-    .eq("episode_number", Number(episodeNumber))
+    .eq("episode_number", currentEpisodeNumber)
     .maybeSingle();
 
   if(error){
@@ -601,7 +633,7 @@ async function loadEpisode(){
   }
 
   if(!data){
-    showError("Ye episode nahi mila.");
+    showError("Episode " + currentEpisodeNumber + " nahi mila.");
     return;
   }
 
@@ -610,21 +642,33 @@ async function loadEpisode(){
   document.title = (data.anime_title || "Anime") + " - Ep " + data.episode_number;
   fallbackVideoUrl = data.video_url || "";
 
-  await loadQualityLinks(data.anime_title);
+  await loadQualityLinks(data.anime_title, currentEpisodeNumber);
   loadAnimeLanguage();
   recordAnimeView();
+}
+
+function highlightActiveEpisode(activeNum){
+  document.querySelectorAll("#episodeNav .episode-nav a").forEach(link => {
+    if(Number(link.getAttribute("data-ep")) === Number(activeNum)){
+      link.classList.add("active");
+    } else {
+      link.classList.remove("active");
+    }
+  });
 }
 
 function showError(message){
   videoContainer.innerHTML = '<div class="message" style="color:#ff6b81">' + escapeHtml(message) + '</div>';
 }
 
-async function loadQualityLinks(animeTitle){
+async function loadQualityLinks(animeTitle, epNum){
   qualityLinks = [];
   qualityButtons.innerHTML = "";
   linkButtons.innerHTML = "";
 
-  if(!animeTitle || !episodeNumber){
+  const epToQuery = epNum || currentEpisodeNumber;
+
+  if(!animeTitle || !epToQuery){
     if(fallbackVideoUrl){
       loadVideo(await convertLink(fallbackVideoUrl));
       updateStatusDisplay();
@@ -636,7 +680,7 @@ async function loadQualityLinks(animeTitle){
     .from("episode_links")
     .select("*")
     .eq("anime_name", animeTitle)
-    .eq("episode_number", Number(episodeNumber));
+    .eq("episode_number", Number(epToQuery));
 
   const order = { "1080p": 1, "720p": 2, "480p": 3 };
   if(data && data.length > 0){
@@ -780,8 +824,7 @@ function renderFallbackButton(safe){
   `;
 }
 
-/* ---------- EPISODE LIST ---------- */
-
+/* ---------- EPISODE LIST (INSTANT IN-PAGE SWITCH) ---------- */
 async function loadEpisodeList(){
   if(!animeId){
     episodeNav.innerHTML = '<div class="message" style="color:#ff6b81">Anime ID nahi mili.</div>';
@@ -805,13 +848,21 @@ async function loadEpisodeList(){
 
   data.forEach(episode => {
     const link = document.createElement("a");
-    link.href = "watch.html?id=" + encodeURIComponent(animeId) + "&episode=" + encodeURIComponent(episode.episode_number);
-    link.textContent = episode.episode_number;
-    link.title = episode.episode_title || "Episode " + episode.episode_number;
+    const epNum = Number(episode.episode_number);
+    link.href = "watch.html?id=" + encodeURIComponent(animeId) + "&episode=" + encodeURIComponent(epNum);
+    link.textContent = epNum;
+    link.title = episode.episode_title || "Episode " + epNum;
+    link.setAttribute("data-ep", epNum);
 
-    if(Number(episode.episode_number) === Number(episodeNumber)){
+    if(currentEpisodeNumber && epNum === currentEpisodeNumber){
       link.classList.add("active");
     }
+
+    // Bina pura page reload kare instant episode switch karne ke liye:
+    link.onclick = (e) => {
+      e.preventDefault();
+      loadEpisode(epNum);
+    };
 
     episodeButtons.appendChild(link);
   });
@@ -820,7 +871,6 @@ async function loadEpisodeList(){
 }
 
 /* ---------- MORE LIKE THIS RECOMMENDATIONS ---------- */
-
 async function loadMoreAnime(){
   const container = document.getElementById("moreAnimeGrid");
   if(!container) return;
@@ -856,7 +906,8 @@ async function loadMoreAnime(){
 
       const card = document.createElement("a");
       card.className = "rec-card";
-      card.href = "watch.html?id=" + encodeURIComponent(aid) + "&episode=1";
+      // Bina hardcoded episode ke link karein taaki wo pehla episode auto-play kare
+      card.href = "watch.html?id=" + encodeURIComponent(aid);
 
       card.innerHTML = `
         <div class="rec-thumb-box">
@@ -878,6 +929,7 @@ async function loadMoreAnime(){
   }
 }
 
+// Initial Loading
 loadEpisode();
 loadEpisodeList();
 loadMoreAnime();
