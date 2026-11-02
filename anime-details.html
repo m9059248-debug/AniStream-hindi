@@ -289,7 +289,7 @@ header {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 85px;
+  max-width: 90px;
 }
 .actor-sub {
   font-size: 9.5px;
@@ -298,7 +298,7 @@ header {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 85px;
+  max-width: 90px;
 }
 
 /* COMPACT EPISODES */
@@ -583,7 +583,7 @@ async function loadAnime(){
   renderAnime(data);
   loadEpisodes(data.anime_id);
   loadComments(data.anime_id);
-  fetchOnlineCastAndDetails(data.title);
+  fetchFastCastAndDetails(data.title);
 }
 
 function renderAnime(anime){
@@ -640,97 +640,145 @@ async function loadEpisodes(targetAnimeId){
   });
 }
 
-/* ================= AUTO-FETCH JIKAN (MAL) CHARACTERS & CAST ================= */
-function cleanSearchTitle(rawTitle) {
-  return String(rawTitle || "")
-    .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+)\b/gi, "")
+/* ================= ULTRA-FAST ANILIST GRAPHQL CAST FETCHER ================= */
+function cleanSearchQuery(title) {
+  if(!title) return "";
+  return String(title)
+    .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+|part\s*\d+)\b/gi, "")
     .replace(/\[.*?\]|\(.*?\)/g, "")
+    .replace(/[:\-–—]/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
-async function fetchOnlineCastAndDetails(animeTitle) {
+async function queryAniList(searchTerm) {
+  const query = `
+    query ($search: String) {
+      Media(search: $search, type: ANIME) {
+        id
+        averageScore
+        source
+        status
+        seasonYear
+        studios(isMain: true) {
+          nodes { name }
+        }
+        characters(sort: [ROLE, RELEVANCE], perPage: 8) {
+          edges {
+            role
+            node {
+              name { full }
+              image { medium }
+            }
+            voiceActors(sort: RELEVANCE) {
+              name { full }
+              image { medium }
+              languageV2
+            }
+          }
+        }
+      }
+    }
+  `;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 7000);
+
+  try {
+    const res = await fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ query, variables: { search: searchTerm } }),
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data?.Media || null;
+  } catch(e) {
+    clearTimeout(timer);
+    return null;
+  }
+}
+
+async function fetchFastCastAndDetails(animeTitle) {
   const castGrid = document.getElementById("characterGrid");
   const metaSection = document.getElementById("metaSection");
   const pillsGrid = document.getElementById("infoPillsGrid");
 
-  const cleanQuery = cleanSearchTitle(animeTitle) || animeTitle;
+  const clean = cleanSearchQuery(animeTitle) || animeTitle;
 
-  try {
-    // 1. Search anime on Jikan API
-    const res = await fetch(`https://api.jikan.moe/v4/anime?q=${encodeURIComponent(cleanQuery)}&limit=1`);
-    const searchData = await res.json();
+  // 1. Pehle full cleaned title se search karein
+  let media = await queryAniList(clean);
 
-    if (!searchData.data || !searchData.data.length) {
-      castGrid.innerHTML = '<div class="empty">Cast details online database mein nahi mili.</div>';
-      return;
+  // 2. Agar lamba hone ki wajah se na mile, toh pehle 5 words se retry karein
+  if (!media) {
+    const words = clean.split(" ");
+    if (words.length > 4) {
+      const shortTitle = words.slice(0, 4).join(" ");
+      media = await queryAniList(shortTitle);
     }
-
-    const malAnime = searchData.data[0];
-    const malId = malAnime.mal_id;
-
-    // 2. Render Overview Metadata Pills
-    const studio = (malAnime.studios && malAnime.studios.length > 0) ? malAnime.studios[0].name : "Unknown";
-    const score = malAnime.score ? `⭐ ${malAnime.score} / 10` : "N/A";
-    const source = malAnime.source || "Original";
-    const rating = malAnime.rating || "PG-13";
-    const aired = malAnime.aired?.string || "N/A";
-
-    pillsGrid.innerHTML = `
-      <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
-      <div class="info-pill"><span>MAL Score</span><strong>${escapeHtml(score)}</strong></div>
-      <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
-      <div class="info-pill"><span>Age Rating</span><strong>${escapeHtml(rating)}</strong></div>
-      <div class="info-pill" style="grid-column: span 2;"><span>Aired</span><strong>${escapeHtml(aired)}</strong></div>
-    `;
-    metaSection.style.display = "block";
-
-    // 3. Fetch Characters & Voice Actors
-    const charRes = await fetch(`https://api.jikan.moe/v4/anime/${malId}/characters`);
-    const charData = await charRes.json();
-
-    if (!charData.data || !charData.data.length) {
-      castGrid.innerHTML = '<div class="empty">Is anime ke characters list available nahi hai.</div>';
-      return;
-    }
-
-    castGrid.innerHTML = "";
-    // Display up to 8 top main and supporting cast members
-    const characters = charData.data.slice(0, 8);
-
-    characters.forEach(item => {
-      const char = item.character;
-      // Japanese voice actor or first available VA
-      const va = (item.voice_actors && item.voice_actors.length > 0) 
-        ? (item.voice_actors.find(v => v.language === "Japanese") || item.voice_actors[0]) 
-        : null;
-
-      const card = document.createElement("div");
-      card.className = "char-card";
-      card.innerHTML = `
-        <div class="char-part">
-          <img src="${char.images?.jpg?.image_url || ''}" class="actor-img" alt="${escapeHtml(char.name)}" onerror="this.style.opacity='0.2'">
-          <div class="actor-text">
-            <div class="actor-name" title="${escapeHtml(char.name)}">${escapeHtml(char.name)}</div>
-            <span class="actor-sub">${escapeHtml(item.role || 'Character')}</span>
-          </div>
-        </div>
-        ${va ? `
-        <div class="va-part">
-          <img src="${va.person?.images?.jpg?.image_url || ''}" class="actor-img" alt="${escapeHtml(va.person?.name)}" onerror="this.style.opacity='0.2'">
-          <div class="actor-text">
-            <div class="actor-name" title="${escapeHtml(va.person?.name)}">${escapeHtml(va.person?.name)}</div>
-            <span class="actor-sub">🎙️ ${escapeHtml(va.language || 'Voice')}</span>
-          </div>
-        </div>
-        ` : ''}
-      `;
-      castGrid.appendChild(card);
-    });
-
-  } catch (err) {
-    console.error("Cast fetch error:", err);
-    castGrid.innerHTML = '<div class="empty">Characters load karne mein problem aayi.</div>';
   }
+
+  if (!media) {
+    castGrid.innerHTML = '<div class="empty">Is anime ke characters online database mein nahi mile.</div>';
+    return;
+  }
+
+  // Render Studio & Overview Pills
+  const studio = media.studios?.nodes?.[0]?.name || "Original";
+  const score = media.averageScore ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10` : "N/A";
+  const source = media.source ? media.source.replace(/_/g, " ") : "N/A";
+  const status = media.status || "Ongoing";
+  const year = media.seasonYear || "N/A";
+
+  pillsGrid.innerHTML = `
+    <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
+    <div class="info-pill"><span>Rating / Score</span><strong>${escapeHtml(score)}</strong></div>
+    <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
+    <div class="info-pill"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
+    <div class="info-pill"><span>Year</span><strong>${escapeHtml(String(year))}</strong></div>
+  `;
+  metaSection.style.display = "block";
+
+  // Render Characters & Voice Actors
+  const edges = media.characters?.edges || [];
+  if (!edges.length) {
+    castGrid.innerHTML = '<div class="empty">Koi character list available nahi hai.</div>';
+    return;
+  }
+
+  castGrid.innerHTML = "";
+  edges.forEach(edge => {
+    const char = edge.node;
+    const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
+
+    // Japanese voice actor pehle chunein, nahi toh pehla available
+    const vas = edge.voiceActors || [];
+    const va = vas.find(v => v.languageV2 === "Japanese") || vas[0] || null;
+
+    const card = document.createElement("div");
+    card.className = "char-card";
+    card.innerHTML = `
+      <div class="char-part">
+        <img src="${char.image?.medium || ''}" class="actor-img" alt="${escapeHtml(char.name?.full)}" onerror="this.style.opacity='0.2'">
+        <div class="actor-text">
+          <div class="actor-name" title="${escapeHtml(char.name?.full)}">${escapeHtml(char.name?.full)}</div>
+          <span class="actor-sub">${escapeHtml(roleText)}</span>
+        </div>
+      </div>
+      ${va ? `
+      <div class="va-part">
+        <img src="${va.image?.medium || ''}" class="actor-img" alt="${escapeHtml(va.name?.full)}" onerror="this.style.opacity='0.2'">
+        <div class="actor-text">
+          <div class="actor-name" title="${escapeHtml(va.name?.full)}">${escapeHtml(va.name?.full)}</div>
+          <span class="actor-sub">🎙️ ${escapeHtml(va.languageV2 || 'Voice')}</span>
+        </div>
+      </div>
+      ` : ''}
+    `;
+    castGrid.appendChild(card);
+  });
 }
 
 /* ================= COMMENTS SYSTEM ================= */
