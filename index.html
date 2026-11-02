@@ -456,6 +456,44 @@ header {
 }
 .status.ongoing { background: #00a86b; border-color: transparent; }
 .status.movie { background: #8b5cf6; border-color: transparent; }
+
+/* ================= GLOWING NEW EPISODE BADGE ================= */
+@keyframes newEpGlowPulse {
+  0% {
+    box-shadow: 0 0 6px rgba(255, 42, 109, 0.7), 0 0 12px rgba(255, 42, 109, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(255, 42, 109, 1), 0 0 24px rgba(255, 42, 109, 0.8);
+    transform: scale(1.04);
+  }
+  100% {
+    box-shadow: 0 0 6px rgba(255, 42, 109, 0.7), 0 0 12px rgba(255, 42, 109, 0.4);
+    transform: scale(1);
+  }
+}
+
+.new-ep-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: linear-gradient(135deg, #ff2a6d 0%, #ff5e62 100%);
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  z-index: 2;
+  letter-spacing: 0.4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  animation: newEpGlowPulse 1.5s infinite ease-in-out;
+  text-transform: uppercase;
+}
+/* ============================================================== */
+
 .view-badge {
   position: absolute;
   right: 5px;
@@ -726,6 +764,10 @@ let animeList=[], viewCounts={}, animeLikeCounts={}, likedAnimeIds=new Set(), li
 let selectedGenre="all", toastTimer=null, searchDebounceTimer=null;
 let heroItems=[], heroIndex=0, heroTimer=null, heroTouchStartX=null;
 
+/* RECENT EPISODES TRACKER (2 HOURS EXPIRY WINDOW) */
+let recentEpisodesMap = {}; // anime_id -> { epNum, time }
+const TWO_HOURS_MS = 2 * 60 * 60 * 1000; 
+
 const $=id=>document.getElementById(id);
 const searchInput=$("searchInput"), genreSelect=$("genreSelect"), genreList=$("genreList"), toast=$("toast");
 
@@ -800,6 +842,41 @@ async function loadAnime(){
   animeList = sortLatestFirst(Array.isArray(data) ? data : []);
   buildGenres();
   renderAll();
+}
+
+/* FETCH RECENTLY ADDED EPISODES (UNDER 2 HOURS) */
+async function loadRecentEpisodes(){
+  try{
+    const { data, error } = await supabaseClient
+      .from("episodes")
+      .select("anime_id, episode_number, created_at, id")
+      .order("created_at", { ascending: false, nullsFirst: false })
+      .limit(100);
+
+    if(!error && data){
+      const now = Date.now();
+      const map = {};
+      data.forEach(ep => {
+        const aid = String(ep.anime_id || "").trim();
+        if(!aid) return;
+        const epTime = ep.created_at ? new Date(ep.created_at).getTime() : 0;
+        
+        // 2 ghante ke andar add hua episode
+        if(epTime && (now - epTime) <= TWO_HOURS_MS && (now - epTime) >= 0){
+          if(!map[aid] || epTime > map[aid].time){
+            map[aid] = {
+              epNum: ep.episode_number,
+              time: epTime
+            };
+          }
+        }
+      });
+      recentEpisodesMap = map;
+      renderAll();
+    }
+  }catch(err){
+    console.warn("Recent episodes fetch failed:", err);
+  }
 }
 
 async function loadViewCounts(){
@@ -920,6 +997,10 @@ function createAnimeCard(anime){
   const id=getAnimeId(anime), title=anime.title||"Untitled Anime", poster=anime.thumbnail_url||"", genre=anime.genre||"Anime", views=viewCounts[id]||0;
   const isMov = isMovie(anime);
   const isOngoing = String(anime.status||"").trim().toLowerCase() === "ongoing";
+  
+  // Check if this anime has an episode added within the last 2 hours
+  const recentEp = recentEpisodesMap[id] || (anime.id ? recentEpisodesMap[String(anime.id)] : null);
+
   const card=document.createElement("article");
   card.className="anime-card";
   
@@ -941,6 +1022,14 @@ function createAnimeCard(anime){
   status.className="status" + (isMov ? " movie" : (isOngoing ? " ongoing" : ""));
   status.textContent=isMov ? "🎬 Movie" : (anime.status||"Series");
   posterWrap.appendChild(status);
+
+  // 🔥 NEW EPISODE GLOWING BADGE (Active for 2 hours)
+  if(recentEp){
+    const newEpBadge = document.createElement("span");
+    newEpBadge.className = "new-ep-badge";
+    newEpBadge.innerHTML = `🔥 EP ${escapeHtml(String(recentEp.epNum || ""))} NEW`;
+    posterWrap.appendChild(newEpBadge);
+  }
   
   const badge=document.createElement("span");
   badge.className="view-badge";
@@ -1000,7 +1089,26 @@ function renderGrid(el,list,empty){
 function renderAll(){
   const filtered=getFilteredAnime(), hasFilter=searchInput.value.trim()||selectedGenre!=="all";
   
+  // ONGOING ANIME SORTING:
+  // Jis anime ka naya episode 2 ghante me aaya hai, wo sabse top / first me aayega.
+  // 2 ghante baad wo wapas apni normal position par chala jayega.
   const ongoingList = filtered.filter(a => !isMovie(a) && String(a.status || "").trim().toLowerCase() === "ongoing");
+  ongoingList.sort((a,b)=>{
+    const idA = getAnimeId(a), idB = getAnimeId(b);
+    const epTimeA = recentEpisodesMap[idA]?.time || (a.id ? recentEpisodesMap[String(a.id)]?.time : 0) || 0;
+    const epTimeB = recentEpisodesMap[idB]?.time || (b.id ? recentEpisodesMap[String(b.id)]?.time : 0) || 0;
+
+    if(epTimeA && epTimeB) return epTimeB - epTimeA;
+    if(epTimeA && !epTimeB) return -1; // New episode wala first position par
+    if(!epTimeA && epTimeB) return 1;
+
+    // Normal position fallback
+    const timeA = a.created_at ? new Date(a.created_at).getTime() : 0;
+    const timeB = b.created_at ? new Date(b.created_at).getTime() : 0;
+    if(timeA && timeB && timeA !== timeB) return timeB - timeA;
+    return Number(b.id || 0) - Number(a.id || 0);
+  });
+
   renderGrid($("ongoingGrid"), ongoingList, hasFilter ? "Is filter ke liye koi ongoing series nahi mili." : "Abhi koi ongoing series nahi hai.");
   
   const seriesList = filtered.filter(a => !isMovie(a));
@@ -1099,9 +1207,22 @@ document.querySelectorAll(".bottom-nav a").forEach(a=>a.addEventListener("click"
   a.classList.add("active");
 }));
 
+// AUTO-TIMER: Har 60 second me check karega, agar 2 ghante pure hue to badge hata kar ongoing section me normal position par bhej dega
+setInterval(() => {
+  const now = Date.now();
+  let changed = false;
+  for(const aid in recentEpisodesMap){
+    if((now - recentEpisodesMap[aid].time) > TWO_HOURS_MS){
+      delete recentEpisodesMap[aid];
+      changed = true;
+    }
+  }
+  if(changed) renderAll();
+}, 60000);
+
 async function startApp(){
   await loadAnime();
-  await Promise.allSettled([loadViewCounts(),loadAnimeLikes()]);
+  await Promise.allSettled([loadViewCounts(), loadAnimeLikes(), loadRecentEpisodes()]);
   updateHero();
   renderAll();
 }
