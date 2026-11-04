@@ -260,6 +260,21 @@ button{
 .search-info{flex:1;min-width:0}
 .search-info h3{margin-bottom:6px;font-size:14px;color:#fff}
 .search-info p{color:var(--muted);font-size:12px;line-height:1.4}  
+.search-info .genre-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-top:6px;
+}
+.search-info .genre-tag{
+  background:rgba(255, 0, 60, 0.12);
+  border:1px solid rgba(255, 0, 60, 0.25);
+  color:#ff759f;
+  padding:2px 6px;
+  border-radius:4px;
+  font-size:10px;
+  font-weight:600;
+}
 .add-search-btn{background:#00b862;color:white;margin-top:8px}
 .add-search-btn:hover{background:#00c77d}  
 
@@ -489,8 +504,9 @@ button{
   <!-- SLOT 1: ANIME MANAGEMENT -->
   <div id="slotAnime">
     <div class="box">  
-      <h2>🔎 Search Anime (Auto-Fill)</h2>  
-      <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Slime, Naruto, Your Name">  
+      <h2>🔎 Search Anime (Ultra Auto-Fill)</h2>  
+      <p class="small" style="margin-bottom:8px;">AniList aur MyAnimeList se live 100% accurate details & multiple genres fetch honge.</p>
+      <input id="animeSearchInput" placeholder="Anime name search karo... e.g. Solo Leveling, Demon Slayer, Naruto, Your Name">  
       <button class="primary search-btn" onclick="searchAnime()">🔎 Search Anime</button>  
       <div id="searchMessage"></div>
       <div id="searchResults"></div>  
@@ -521,8 +537,8 @@ button{
       <label class="small">Anime Description</label>
       <textarea id="description" placeholder="Anime Description"></textarea>  
       
-      <label class="small">Genre</label>
-      <input id="genre" placeholder="e.g. Action, Fantasy">  
+      <label class="small">Genre (Multiple Genres Comma-Separated)</label>
+      <input id="genre" placeholder="e.g. Action, Adventure, Fantasy, Supernatural">  
       
       <label class="small">Season / Format</label>
       <input id="season" placeholder="e.g. Season 1 (Movies ke liye 'Movie')">  
@@ -809,7 +825,6 @@ async function loadAnalytics(){
     const comments = commentsRes.data || [];
     const visitors = visitorsRes.data || [];
 
-    // Unique visitors count
     const uniqueVisitors = new Set(visitors.map(v => v.visitor_id)).size;
 
     const visitorEl = document.getElementById("statTotalVisitors");
@@ -860,77 +875,148 @@ async function loadAnalytics(){
   }
 }
 
-async function fetchFromKitsu(query) {
-  const url = "https://kitsu.io/api/edge/anime?filter[text]=" + encodeURIComponent(query) + "&page[limit]=10";
+/* ================= 1. PRIMARY SEARCH: ANILIST GRAPHQL (EXACT MATCH & FULL GENRES) ================= */
+async function fetchFromAniList(query) {
+  const queryBody = `
+    query ($search: String) {
+      Page(page: 1, perPage: 10) {
+        media(search: $search, type: ANIME, sort: SEARCH_MATCH) {
+          id
+          title {
+            english
+            romaji
+            native
+          }
+          coverImage {
+            extraLarge
+            large
+          }
+          bannerImage
+          description(asHtml: false)
+          genres
+          season
+          seasonYear
+          status
+          format
+        }
+      }
+    }
+  `;
+
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 7000);
+
   try {
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timer);
-    if (!res.ok) throw new Error("Kitsu HTTP " + res.status);
-    const json = await res.json();
-    return (json.data || []).map(item => {
-      const a = item.attributes || {};
-      const poster = a.posterImage?.large || a.posterImage?.original || "";
-      return {
-        id: item.id,
-        title: { english: a.titles?.en || a.canonicalTitle || "Unknown Anime" },
-        coverImage: { large: poster, extraLarge: poster },
-        bannerImage: a.coverImage?.large || poster,
-        description: a.synopsis || "",
-        genres: [],
-        season: "",
-        seasonYear: a.startDate ? a.startDate.slice(0, 4) : "",
-        status: a.status === "finished" ? "FINISHED" : "Ongoing",
-        format: a.subtype ? a.subtype.toUpperCase() : "TV"
-      };
+    const res = await fetch("https://graphql.anilist.co", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ query: queryBody, variables: { search: query } }),
+      signal: controller.signal
     });
-  } catch (err) {
+    clearTimeout(timer);
+    if (!res.ok) throw new Error("AniList HTTP " + res.status);
+    const json = await res.json();
+    return (json.data?.Page?.media || []).map(item => ({
+      id: item.id,
+      title: { english: item.title?.english || item.title?.romaji || "Unknown Anime" },
+      coverImage: {
+        extraLarge: item.coverImage?.extraLarge || item.coverImage?.large || "",
+        large: item.coverImage?.large || ""
+      },
+      bannerImage: item.bannerImage || item.coverImage?.extraLarge || "",
+      description: item.description || "",
+      genres: Array.isArray(item.genres) ? item.genres : [],
+      season: item.season || "",
+      seasonYear: item.seasonYear || "",
+      status: item.status || "Ongoing",
+      format: item.format || "TV"
+    }));
+  } catch(err) {
     clearTimeout(timer);
     throw err;
   }
 }
 
-async function fetchFromAniList(query) {
-  const queryBody = `query ($search: String) { Page(page: 1, perPage: 10) { media(search: $search, type: ANIME) { id title { english romaji native } coverImage { large extraLarge } bannerImage description(asHtml: false) genres season seasonYear status format } } }`;
-  const res = await fetch("https://graphql.anilist.co", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query: queryBody, variables: { search: query } })
-  });
-  const json = await res.json();
-  return (json.data?.Page?.media || []).map(item => ({
-    ...item,
-    title: { english: item.title?.english || item.title?.romaji || "Unknown Anime" }
-  }));
+/* ================= 2. BACKUP SEARCH: JIKAN / MYANIMELIST API ================= */
+async function fetchFromJikan(query) {
+  const url = "https://api.jikan.moe/v4/anime?q=" + encodeURIComponent(query) + "&limit=10";
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 7000);
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error("Jikan HTTP " + res.status);
+    const json = await res.json();
+    return (json.data || []).map(item => {
+      const poster = item.images?.jpg?.large_image_url || item.images?.jpg?.image_url || "";
+      const genreList = Array.isArray(item.genres) ? item.genres.map(g => g.name) : [];
+      if(Array.isArray(item.themes)){
+        item.themes.forEach(t => { if(t.name) genreList.push(t.name); });
+      }
+      return {
+        id: item.mal_id,
+        title: { english: item.title_english || item.title || "Unknown Anime" },
+        coverImage: { extraLarge: poster, large: poster },
+        bannerImage: poster,
+        description: item.synopsis || "",
+        genres: [...new Set(genreList)],
+        season: item.season || "",
+        seasonYear: item.year || (item.aired?.from ? item.aired.from.slice(0, 4) : ""),
+        status: item.status === "Finished Airing" ? "FINISHED" : "Ongoing",
+        format: item.type ? item.type.toUpperCase() : "TV"
+      };
+    });
+  } catch(err) {
+    clearTimeout(timer);
+    throw err;
+  }
 }
 
+/* ================= MAIN SMART SEARCH FUNCTION ================= */
 async function searchAnime() {  
   const query = document.getElementById("animeSearchInput").value.trim();  
   const results = document.getElementById("searchResults");
   const message = document.getElementById("searchMessage");  
   if(!query){ setMessage(message, "error", "❌ Anime name enter karo."); return; }  
-  setMessage(message, "info", "🔎 Searching anime...");
+  
+  setMessage(message, "info", "🔎 Searching on AniList Database...");
   results.innerHTML = "";  
   
   let animeList = [];
+  
+  // 1. AniList primary search
   try {
-    animeList = await fetchFromKitsu(query);
-  } catch {
+    animeList = await fetchFromAniList(query);
+  } catch(e1) {
+    console.warn("AniList error, trying Jikan MAL backup...", e1);
+    // 2. Fallback to MyAnimeList
     try {
-      animeList = await fetchFromAniList(query);
-    } catch {
-      setMessage(message, "error", "❌ Search failed: Network error.");
+      animeList = await fetchFromJikan(query);
+    } catch(e2) {
+      console.warn("Jikan backup failed too:", e2);
+      setMessage(message, "error", "❌ Search failed: Network error. Ek baar internet check karein.");
       return;
     }
   }
 
-  if(!animeList.length){ setMessage(message, "error", "❌ Anime nahi mila."); return; }  
-  setMessage(message, "success", "✅ " + animeList.length + " anime result mile.");  
+  // Agar AniList par 0 results milein, toh Jikan try karein
+  if(!animeList.length){ 
+    try {
+      animeList = await fetchFromJikan(query);
+    } catch(e) {}
+  }
+
+  if(!animeList.length){ 
+    setMessage(message, "error", "❌ Koi anime nahi mila. Spelling check karein."); 
+    return; 
+  }  
+
+  setMessage(message, "success", "✅ " + animeList.length + " anime result mile (Rich Details & Genres).");  
   animeList.forEach(anime => createSearchResult(anime, results));  
 }
 
-function createSearchResult(anime,container){  
+function createSearchResult(anime, container){  
   const item = document.createElement("div");
   item.className = "search-result";  
   const image = document.createElement("img");
@@ -946,12 +1032,25 @@ function createSearchResult(anime,container){
   
   const isMov = String(anime.format).toUpperCase() === "MOVIE";
   const details = document.createElement("p");
-  details.textContent = (isMov ? "🎬 MOVIE" : "📺 TV SERIES") + " • " + (anime.seasonYear||"N/A") + " • " + formatAnimeStatus(anime.status);  
+  details.textContent = (isMov ? "🎬 MOVIE" : "📺 TV SERIES") + " • " + (anime.seasonYear || "N/A") + " • " + formatAnimeStatus(anime.status);  
   info.append(details);  
   
+  // Multiple genre badges preview
+  if (Array.isArray(anime.genres) && anime.genres.length) {
+    const genreWrap = document.createElement("div");
+    genreWrap.className = "genre-tags";
+    anime.genres.slice(0, 4).forEach(g => {
+      const tag = document.createElement("span");
+      tag.className = "genre-tag";
+      tag.textContent = g;
+      genreWrap.appendChild(tag);
+    });
+    info.appendChild(genreWrap);
+  }
+
   const button = document.createElement("button");
   button.className = "add-search-btn";
-  button.textContent = "➕ Fill Anime Details";
+  button.textContent = "➕ Auto-Fill Details";
   button.onclick = () => fillAnimeForm(anime);  
   
   item.append(image, info, button);
@@ -969,7 +1068,15 @@ function fillAnimeForm(anime){
   document.getElementById("thumbnail").value = thumbnail;  
   document.getElementById("banner").value = anime.bannerImage || thumbnail;  
   document.getElementById("description").value = cleanDescription(anime.description || "");  
-  document.getElementById("genre").value = Array.isArray(anime.genres) && anime.genres.length ? anime.genres.join(", ") : (isMov ? "Anime Movie" : "Action, Fantasy");  
+  
+  // Multiple comma-separated genres auto-fill
+  let genreString = "";
+  if (Array.isArray(anime.genres) && anime.genres.length > 0) {
+    genreString = anime.genres.join(", ");
+  } else {
+    genreString = isMov ? "Anime Movie, Action, Fantasy" : "Action, Adventure, Fantasy";
+  }
+  document.getElementById("genre").value = genreString;  
   
   if(isMov){
     document.getElementById("season").value = "Movie";
@@ -983,7 +1090,7 @@ function fillAnimeForm(anime){
   
   document.getElementById("language").value = "Hindi";  
   document.getElementById("animeTitle").scrollIntoView({behavior:"smooth", block:"center"});  
-  setMessage(document.getElementById("animeMessage"), "success", "✅ Anime details fill ho gayi. Format: " + (isMov ? "Movie" : "Series"));  
+  setMessage(document.getElementById("animeMessage"), "success", "✅ Auto-filled: " + title + " (" + genreString + ")");  
 }  
 
 async function addAnime(){  
