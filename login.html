@@ -3,550 +3,436 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - AnimeHindiZone</title>
+<meta name="theme-color" content="#040508">
+<title>AniStream — Login & Sign Up</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-*{
-  box-sizing:border-box;
+/* ================= NEON CRIMSON THEME ================= */
+:root {
+  --bg: #040508;
+  --surface: #0a0c14;
+  --surface-card: #0d0f1a;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 0, 60, 0.35);
+  --text: #ffffff;
+  --muted: #8e94a9;
+  --accent: #ff003c;
+  --accent-2: #ff2a5f;
+  --accent-gradient: linear-gradient(135deg, #ff003c 0%, #ff2a5f 100%);
+  --accent-glow: rgba(255, 0, 60, 0.45);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
 }
 
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:Arial,sans-serif;
-  background:#0b0b0f;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  position: relative;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-.container{
-  width:100%;
-  max-width:420px;
+body::before {
+  content: "";
+  position: absolute;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 500px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 0, 60, 0.22) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-.logo{
-  text-align:center;
-  font-size:28px;
-  font-weight:bold;
-  color:#ff1744;
-  margin-bottom:25px;
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; outline: none; }
+
+.login-card {
+  background: var(--surface-card);
+  border: 1px solid rgba(255, 0, 60, 0.35);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 420px;
+  padding: 30px 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 0, 60, 0.18);
+  position: relative;
+  z-index: 10;
+  backdrop-filter: blur(16px);
 }
 
-.card{
-  background:#15151c;
-  border:1px solid #292933;
-  border-radius:16px;
-  padding:25px;
-  box-shadow:0 10px 35px rgba(0,0,0,.4);
+.logo-header {
+  text-align: center;
+  margin-bottom: 22px;
 }
 
-h2{
-  text-align:center;
-  margin-top:0;
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.5px;
 }
 
-.subtitle{
-  text-align:center;
-  color:#aaa;
-  font-size:14px;
-  margin-bottom:22px;
+.logo-badge {
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 3px 7px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
-input{
-  width:100%;
-  padding:14px;
-  margin-bottom:14px;
-  background:#0f0f14;
-  border:1px solid #33333d;
-  border-radius:8px;
-  color:white;
-  font-size:15px;
-  outline:none;
+.logo span { color: #fff; }
+.logo b { color: var(--accent); text-shadow: 0 0 10px var(--accent-glow); }
+
+.subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
 }
 
-input:focus{
-  border-color:#ff1744;
+/* AUTH TABS */
+.auth-tabs {
+  display: flex;
+  background: #06070d;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 4px;
+  margin-bottom: 20px;
 }
 
-button{
-  width:100%;
-  padding:14px;
-  border:0;
-  border-radius:8px;
-  background:#ff1744;
-  color:white;
-  font-size:16px;
-  font-weight:bold;
-  cursor:pointer;
+.auth-tab {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
 }
 
-button:hover{
-  background:#e9143d;
+.auth-tab.active {
+  background: var(--accent-gradient);
+  color: #fff;
+  box-shadow: 0 2px 10px var(--accent-glow);
 }
 
-.switch{
-  text-align:center;
-  margin-top:18px;
-  color:#aaa;
-  font-size:14px;
+/* FORM FIELDS */
+.form-group {
+  margin-bottom: 14px;
 }
 
-.switch span{
-  color:#ff1744;
-  cursor:pointer;
-  font-weight:bold;
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.message{
-  text-align:center;
-  margin-top:15px;
-  font-size:14px;
-  line-height:1.5;
+.form-input {
+  width: 100%;
+  background: #06070d;
+  border: 1px solid var(--line);
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 13px;
+  transition: all 0.2s ease;
 }
 
-.success{
-  color:#35d07f;
+.form-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(255, 0, 60, 0.3);
 }
 
-.error{
-  color:#ff5c72;
+.submit-btn {
+  width: 100%;
+  background: var(--accent-gradient);
+  color: #fff;
+  border: none;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  margin-top: 6px;
+  box-shadow: 0 4px 18px var(--accent-glow);
+  transition: all 0.2s ease;
 }
 
-.home{
-  display:block;
-  text-align:center;
-  margin-top:18px;
-  color:#aaa;
-  text-decoration:none;
-  font-size:14px;
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 0, 60, 0.7);
 }
 
-.home:hover{
-  color:white;
+.auth-message {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 14px;
+  text-align: center;
+  min-height: 18px;
+  line-height: 1.4;
+}
+
+.auth-message.error { color: #ff3b68; }
+.auth-message.success { color: #00e676; }
+
+.bottom-back {
+  text-align: center;
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+
+.back-link {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.15s ease;
+}
+
+.back-link:hover {
+  color: var(--accent);
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <div class="logo">🔥 AnimeHindiZone</div>
-
-  <div class="card">
-
-    <!-- LOGIN -->
-    <div id="loginBox">
-
-      <h2>Welcome Back</h2>
-
-      <div class="subtitle">
-        Login to watch anime
-      </div>
-
-      <input
-        type="email"
-        id="loginEmail"
-        placeholder="Email address"
-        autocomplete="email"
-      >
-
-      <input
-        type="password"
-        id="loginPassword"
-        placeholder="Password"
-        autocomplete="current-password"
-      >
-
-      <button onclick="loginUser()">
-        Login
-      </button>
-
-      <div class="switch">
-        Don't have an account?
-        <span onclick="showSignup()">Sign Up</span>
-      </div>
-
-    </div>
-
-
-    <!-- SIGNUP -->
-    <div id="signupBox" style="display:none;">
-
-      <h2>Create Account</h2>
-
-      <div class="subtitle">
-        Create your AnimeHindiZone account
-      </div>
-
-      <!-- NAME -->
-      <input
-        type="text"
-        id="signupName"
-        placeholder="Your name"
-        autocomplete="name"
-        maxlength="50"
-      >
-
-      <!-- EMAIL -->
-      <input
-        type="email"
-        id="signupEmail"
-        placeholder="Email address"
-        autocomplete="email"
-      >
-
-      <!-- PASSWORD -->
-      <input
-        type="password"
-        id="signupPassword"
-        placeholder="Password"
-        autocomplete="new-password"
-      >
-
-      <!-- CONFIRM PASSWORD -->
-      <input
-        type="password"
-        id="signupConfirm"
-        placeholder="Confirm password"
-        autocomplete="new-password"
-      >
-
-      <button onclick="signupUser()">
-        Create Account
-      </button>
-
-      <div class="switch">
-        Already have an account?
-        <span onclick="showLogin()">Login</span>
-      </div>
-
-    </div>
-
-    <div id="message" class="message"></div>
-
-    <a href="index.html" class="home">
-      ← Back to Home
+<div class="login-card">
+  <div class="logo-header">
+    <a href="index.html" class="logo">
+      <span class="logo-badge">PRO</span>
+      <span>Ani<b>Stream</b></span>
     </a>
-
+    <p class="subtitle" id="authSubtitle">Log in to sync your watch history & favorites</p>
   </div>
 
+  <div class="auth-tabs">
+    <button type="button" class="auth-tab active" id="tabLogin" onclick="showLogin()">Login</button>
+    <button type="button" class="auth-tab" id="tabSignup" onclick="showSignup()">Sign Up</button>
+  </div>
+
+  <!-- LOGIN FORM -->
+  <form id="loginForm" onsubmit="event.preventDefault(); loginUser();">
+    <div class="form-group">
+      <label for="loginEmail">Email Address</label>
+      <input type="email" id="loginEmail" class="form-input" placeholder="name@example.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label for="loginPassword">Password</label>
+      <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button type="submit" id="loginBtn" class="submit-btn">Login to AniStream</button>
+  </form>
+
+  <!-- SIGNUP FORM -->
+  <form id="signupForm" style="display:none;" onsubmit="event.preventDefault(); signupUser();">
+    <div class="form-group">
+      <label for="signupName">Your Name</label>
+      <input type="text" id="signupName" class="form-input" placeholder="e.g. Rahul Sharma" autocomplete="name" maxlength="50">
+    </div>
+
+    <div class="form-group">
+      <label for="signupEmail">Email Address</label>
+      <input type="email" id="signupEmail" class="form-input" placeholder="name@example.com" autocomplete="email">
+    </div>
+
+    <div class="form-group">
+      <label for="signupPassword">Password</label>
+      <input type="password" id="signupPassword" class="form-input" placeholder="Minimum 6 characters" autocomplete="new-password">
+    </div>
+
+    <div class="form-group">
+      <label for="signupConfirm">Confirm Password</label>
+      <input type="password" id="signupConfirm" class="form-input" placeholder="Re-enter password" autocomplete="new-password">
+    </div>
+
+    <button type="submit" id="signupBtn" class="submit-btn">Create Free Account</button>
+  </form>
+
+  <div id="authMessage" class="auth-message"></div>
+
+  <div class="bottom-back">
+    <a href="index.html" class="back-link">‹ Back to Home</a>
+  </div>
 </div>
 
-
 <script>
+"use strict";
 
-const SUPABASE_URL =
-"https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const SUPABASE_KEY =
-"sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
-
-
-// ===============================
-// SHOW LOGIN
-// ===============================
+const $ = id => document.getElementById(id);
 
 function showLogin(){
-
-  document.getElementById("loginBox").style.display = "block";
-  document.getElementById("signupBox").style.display = "none";
-
+  $("loginForm").style.display = "block";
+  $("signupForm").style.display = "none";
+  $("tabLogin").classList.add("active");
+  $("tabSignup").classList.remove("active");
+  $("authSubtitle").textContent = "Log in to sync your watch history & favorites";
   clearMessage();
 }
-
-
-// ===============================
-// SHOW SIGNUP
-// ===============================
 
 function showSignup(){
-
-  document.getElementById("loginBox").style.display = "none";
-  document.getElementById("signupBox").style.display = "block";
-
+  $("loginForm").style.display = "none";
+  $("signupForm").style.display = "block";
+  $("tabLogin").classList.remove("active");
+  $("tabSignup").classList.add("active");
+  $("authSubtitle").textContent = "Create an account to save watchlist & preferences";
   clearMessage();
 }
 
-
-// ===============================
-// MESSAGE
-// ===============================
-
-function showMessage(text,type){
-
-  const message =
-    document.getElementById("message");
-
-  message.textContent = text;
-  message.className = "message " + type;
+function showMessage(text, type){
+  const el = $("authMessage");
+  el.textContent = text;
+  el.className = "auth-message " + (type || "");
 }
-
 
 function clearMessage(){
-
-  const message =
-    document.getElementById("message");
-
-  message.textContent = "";
-  message.className = "message";
+  const el = $("authMessage");
+  el.textContent = "";
+  el.className = "auth-message";
 }
-
-
-// ===============================
-// SIGNUP
-// ===============================
-
-async function signupUser(){
-
-  const name =
-    document.getElementById("signupName").value.trim();
-
-  const email =
-    document.getElementById("signupEmail").value.trim();
-
-  const password =
-    document.getElementById("signupPassword").value;
-
-  const confirmPassword =
-    document.getElementById("signupConfirm").value;
-
-
-  // CHECK EMPTY FIELDS
-
-  if(
-    !name ||
-    !email ||
-    !password ||
-    !confirmPassword
-  ){
-
-    showMessage(
-      "Please fill all fields.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // NAME LENGTH
-
-  if(name.length < 2){
-
-    showMessage(
-      "Name must be at least 2 characters.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // PASSWORD LENGTH
-
-  if(password.length < 6){
-
-    showMessage(
-      "Password must be at least 6 characters.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  // PASSWORD MATCH
-
-  if(password !== confirmPassword){
-
-    showMessage(
-      "Passwords do not match.",
-      "error"
-    );
-
-    return;
-  }
-
-
-  showMessage(
-    "Creating your account...",
-    ""
-  );
-
-
-  // CREATE SUPABASE ACCOUNT
-
-  const { data, error } =
-    await supabaseClient.auth.signUp({
-
-      email: email,
-
-      password: password,
-
-      options:{
-
-        emailRedirectTo:
-        window.location.origin +
-        "/AnimeHindiZone/login.html",
-
-        // NAME GOES INTO USER METADATA
-        // Supabase trigger will save it
-        // into public.profiles
-
-        data:{
-          name: name
-        }
-
-      }
-
-    });
-
-
-  // ERROR
-
-  if(error){
-
-    showMessage(
-      error.message,
-      "error"
-    );
-
-    return;
-  }
-
-
-  // SESSION EXISTS
-
-  if(data.session){
-
-    showMessage(
-      "Account created successfully! Redirecting...",
-      "success"
-    );
-
-    setTimeout(function(){
-
-      window.location.href =
-        "index.html";
-
-    },1000);
-
-  }
-
-  // EMAIL VERIFICATION REQUIRED
-
-  else{
-
-    showMessage(
-      "Account created! Please check your email and verify your account before logging in.",
-      "success"
-    );
-
-  }
-
-}
-
-
-// ===============================
-// LOGIN
-// ===============================
 
 async function loginUser(){
-
-  const email =
-    document.getElementById("loginEmail").value.trim();
-
-  const password =
-    document.getElementById("loginPassword").value;
-
+  const email = $("loginEmail").value.trim();
+  const password = $("loginPassword").value;
+  const btn = $("loginBtn");
 
   if(!email || !password){
-
-    showMessage(
-      "Please enter email and password.",
-      "error"
-    );
-
+    showMessage("Please enter both email and password.", "error");
     return;
   }
 
+  btn.disabled = true;
+  btn.style.opacity = "0.7";
+  btn.textContent = "Logging in...";
+  clearMessage();
 
-  showMessage(
-    "Logging in...",
-    ""
-  );
-
-
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-
+  try {
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: email,
-
       password: password
-
     });
 
+    if(error) throw error;
 
-  if(error){
+    showMessage("Login successful! Redirecting...", "success");
+    setTimeout(() => {
+      window.location.replace("index.html");
+    }, 800);
+  } catch(err) {
+    showMessage("❌ " + (err.message || "Login failed."), "error");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.textContent = "Login to AniStream";
+  }
+}
 
-    showMessage(
-      error.message,
-      "error"
-    );
+async function signupUser(){
+  const name = $("signupName").value.trim();
+  const email = $("signupEmail").value.trim();
+  const password = $("signupPassword").value;
+  const confirmPassword = $("signupConfirm").value;
+  const btn = $("signupBtn");
 
+  if(!name || !email || !password || !confirmPassword){
+    showMessage("Please fill all fields.", "error");
     return;
   }
 
-
-  showMessage(
-    "Login successful! Redirecting...",
-    "success"
-  );
-
-
-  setTimeout(function(){
-
-    window.location.href =
-      "index.html";
-
-  },800);
-
-}
-
-
-// ===============================
-// CHECK EXISTING SESSION
-// ===============================
-
-async function checkSession(){
-
-  const { data } =
-    await supabaseClient.auth.getSession();
-
-
-  if(data.session){
-
-    // User is already logged in.
-    // We don't force redirect here.
+  if(name.length < 2){
+    showMessage("Name must be at least 2 characters.", "error");
+    return;
   }
 
+  if(password.length < 6){
+    showMessage("Password must be at least 6 characters.", "error");
+    return;
+  }
+
+  if(password !== confirmPassword){
+    showMessage("Passwords do not match.", "error");
+    return;
+  }
+
+  btn.disabled = true;
+  btn.style.opacity = "0.7";
+  btn.textContent = "Creating account...";
+  clearMessage();
+
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        emailRedirectTo: window.location.origin + "/AnimeHindiZone/login.html",
+        data: {
+          name: name
+        }
+      }
+    });
+
+    if(error) throw error;
+
+    if(data.session){
+      showMessage("Account created successfully! Redirecting...", "success");
+      setTimeout(() => {
+        window.location.replace("index.html");
+      }, 900);
+    } else {
+      showMessage("Account created! Check your email to verify before logging in.", "success");
+      btn.disabled = false;
+      btn.style.opacity = "1";
+      btn.textContent = "Create Free Account";
+    }
+  } catch(err) {
+    showMessage("❌ " + (err.message || "Account creation failed."), "error");
+    btn.disabled = false;
+    btn.style.opacity = "1";
+    btn.textContent = "Create Free Account";
+  }
 }
 
+async function checkSession(){
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if(session && session.user){
+    window.location.replace("index.html");
+  }
+}
 
 checkSession();
-
 </script>
 
 </body>
