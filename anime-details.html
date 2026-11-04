@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#040508">
-<title>Anime Details - AniStream</title>
+<title>Anime Details — AniStream</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -71,7 +71,7 @@ header {
 .logo-badge {
   background: var(--accent-gradient);
   color: #fff;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 900;
   padding: 3px 6px;
   border-radius: var(--radius-sm);
@@ -109,7 +109,7 @@ header {
   color: #ff3b68;
 }
 
-/* COMPACT HERO */
+/* HERO SECTION */
 .hero {
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -141,8 +141,8 @@ header {
   padding: 16px 14px;
 }
 .poster {
-  width: 95px;
-  height: 140px;
+  width: 105px;
+  height: 155px;
   object-fit: cover;
   border-radius: var(--radius-sm);
   background: #0d0f1a;
@@ -182,11 +182,11 @@ header {
   color: #a4a9bd;
   line-height: 1.45;
   font-size: 11.5px;
-  max-height: 58px;
+  max-height: 65px;
   overflow-y: auto;
 }
 
-/* COMPACT SHARE BOX */
+/* SHARE BOX */
 .share-box {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -232,10 +232,7 @@ header {
   background: #141728;
   border: 1px solid var(--line);
 }
-.copy-btn:hover {
-  border-color: var(--accent);
-  color: #fff;
-}
+.copy-btn:hover { border-color: var(--accent); color: #fff; }
 .whatsapp-btn { background: #128c7e; }
 .whatsapp-btn:hover { background: #0e7266; }
 .telegram-btn { background: #229ed9; }
@@ -247,7 +244,7 @@ header {
   display: none;
 }
 
-/* COMPACT SECTIONS */
+/* GENERAL SECTIONS */
 .section {
   background: var(--surface);
   border: 1px solid var(--line);
@@ -261,6 +258,9 @@ header {
   font-weight: 800;
   margin-bottom: 10px;
   text-shadow: 0 0 10px var(--accent-glow);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* OVERVIEW & METRICS PILLS */
@@ -277,9 +277,7 @@ header {
   padding: 8px 10px;
   transition: border-color 0.15s ease;
 }
-.info-pill:hover {
-  border-color: rgba(255, 0, 60, 0.3);
-}
+.info-pill:hover { border-color: rgba(255, 0, 60, 0.35); }
 .info-pill span {
   display: block;
   font-size: 9.5px;
@@ -294,7 +292,69 @@ header {
   font-weight: 800;
 }
 
-/* CHARACTERS & VOICE CAST GRID */
+/* TRAILER EMBED */
+.trailer-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line);
+}
+.trailer-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* RELATIONS & RECOMMENDATIONS GRID */
+.relation-grid, .rec-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+.rel-card {
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.2s ease;
+}
+.rel-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 4px 15px rgba(255, 0, 60, 0.25);
+}
+.rel-thumb {
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  background: #07080f;
+}
+.rel-body {
+  padding: 6px 8px;
+}
+.rel-type {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.rel-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* CHARACTERS & VOICE CAST */
 .character-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -335,9 +395,7 @@ header {
   border: 1px solid var(--line);
   flex-shrink: 0;
 }
-.actor-text {
-  min-width: 0;
-}
+.actor-text { min-width: 0; }
 .actor-name {
   font-size: 11.5px;
   font-weight: 700;
@@ -357,7 +415,7 @@ header {
   max-width: 90px;
 }
 
-/* COMPACT EPISODES */
+/* EPISODES */
 .episodes {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
@@ -393,7 +451,7 @@ header {
 }
 .episode-btn:hover .ep-tag { color: #fff; }
 
-/* COMPACT COMMENTS */
+/* COMMENTS */
 .comment-form {
   background: var(--surface-card);
   border: 1px solid var(--line);
@@ -477,11 +535,12 @@ header {
 
 @media(max-width: 480px) {
   .hero-content { padding: 12px 10px; gap: 10px; }
-  .poster { width: 80px; height: 118px; }
+  .poster { width: 85px; height: 125px; }
   .info h1 { font-size: 16px; }
   .share-buttons { display: grid; grid-template-columns: repeat(2, 1fr); }
   .episodes { grid-template-columns: repeat(4, 1fr); gap: 5px; }
   .character-grid { grid-template-columns: 1fr; }
+  .relation-grid, .rec-grid { grid-template-columns: repeat(3, 1fr); gap: 6px; }
 }
 </style>
 </head>
@@ -504,12 +563,12 @@ header {
 <div class="container">
   <a href="index.html" class="back">‹ Back to Home</a>
 
-  <!-- ANIME DETAILS HERO -->
+  <!-- 1. ANIME HERO -->
   <div id="animeContainer">
     <div class="loading">Anime details load ho rahe hain...</div>
   </div>
 
-  <!-- SHARE BOX -->
+  <!-- 2. SHARE BOX -->
   <div class="share-box">
     <div class="share-title">📤 Share Anime</div>
     <div class="share-buttons">
@@ -521,7 +580,7 @@ header {
     <div id="shareMessage" class="share-message">Link copied successfully!</div>
   </div>
 
-  <!-- EPISODES SECTION -->
+  <!-- 3. EPISODES SELECTOR -->
   <div class="section">
     <h2>📺 Select Episode</h2>
     <div id="episodeContainer" class="episodes">
@@ -529,13 +588,25 @@ header {
     </div>
   </div>
 
-  <!-- AUTO-FETCHED ANIME DETAILS & METRICS -->
-  <div class="section" id="metaSection" style="display: none;">
-    <h2>ℹ️ Anime Overview & Studio Details</h2>
+  <!-- 4. OFFICIAL TRAILER -->
+  <div class="section" id="trailerSection" style="display:none;">
+    <h2>🎬 Official Trailer</h2>
+    <div class="trailer-wrap" id="trailerWrap"></div>
+  </div>
+
+  <!-- 5. FULL METRICS & STUDIO DETAILS -->
+  <div class="section" id="metaSection" style="display:none;">
+    <h2>ℹ️ Complete Anime Overview & Metrics</h2>
     <div class="info-pills-grid" id="infoPillsGrid"></div>
   </div>
 
-  <!-- AUTO-FETCHED CHARACTERS & VOICE CAST -->
+  <!-- 6. FRANCHISE & SEQUELS / PREQUELS -->
+  <div class="section" id="relationSection" style="display:none;">
+    <h2>🔗 Anime Franchise (Sequels & Prequels)</h2>
+    <div class="relation-grid" id="relationGrid"></div>
+  </div>
+
+  <!-- 7. CHARACTERS & VOICE CAST -->
   <div class="section" id="castSection">
     <h2>🎭 Characters & Voice Cast</h2>
     <div id="characterGrid" class="character-grid">
@@ -543,7 +614,13 @@ header {
     </div>
   </div>
 
-  <!-- COMMENTS SECTION -->
+  <!-- 8. RECOMMENDED ANIME -->
+  <div class="section" id="recSection" style="display:none;">
+    <h2>✨ Similar Recommendations</h2>
+    <div class="rec-grid" id="recGrid"></div>
+  </div>
+
+  <!-- 9. COMMENTS -->
   <div class="section">
     <h2>💬 Comments</h2>
     <div class="comment-form">
@@ -582,9 +659,7 @@ function escapeHtml(value){
     .replace(/'/g,"&#039;");
 }
 
-function getAnimeShareLink(){
-  return window.location.href;
-}
+function getAnimeShareLink(){ return window.location.href; }
 
 function updateShareLinks(){
   const shareUrl = getAnimeShareLink();
@@ -598,9 +673,7 @@ async function shareAnime(){
   const shareTitle = document.title || "AniStream";
   const shareText = "Watch this anime on AniStream";
   if(navigator.share){
-    try{
-      await navigator.share({ title: shareTitle, text: shareText, url: shareUrl });
-    }catch(error){}
+    try{ await navigator.share({ title: shareTitle, text: shareText, url: shareUrl }); }catch(e){}
   }else{
     copyAnimeLink();
   }
@@ -655,7 +728,7 @@ async function loadAnime(){
   renderAnime(data);
   loadEpisodes(data.anime_id);
   loadComments(data.anime_id);
-  fetchFastCastAndDetails(data.title);
+  fetchAllAnimeDetails(data.title);
 }
 
 function renderAnime(anime){
@@ -665,7 +738,7 @@ function renderAnime(anime){
   if(anime.language) tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
   if(anime.status) tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
 
-  document.title = (anime.title || "Anime") + " - AniStream";
+  document.title = (anime.title || "Anime") + " — AniStream";
 
   animeContainer.innerHTML = `
     <div class="hero">
@@ -712,7 +785,7 @@ async function loadEpisodes(targetAnimeId){
   });
 }
 
-/* ================= ULTRA-FAST ANILIST GRAPHQL CAST FETCHER ================= */
+/* ================= COMPREHENSIVE ANILIST DEEP FETCHER ================= */
 function cleanSearchQuery(title) {
   if(!title) return "";
   return String(title)
@@ -723,17 +796,49 @@ function cleanSearchQuery(title) {
     .trim();
 }
 
-async function queryAniList(searchTerm) {
+async function queryAniListFull(searchTerm) {
   const query = `
     query ($search: String) {
-      Media(search: $search, type: ANIME) {
+      Media(search: $search, type: ANIME, isAdult: false) {
         id
         averageScore
         source
         status
+        season
         seasonYear
+        episodes
+        duration
+        favourites
+        startDate { year month day }
+        endDate { year month day }
         studios(isMain: true) {
           nodes { name }
+        }
+        trailer {
+          id
+          site
+        }
+        relations {
+          edges {
+            relationType
+            node {
+              id
+              title { english romaji }
+              coverImage { medium }
+              format
+              status
+            }
+          }
+        }
+        recommendations(perPage: 6, sort: RATING_DESC) {
+          nodes {
+            mediaRecommendation {
+              id
+              title { english romaji }
+              coverImage { medium }
+              averageScore
+            }
+          }
         }
         characters(sort: [ROLE, RELEVANCE], perPage: 8) {
           edges {
@@ -773,79 +878,145 @@ async function queryAniList(searchTerm) {
   }
 }
 
-async function fetchFastCastAndDetails(animeTitle) {
-  const castGrid = document.getElementById("characterGrid");
-  const metaSection = document.getElementById("metaSection");
-  const pillsGrid = document.getElementById("infoPillsGrid");
-
+async function fetchAllAnimeDetails(animeTitle) {
   const clean = cleanSearchQuery(animeTitle) || animeTitle;
 
-  let media = await queryAniList(clean);
-
+  let media = await queryAniListFull(clean);
   if (!media) {
     const words = clean.split(" ");
     if (words.length > 4) {
-      const shortTitle = words.slice(0, 4).join(" ");
-      media = await queryAniList(shortTitle);
+      media = await queryAniListFull(words.slice(0, 4).join(" "));
     }
   }
 
   if (!media) {
-    castGrid.innerHTML = '<div class="empty">Is anime ke characters online database mein nahi mile.</div>';
+    document.getElementById("characterGrid").innerHTML = '<div class="empty">Is anime ka online database match nahi mila.</div>';
     return;
   }
 
-  const studio = media.studios?.nodes?.[0]?.name || "Original";
+  // 1. Trailer Render
+  if (media.trailer && media.trailer.site === "youtube" && media.trailer.id) {
+    const trailerSection = document.getElementById("trailerSection");
+    const trailerWrap = document.getElementById("trailerWrap");
+    trailerWrap.innerHTML = `
+      <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(media.trailer.id)}?rel=0" allowfullscreen loading="lazy"></iframe>
+    `;
+    trailerSection.style.display = "block";
+  }
+
+  // 2. Comprehensive Metrics
+  const metaSection = document.getElementById("metaSection");
+  const pillsGrid = document.getElementById("infoPillsGrid");
+
+  const studio = media.studios?.nodes?.[0]?.name || "N/A";
   const score = media.averageScore ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10` : "N/A";
   const source = media.source ? media.source.replace(/_/g, " ") : "N/A";
-  const status = media.status || "Ongoing";
-  const year = media.seasonYear || "N/A";
+  const status = media.status ? media.status.replace(/_/g, " ") : "Ongoing";
+  const eps = media.episodes ? `${media.episodes} Ep` : "TBA";
+  const duration = media.duration ? `${media.duration} Mins / Ep` : "N/A";
+  const airedSeason = media.season ? `${media.season} ${media.seasonYear || ""}` : (media.seasonYear || "N/A");
+  
+  let dateStr = "N/A";
+  if(media.startDate?.year){
+    dateStr = `${media.startDate.day || 1}/${media.startDate.month || 1}/${media.startDate.year}`;
+  }
 
   pillsGrid.innerHTML = `
-    <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
     <div class="info-pill"><span>Rating / Score</span><strong>${escapeHtml(score)}</strong></div>
+    <div class="info-pill"><span>Total Episodes</span><strong>${escapeHtml(eps)}</strong></div>
+    <div class="info-pill"><span>Duration</span><strong>${escapeHtml(duration)}</strong></div>
+    <div class="info-pill"><span>Airing Season</span><strong>${escapeHtml(airedSeason)}</strong></div>
+    <div class="info-pill"><span>Start Date</span><strong>${escapeHtml(dateStr)}</strong></div>
+    <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
     <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
     <div class="info-pill"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
-    <div class="info-pill"><span>Year</span><strong>${escapeHtml(String(year))}</strong></div>
   `;
   metaSection.style.display = "block";
 
-  const edges = media.characters?.edges || [];
-  if (!edges.length) {
-    castGrid.innerHTML = '<div class="empty">Koi character list available nahi hai.</div>';
-    return;
+  // 3. Franchise / Relations (Prequels, Sequels, etc.)
+  const relations = media.relations?.edges || [];
+  if (relations.length) {
+    const relationSection = document.getElementById("relationSection");
+    const relationGrid = document.getElementById("relationGrid");
+    relationGrid.innerHTML = "";
+
+    relations.slice(0, 6).forEach(edge => {
+      const relNode = edge.node;
+      const relTitle = relNode.title?.english || relNode.title?.romaji || "Related Anime";
+      const card = document.createElement("div");
+      card.className = "rel-card";
+      card.innerHTML = `
+        <img class="rel-thumb" src="${relNode.coverImage?.medium || ''}" alt="${escapeHtml(relTitle)}" onerror="this.style.opacity='0.2'">
+        <div class="rel-body">
+          <div class="rel-type">${escapeHtml(edge.relationType.replace(/_/g, " "))}</div>
+          <div class="rel-title" title="${escapeHtml(relTitle)}">${escapeHtml(relTitle)}</div>
+        </div>
+      `;
+      relationGrid.appendChild(card);
+    });
+    relationSection.style.display = "block";
   }
 
-  castGrid.innerHTML = "";
-  edges.forEach(edge => {
-    const char = edge.node;
-    const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
+  // 4. Characters & Voice Cast
+  const castGrid = document.getElementById("characterGrid");
+  const edges = media.characters?.edges || [];
+  if (edges.length) {
+    castGrid.innerHTML = "";
+    edges.forEach(edge => {
+      const char = edge.node;
+      const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
+      const vas = edge.voiceActors || [];
+      const va = vas.find(v => v.languageV2 === "Japanese") || vas[0] || null;
 
-    const vas = edge.voiceActors || [];
-    const va = vas.find(v => v.languageV2 === "Japanese") || vas[0] || null;
+      const card = document.createElement("div");
+      card.className = "char-card";
+      card.innerHTML = `
+        <div class="char-part">
+          <img src="${char.image?.medium || ''}" class="actor-img" alt="${escapeHtml(char.name?.full)}" onerror="this.style.opacity='0.2'">
+          <div class="actor-text">
+            <div class="actor-name" title="${escapeHtml(char.name?.full)}">${escapeHtml(char.name?.full)}</div>
+            <span class="actor-sub">${escapeHtml(roleText)}</span>
+          </div>
+        </div>
+        ${va ? `
+        <div class="va-part">
+          <img src="${va.image?.medium || ''}" class="actor-img" alt="${escapeHtml(va.name?.full)}" onerror="this.style.opacity='0.2'">
+          <div class="actor-text">
+            <div class="actor-name" title="${escapeHtml(va.name?.full)}">${escapeHtml(va.name?.full)}</div>
+            <span class="actor-sub">🎙️ ${escapeHtml(va.languageV2 || 'Voice')}</span>
+          </div>
+        </div>
+        ` : ''}
+      `;
+      castGrid.appendChild(card);
+    });
+  } else {
+    castGrid.innerHTML = '<div class="empty">Koi character information available nahi hai.</div>';
+  }
 
-    const card = document.createElement("div");
-    card.className = "char-card";
-    card.innerHTML = `
-      <div class="char-part">
-        <img src="${char.image?.medium || ''}" class="actor-img" alt="${escapeHtml(char.name?.full)}" onerror="this.style.opacity='0.2'">
-        <div class="actor-text">
-          <div class="actor-name" title="${escapeHtml(char.name?.full)}">${escapeHtml(char.name?.full)}</div>
-          <span class="actor-sub">${escapeHtml(roleText)}</span>
+  // 5. Recommended Anime
+  const recs = (media.recommendations?.nodes || []).map(n => n.mediaRecommendation).filter(Boolean);
+  if (recs.length) {
+    const recSection = document.getElementById("recSection");
+    const recGrid = document.getElementById("recGrid");
+    recGrid.innerHTML = "";
+
+    recs.slice(0, 6).forEach(item => {
+      const rTitle = item.title?.english || item.title?.romaji || "Anime";
+      const rScore = item.averageScore ? `⭐ ${(item.averageScore/10).toFixed(1)}` : "";
+      const card = document.createElement("div");
+      card.className = "rel-card";
+      card.innerHTML = `
+        <img class="rel-thumb" src="${item.coverImage?.medium || ''}" alt="${escapeHtml(rTitle)}" onerror="this.style.opacity='0.2'">
+        <div class="rel-body">
+          <div class="rel-type">${escapeHtml(rScore || "RECOMMENDED")}</div>
+          <div class="rel-title" title="${escapeHtml(rTitle)}">${escapeHtml(rTitle)}</div>
         </div>
-      </div>
-      ${va ? `
-      <div class="va-part">
-        <img src="${va.image?.medium || ''}" class="actor-img" alt="${escapeHtml(va.name?.full)}" onerror="this.style.opacity='0.2'">
-        <div class="actor-text">
-          <div class="actor-name" title="${escapeHtml(va.name?.full)}">${escapeHtml(va.name?.full)}</div>
-          <span class="actor-sub">🎙️ ${escapeHtml(va.languageV2 || 'Voice')}</span>
-        </div>
-      </div>
-      ` : ''}
-    `;
-    castGrid.appendChild(card);
-  });
+      `;
+      recGrid.appendChild(card);
+    });
+    recSection.style.display = "block";
+  }
 }
 
 /* ================= COMMENTS SYSTEM ================= */
