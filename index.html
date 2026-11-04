@@ -114,35 +114,6 @@ header{
 }
 .nav-links a:hover{color:#fff;text-shadow:0 0 8px rgba(255,255,255,.4)}
 
-/* PROFILE HEADER BUTTON & BADGE */
-.profile-header-btn{
-  background:rgba(255,0,60,.12);
-  border:1px solid rgba(255,0,60,.4);
-  color:#fff;
-  padding:5px 12px;
-  border-radius:var(--radius-full);
-  font-size:11.5px;
-  font-weight:800;
-  cursor:pointer;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  transition:all .2s ease;
-}
-.profile-header-btn:hover{
-  background:var(--accent);
-  box-shadow:0 0 12px var(--accent-glow);
-  transform:translateY(-1px);
-}
-.user-avatar-badge{
-  width:24px;
-  height:24px;
-  border-radius:50%;
-  border:1.5px solid var(--accent);
-  object-fit:cover;
-  box-shadow:0 0 8px var(--accent-glow);
-}
-
 .hero{
   position:relative;
   min-height:320px;
@@ -468,104 +439,6 @@ footer{
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ================= PROFILE & AUTH MODALS CSS ================= */
-.modal-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(4,5,8,.88);
-  backdrop-filter:blur(12px);
-  z-index:9999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:14px;
-}
-.modal-overlay.active{display:flex}
-.profile-modal{
-  background:#0d0f1a;
-  border:1px solid rgba(255,0,60,.35);
-  border-radius:var(--radius-lg);
-  width:100%;
-  max-width:360px;
-  padding:22px 18px;
-  box-shadow:0 0 35px rgba(255,0,60,.25);
-  position:relative;
-  animation:modalPop .2s ease-out;
-}
-@keyframes modalPop{
-  from{transform:scale(.92);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-.modal-close{
-  position:absolute;
-  top:12px;
-  right:14px;
-  background:transparent;
-  border:none;
-  color:var(--muted);
-  font-size:18px;
-  cursor:pointer;
-}
-.modal-close:hover{color:#fff}
-.auth-tabs{
-  display:flex;
-  gap:8px;
-  margin-bottom:16px;
-  border-bottom:1px solid var(--line);
-  padding-bottom:10px;
-}
-.auth-tab{
-  flex:1;
-  background:transparent;
-  border:none;
-  color:var(--muted);
-  font-size:13px;
-  font-weight:800;
-  padding:6px 0;
-  cursor:pointer;
-  border-bottom:2px solid transparent;
-}
-.auth-tab.active{
-  color:#fff;
-  border-color:var(--accent);
-  text-shadow:0 0 8px var(--accent-glow);
-}
-.auth-input{
-  width:100%;
-  background:#06070d;
-  border:1px solid var(--line);
-  padding:10px 14px;
-  border-radius:var(--radius-sm);
-  color:#fff;
-  font-size:12.5px;
-  margin-bottom:10px;
-  transition:all .2s ease;
-}
-.auth-input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 10px rgba(255,0,60,.3);
-}
-.avatar-selection-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:8px;
-  margin:12px 0 16px;
-}
-.avatar-option{
-  width:100%;
-  aspect-ratio:1;
-  border-radius:50%;
-  border:2px solid var(--line);
-  cursor:pointer;
-  object-fit:cover;
-  transition:all .2s ease;
-}
-.avatar-option.active{
-  border-color:var(--accent);
-  box-shadow:0 0 12px var(--accent-glow);
-  transform:scale(1.08);
-}
-
 .bottom-nav{display:none}
 @media(max-width:720px){
   .nav{min-height:52px;padding:0 12px}
@@ -582,7 +455,7 @@ footer{
   #allAnimeGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
   .bottom-nav{
     position:fixed;left:10px;right:10px;bottom:10px;
-    height:50px;background:rgba(10,12,20,.92);
+    height:48px;background:rgba(10,12,20,.92);
     border:1px solid rgba(255,0,60,.25);
     backdrop-filter:blur(14px);border-radius:var(--radius-full);
     display:flex;align-items:center;justify-content:space-around;
@@ -611,10 +484,6 @@ footer{
       <a href="#series">📺 Series</a>
       <a href="#movies">🎬 Movies</a>
       <a href="#allAnime">📚 All Anime</a>
-      <!-- HEADER PROFILE BUTTON -->
-      <div id="profileHeaderArea">
-        <button type="button" class="profile-header-btn" onclick="openAuthModal()">👤 Login</button>
-      </div>
     </nav>
   </div>
 </header>
@@ -707,51 +576,9 @@ footer{
   <a href="#ongoing"><span>⚡</span>Ongoing</a>
   <a href="#series"><span>📺</span>Series</a>
   <a href="#movies"><span>🎬</span>Movies</a>
-  <a href="javascript:void(0)" onclick="handleProfileNavClick()" id="bottomNavProfile"><span>👤</span>Profile</a>
 </nav>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<!-- 1. LOGIN / SIGN UP MODAL -->
-<div id="authModal" class="modal-overlay">
-  <div class="profile-modal">
-    <button type="button" class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div class="auth-tabs">
-      <button type="button" class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Login</button>
-      <button type="button" class="auth-tab" id="tabSignup" onclick="switchAuthTab('signup')">Sign Up</button>
-    </div>
-
-    <div id="authFormArea">
-      <input type="email" id="authEmail" class="auth-input" placeholder="Email Address">
-      <input type="password" id="authPassword" class="auth-input" placeholder="Password (Min 6 Characters)">
-      <button type="button" id="authSubmitBtn" class="btn btn-primary" style="width:100%;margin-top:6px;" onclick="handleAuthSubmit()">Login</button>
-      <div id="authMessage" style="font-size:11px;margin-top:8px;text-align:center;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- 2. USER PROFILE MODAL -->
-<div id="userProfileModal" class="modal-overlay">
-  <div class="profile-modal" style="text-align:center;">
-    <button type="button" class="modal-close" onclick="closeProfileModal()">✕</button>
-    
-    <img id="profileCurrentAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Luffy" class="user-avatar-badge" style="width:68px;height:68px;margin:auto;display:block;" alt="Avatar">
-    <h3 id="profileUserEmail" style="font-size:13.5px;margin-top:10px;color:#fff;">user@email.com</h3>
-    <span style="font-size:9.5px;color:var(--accent);font-weight:800;letter-spacing:1px;">✦ ANISTREAM MEMBER</span>
-
-    <div style="text-align:left;margin-top:16px;">
-      <label style="font-size:10.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px;">Choose Anime Avatar</label>
-      <div class="avatar-selection-grid">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Luffy" class="avatar-option active" onclick="selectAvatar(this.src)">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Zoro" class="avatar-option" onclick="selectAvatar(this.src)">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Naruto" class="avatar-option" onclick="selectAvatar(this.src)">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Gojo" class="avatar-option" onclick="selectAvatar(this.src)">
-      </div>
-    </div>
-
-    <button type="button" class="btn btn-primary" style="width:100%;margin-top:12px;background:#ff003c;" onclick="handleUserLogout()">🚪 Logout</button>
-  </div>
-</div>
 
 <script>
 "use strict";
@@ -766,9 +593,6 @@ let heroItems=[],heroIndex=0,heroTimer=null,heroTouchStartX=null;
 
 let recentEpisodesMap={};
 const TWO_HOURS_MS=2*60*60*1000;
-
-let currentAuthMode="login";
-let currentUser=null;
 
 const $=id=>document.getElementById(id);
 const searchInput=$("searchInput"),genreSelect=$("genreSelect"),genreList=$("genreList"),toast=$("toast");
@@ -1297,117 +1121,8 @@ async function trackSiteVisit(){
   }
 }
 
-/* ================= USER AUTH & PROFILE LOGIC ================= */
-function openAuthModal(){ $("authModal").classList.add("active"); }
-function closeAuthModal(){ $("authModal").classList.remove("active"); $("authMessage").textContent=""; }
-
-function openProfileModal(){ $("userProfileModal").classList.add("active"); }
-function closeProfileModal(){ $("userProfileModal").classList.remove("active"); }
-
-function handleProfileNavClick(){
-  if(currentUser) openProfileModal();
-  else openAuthModal();
-}
-
-function switchAuthTab(mode){
-  currentAuthMode=mode;
-  $("tabLogin").classList.toggle("active",mode==="login");
-  $("tabSignup").classList.toggle("active",mode==="signup");
-  $("authSubmitBtn").textContent=mode==="login"?"Login":"Sign Up";
-  $("authMessage").textContent="";
-}
-
-async function handleAuthSubmit(){
-  const email=$("authEmail").value.trim();
-  const password=$("authPassword").value.trim();
-  const msg=$("authMessage");
-
-  if(!email||!password){
-    msg.style.color="#ff003c";
-    msg.textContent="Email aur password daalna zaroori hai.";
-    return;
-  }
-
-  msg.style.color="#aaa";
-  msg.textContent="Please wait...";
-
-  if(currentAuthMode==="login"){
-    const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-    if(error){
-      msg.style.color="#ff003c";
-      msg.textContent="❌ "+error.message;
-    }else{
-      closeAuthModal();
-      showToast("✅ Login ho gaya!");
-      checkCurrentUser();
-    }
-  }else{
-    const {data,error}=await supabaseClient.auth.signUp({email,password});
-    if(error){
-      msg.style.color="#ff003c";
-      msg.textContent="❌ "+error.message;
-    }else{
-      msg.style.color="#00e676";
-      msg.textContent="✅ Account create ho gaya! Login karein.";
-      switchAuthTab("login");
-    }
-  }
-}
-
-async function handleUserLogout(){
-  await supabaseClient.auth.signOut();
-  closeProfileModal();
-  currentUser=null;
-  renderProfileHeader();
-  showToast("Logged out successfully");
-}
-
-function selectAvatar(url){
-  document.querySelectorAll(".avatar-option").forEach(el=>el.classList.remove("active"));
-  if(window.event&&window.event.target) window.event.target.classList.add("active");
-  $("profileCurrentAvatar").src=url;
-  localStorage.setItem("anistream_avatar_"+(currentUser?.id||"guest"),url);
-  renderProfileHeader();
-  showToast("Avatar update ho gaya!");
-}
-
-async function checkCurrentUser(){
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  currentUser=session?.user||null;
-  renderProfileHeader();
-}
-
-function renderProfileHeader(){
-  const container=$("profileHeaderArea");
-  if(!container)return;
-
-  if(currentUser){
-    const savedAvatar=localStorage.getItem("anistream_avatar_"+currentUser.id)||"https://api.dicebear.com/7.x/bottts/svg?seed=Luffy";
-    const shortEmail=currentUser.email.split("@")[0];
-    $("profileUserEmail").textContent=currentUser.email;
-    $("profileCurrentAvatar").src=savedAvatar;
-
-    container.innerHTML=`
-      <button type="button" class="profile-header-btn" onclick="openProfileModal()">
-        <img src="${savedAvatar}" class="user-avatar-badge" alt="">
-        <span>${escapeHtml(shortEmail)}</span>
-      </button>
-    `;
-  }else{
-    container.innerHTML=`
-      <button type="button" class="profile-header-btn" onclick="openAuthModal()">👤 Login</button>
-    `;
-  }
-}
-
-supabaseClient.auth.onAuthStateChange((_event,session)=>{
-  currentUser=session?.user||null;
-  renderProfileHeader();
-});
-
 async function startApp(){
   trackSiteVisit();
-  checkCurrentUser();
   await loadAnime();
   await Promise.allSettled([loadAnimeLikes(),loadRecentEpisodes()]);
   updateHero();
