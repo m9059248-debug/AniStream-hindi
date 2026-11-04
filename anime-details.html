@@ -354,7 +354,6 @@ header {
   color: #ffffff;
   text-shadow: 0 0 6px var(--accent-glow);
 }
-/* ============================================================== */
 
 /* OVERVIEW & METRICS PILLS */
 .info-pills-grid {
@@ -627,7 +626,6 @@ header {
     </a>
     <div>
       <a href="index.html">Home</a>
-      <a href="admin.html">Admin</a>
     </div>
   </div>
 </header>
@@ -715,7 +713,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLI
 const params = new URLSearchParams(window.location.search);
 const animeId = params.get("id");
 
-let dbAnimeList = []; // Website library cache
+let dbAnimeList = [];
 
 const animeContainer = document.getElementById("animeContainer");
 const episodeContainer = document.getElementById("episodeContainer");
@@ -775,7 +773,6 @@ function showShareMessage(message){
   setTimeout(() => { shareMessage.style.display = "none"; }, 2000);
 }
 
-/* ================= TITLE NORMALIZER FOR DATABASE MATCHING ================= */
 function normalizeTitle(t) {
   return String(t || "")
     .toLowerCase()
@@ -1117,7 +1114,6 @@ function renderSmartDatabaseRecommendations(currentAnime, aniListRecNodes) {
   const matchedSet = new Set();
   const finalRecs = [];
 
-  // Step A: AniList match in DB
   aniListRecNodes.forEach(n => {
     const item = n?.mediaRecommendation;
     if (!item) return;
@@ -1132,7 +1128,6 @@ function renderSmartDatabaseRecommendations(currentAnime, aniListRecNodes) {
     }
   });
 
-  // Step B: Genre overlap candidates
   const scoredCandidates = candidateList
     .filter(a => !matchedSet.has(a.anime_id || a.id))
     .map(a => {
@@ -1157,7 +1152,6 @@ function renderSmartDatabaseRecommendations(currentAnime, aniListRecNodes) {
     return;
   }
 
-  // Render clickable recommendation cards
   finalRecs.forEach(entry => {
     const an = entry.anime;
     const aid = an.anime_id || an.id;
