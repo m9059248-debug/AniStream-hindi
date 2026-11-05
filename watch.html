@@ -303,6 +303,127 @@ video, iframe {
   font-weight: 800;
 }
 
+/* ============ WATCH MORE ANIME ============ */
+
+.recommend-section {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+  padding: 14px;
+  overflow: hidden;
+}
+
+.recommend-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.recommend-heading h2 {
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.recommend-heading span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.recommend-row {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #343746 transparent;
+  padding-bottom: 8px;
+}
+
+.recommend-row::-webkit-scrollbar {
+  height: 4px;
+}
+
+.recommend-row::-webkit-scrollbar-thumb {
+  background: #343746;
+  border-radius: 10px;
+}
+
+.recommend-card {
+  flex: 0 0 132px;
+  width: 132px;
+  min-width: 0;
+  display: block;
+  background: var(--surface-card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform .2s ease, border-color .2s ease;
+}
+
+.recommend-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+.recommend-image {
+  width: 100%;
+  height: 176px;
+  display: block;
+  object-fit: cover;
+  background: #08090d;
+}
+
+.recommend-info {
+  padding: 8px;
+}
+
+.recommend-title {
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 800;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 31px;
+}
+
+.recommend-genre {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.recommend-watch {
+  display: block;
+  background: rgba(255,42,109,.12);
+  color: var(--accent);
+  border-radius: 4px;
+  text-align: center;
+  padding: 6px 4px;
+  margin-top: 8px;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.recommend-empty {
+  width: 100%;
+  text-align: center;
+  padding: 20px 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
 @media(max-width: 480px) {
   #episodeNav .episode-nav {
     grid-template-columns: repeat(6, 1fr);
@@ -311,6 +432,15 @@ video, iframe {
   .link-buttons {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .recommend-card {
+    flex-basis: 116px;
+    width: 116px;
+  }
+
+  .recommend-image {
+    height: 154px;
   }
 }
 </style>
@@ -389,6 +519,18 @@ video, iframe {
 
   </div>
 
+  <!-- WATCH MORE ANIME -->
+  <section class="recommend-section">
+    <div class="recommend-heading">
+      <h2>🔥 Watch More Anime</h2>
+      <span>Recommended for you</span>
+    </div>
+
+    <div id="recommendations" class="recommend-row">
+      <div class="recommend-empty">Loading anime recommendations...</div>
+    </div>
+  </section>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -420,6 +562,7 @@ const qualityButtons = document.getElementById("qualityButtons");
 const currentStatus = document.getElementById("currentStatus");
 const linkButtons = document.getElementById("linkButtons");
 const languageTags = document.getElementById("languageTags");
+const recommendations = document.getElementById("recommendations");
 
 let qualityLinks = [];
 let selectedQuality = "720p";
@@ -627,6 +770,196 @@ async function loadAnimeLanguage() {
 
       });
     }
+  }
+}
+
+/* ---------- WATCH MORE ANIME ---------- */
+
+function normalizeGenre(genre) {
+  if (!genre) return [];
+
+  return String(genre)
+    .toLowerCase()
+    .split(/[,|/]+/)
+    .map(item => item.trim())
+    .filter(Boolean);
+}
+
+function getAnimeIdentifier(anime) {
+  return anime.anime_id ?? anime.id;
+}
+
+function createRecommendationCard(anime) {
+
+  const identifier = getAnimeIdentifier(anime);
+  const title = anime.title || "Untitled Anime";
+  const imageUrl = safeUrl(anime.thumbnail_url);
+  const genreText = anime.genre || "Anime";
+
+  if (identifier == null) return null;
+
+  const card = document.createElement("a");
+
+  card.className = "recommend-card";
+  card.href = "anime-details.html?id=" +
+    encodeURIComponent(identifier);
+
+  const image = document.createElement("img");
+
+  image.className = "recommend-image";
+  image.loading = "lazy";
+  image.alt = title;
+  image.src = imageUrl || "";
+  image.onerror = function() {
+    this.style.display = "none";
+  };
+
+  const info = document.createElement("div");
+  info.className = "recommend-info";
+
+  const name = document.createElement("div");
+  name.className = "recommend-title";
+  name.textContent = title;
+
+  const genre = document.createElement("span");
+  genre.className = "recommend-genre";
+  genre.textContent = genreText;
+
+  const watch = document.createElement("span");
+  watch.className = "recommend-watch";
+  watch.textContent = "▶ Watch Now";
+
+  info.appendChild(name);
+  info.appendChild(genre);
+  info.appendChild(watch);
+
+  card.appendChild(image);
+  card.appendChild(info);
+
+  return card;
+}
+
+async function loadRecommendations() {
+
+  recommendations.innerHTML =
+    '<div class="recommend-empty">Loading anime recommendations...</div>';
+
+  try {
+
+    /*
+      Anime table se existing records load honge.
+      id desc ka matlab newest records pehle.
+    */
+
+    const { data, error } = await supabaseClient
+      .from("anime")
+      .select("*")
+      .order("id", { ascending: false })
+      .limit(80);
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data || data.length === 0) {
+
+      recommendations.innerHTML =
+        '<div class="recommend-empty">Abhi recommendations available nahi hain.</div>';
+
+      return;
+    }
+
+    // Current anime ko recommendation se remove karo.
+    const currentId = String(animeId ?? "");
+
+    const otherAnime = data.filter(anime => {
+
+      const identifier = getAnimeIdentifier(anime);
+
+      return identifier != null &&
+        String(identifier) !== currentId &&
+        anime.title;
+
+    });
+
+    if (otherAnime.length === 0) {
+
+      recommendations.innerHTML =
+        '<div class="recommend-empty">Abhi aur anime available nahi hain.</div>';
+
+      return;
+    }
+
+    // Current anime ke genre find karo.
+    const currentAnime = data.find(anime => {
+
+      const identifier = getAnimeIdentifier(anime);
+
+      return identifier != null &&
+        String(identifier) === currentId;
+
+    });
+
+    const currentGenres = normalizeGenre(currentAnime?.genre);
+
+    // Same genre wale anime ko priority do.
+    const scoredAnime = otherAnime.map((anime, index) => {
+
+      const genres = normalizeGenre(anime.genre);
+
+      const commonGenres = genres.filter(genre =>
+        currentGenres.includes(genre)
+      );
+
+      return {
+        anime,
+        score: commonGenres.length,
+        index
+      };
+
+    });
+
+    scoredAnime.sort((a, b) => {
+
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+
+      return a.index - b.index;
+
+    });
+
+    // Maximum 20 recommendations.
+    const finalRecommendations = scoredAnime
+      .slice(0, 20)
+      .map(item => item.anime);
+
+    recommendations.innerHTML = "";
+
+    finalRecommendations.forEach(anime => {
+
+      const card = createRecommendationCard(anime);
+
+      if (card) {
+        recommendations.appendChild(card);
+      }
+
+    });
+
+    if (!recommendations.children.length) {
+
+      recommendations.innerHTML =
+        '<div class="recommend-empty">Recommendations available nahi hain.</div>';
+
+    }
+
+  } catch (error) {
+
+    console.error("Recommendation loading error:", error);
+
+    recommendations.innerHTML =
+      '<div class="recommend-empty">Recommendations load nahi ho payi. Please refresh karein.</div>';
+
   }
 }
 
@@ -1024,6 +1357,8 @@ async function loadEpisodeList() {
 loadEpisode();
 
 loadEpisodeList();
+
+loadRecommendations();
 
 </script>
 
