@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -235,9 +236,10 @@ header{
 .hero-dot.active{width:18px;background:var(--accent);box-shadow:0 0 8px var(--accent-glow)}
 
 .container{max-width:1320px;margin:auto;padding:18px 12px 75px}
+
 .search-row{
   display:grid;
-  grid-template-columns:minmax(0,1fr) 150px;
+  grid-template-columns:minmax(0,1fr) 150px 150px;
   gap:8px;
   margin-bottom:12px;
 }
@@ -253,6 +255,7 @@ header{
 }
 .search-row input:focus,.search-row select:focus{border-color:var(--accent);box-shadow:0 0 12px rgba(255,0,60,.25)}
 .search-row input::placeholder{color:#646a7e}
+.search-row select option{background:#101322;color:#fff}
 
 .genre-list{
   display:flex;
@@ -511,6 +514,16 @@ footer{
 <main class="container">
   <div class="search-row">
     <input type="search" id="searchInput" placeholder="🔍 Search series, movies, genre or language..." autocomplete="off">
+
+    <select id="languageSelect" aria-label="Filter by language">
+      <option value="Hindi">🇮🇳 Hindi</option>
+      <option value="English">🇬🇧 English</option>
+      <option value="Japanese">🇯🇵 Japanese</option>
+      <option value="Tamil">Tamil</option>
+      <option value="Telugu">Telugu</option>
+      <option value="all">All Languages</option>
+    </select>
+
     <select id="genreSelect" aria-label="Filter by genre">
       <option value="all">All genres</option>
     </select>
@@ -588,14 +601,20 @@ const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF
 const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 
 let animeList=[],animeLikeCounts={},likedAnimeIds=new Set(),likeBusyIds=new Set();
-let selectedGenre="all",toastTimer=null,searchDebounceTimer=null;
+let selectedGenre="all";
+let selectedLanguage="Hindi";
+let toastTimer=null,searchDebounceTimer=null;
 let heroItems=[],heroIndex=0,heroTimer=null,heroTouchStartX=null;
 
 let recentEpisodesMap={};
 const TWO_HOURS_MS=2*60*60*1000;
 
 const $=id=>document.getElementById(id);
-const searchInput=$("searchInput"),genreSelect=$("genreSelect"),genreList=$("genreList"),toast=$("toast");
+const searchInput=$("searchInput");
+const genreSelect=$("genreSelect");
+const languageSelect=$("languageSelect");
+const genreList=$("genreList");
+const toast=$("toast");
 
 function showToast(message){
   toast.textContent=message;
@@ -622,6 +641,50 @@ function isMovie(anime){
   const g=String(anime.genre||"").toLowerCase();
   return s.includes("movie")||g.includes("movie");
 }
+
+/* LANGUAGE SYSTEM */
+
+const SUPPORTED_LANGUAGES=[
+  "Hindi","English","Japanese","Tamil","Telugu"
+];
+
+function getAnimeLanguages(anime){
+  return String(anime.language||"")
+    .split(",")
+    .map(language=>language.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function loadSavedLanguage(){
+  try{
+    const saved=localStorage.getItem("anistream_selected_language");
+    const allowed=[...SUPPORTED_LANGUAGES,"all"];
+
+    selectedLanguage=allowed.includes(saved)?saved:"Hindi";
+  }catch{
+    selectedLanguage="Hindi";
+  }
+
+  languageSelect.value=selectedLanguage;
+}
+
+function saveSelectedLanguage(){
+  try{
+    localStorage.setItem(
+      "anistream_selected_language",
+      selectedLanguage
+    );
+  }catch(error){
+    console.warn("Language preference save failed:",error);
+  }
+}
+
+languageSelect.addEventListener("change",()=>{
+  selectedLanguage=languageSelect.value;
+  saveSelectedLanguage();
+  updateHero();
+  renderAll();
+});
 
 function getVoterId(){
   const key="anistream_voter_id";
@@ -675,6 +738,7 @@ async function loadAnime(){
   animeList=sortLatestFirst(Array.isArray(data)?data:[]);
   buildGenres();
   renderAll();
+  updateHero();
 }
 
 async function loadRecentEpisodes(){
@@ -729,6 +793,7 @@ async function loadAnimeLikes(){
     likedAnimeIds=mine;
     renderAll();
   }catch(e){
+    console.warn("Likes load failed:",e);
     animeLikeCounts={};
     likedAnimeIds=new Set();
   }
@@ -762,6 +827,7 @@ async function toggleAnimeLike(id){
       showToast("❤️ Liked");
     }
   }catch(e){
+    console.error("Like update error:",e);
     showToast("Like update failed.");
   }finally{
     likeBusyIds.delete(id);
@@ -816,15 +882,30 @@ function setGenre(g){
 
 function getFilteredAnime(){
   const search=String(searchInput.value||"").trim().toLowerCase();
+
   const list=animeList.filter(a=>{
     const title=String(a.title||"").toLowerCase();
     const genre=String(a.genre||"").toLowerCase();
     const lang=String(a.language||"").toLowerCase();
     const id=getAnimeId(a).toLowerCase();
-    const match=!search||title.includes(search)||genre.includes(search)||lang.includes(search)||id.includes(search);
-    const genreMatch=selectedGenre==="all"||genre.split(",").some(g=>g.trim()===selectedGenre.toLowerCase());
-    return match&&genreMatch;
+
+    const match=!search||
+      title.includes(search)||
+      genre.includes(search)||
+      lang.includes(search)||
+      id.includes(search);
+
+    const genreMatch=selectedGenre==="all"||
+      genre.split(",").some(g=>g.trim()===selectedGenre.toLowerCase());
+
+    const languages=getAnimeLanguages(a);
+
+    const languageMatch=selectedLanguage==="all"||
+      languages.includes(selectedLanguage.toLowerCase());
+
+    return match&&genreMatch&&languageMatch;
   });
+
   return sortLatestFirst(list);
 }
 
@@ -931,9 +1012,15 @@ function renderGrid(el,list,empty){
 
 function renderAll(){
   const filtered=getFilteredAnime();
-  const hasFilter=searchInput.value.trim()||selectedGenre!=="all";
 
-  const ongoingList=filtered.filter(a=>!isMovie(a)&&String(a.status||"").trim().toLowerCase()==="ongoing");
+  const hasFilter=
+    searchInput.value.trim()||
+    selectedGenre!=="all"||
+    selectedLanguage!=="Hindi";
+
+  const ongoingList=filtered.filter(a=>
+    !isMovie(a)&&String(a.status||"").trim().toLowerCase()==="ongoing"
+  );
 
   ongoingList.sort((a,b)=>{
     const idA=getAnimeId(a),idB=getAnimeId(b);
@@ -950,15 +1037,33 @@ function renderAll(){
     return Number(b.id||0)-Number(a.id||0);
   });
 
-  renderGrid($("ongoingGrid"),ongoingList,hasFilter?"Is filter ke liye koi ongoing series nahi mili.":"Abhi koi ongoing series nahi hai.");
+  const languageName=selectedLanguage==="all"?"":selectedLanguage;
+
+  renderGrid(
+    $("ongoingGrid"),
+    ongoingList,
+    hasFilter?"Is filter ke liye koi ongoing series nahi mili.":"Abhi koi ongoing series nahi hai."
+  );
 
   const seriesList=filtered.filter(a=>!isMovie(a));
-  renderGrid($("seriesGrid"),seriesList,hasFilter?"Is filter ke liye koi anime series nahi mili.":"Abhi koi anime series add nahi hui.");
+  renderGrid(
+    $("seriesGrid"),
+    seriesList,
+    hasFilter?"Is filter ke liye koi anime series nahi mili.":"Abhi koi anime series add nahi hui."
+  );
 
   const moviesList=filtered.filter(a=>isMovie(a));
-  renderGrid($("moviesGrid"),moviesList,hasFilter?"Is filter ke liye koi movie nahi mili.":"Abhi koi movie add nahi hui. Admin panel se movie select karke add karo.");
+  renderGrid(
+    $("moviesGrid"),
+    moviesList,
+    hasFilter?"Is filter ke liye koi movie nahi mili.":"Abhi koi movie add nahi hui. Admin panel se movie select karke add karo."
+  );
 
-  renderGrid($("allAnimeGrid"),filtered,hasFilter?"Is search ke liye koi anime nahi mila.":"Database mein koi anime nahi mila.");
+  renderGrid(
+    $("allAnimeGrid"),
+    filtered,
+    hasFilter?"Is filter ke liye koi anime nahi mila.":"Database mein koi anime nahi mila."
+  );
 }
 
 function safeImageUrl(value){
@@ -985,12 +1090,12 @@ function renderHero(index,animate=true){
   const title=document.createTextNode((featured.title||"Featured Anime")+" ");
   const br=document.createElement("br");
   const span=document.createElement("span");
-  span.textContent="Watch in Hindi";
+  span.textContent="Watch in "+selectedLanguage;
   $("heroTitle").append(title,br,span);
 
   $("heroDescription").textContent=featured.description
     ?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,200)
-    :"Stream popular anime series and movies with Hindi audio.";
+    :"Stream popular anime series and movies in "+selectedLanguage+".";
 
   $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
   $("heroWatch").textContent=isMovie(featured)?"🎬 Movie":"▶ Series";
@@ -998,7 +1103,11 @@ function renderHero(index,animate=true){
   const meta=$("heroMeta");
   meta.replaceChildren();
 
-  [isMovie(featured)?"Anime Movie":(featured.season||"Series"),featured.genre||"Anime",featured.status||"Available"].forEach(t=>{
+  [
+    isMovie(featured)?"Anime Movie":(featured.season||"Series"),
+    featured.genre||"Anime",
+    featured.language||selectedLanguage
+  ].forEach(t=>{
     const s=document.createElement("span");
     s.textContent=t;
     meta.appendChild(s);
@@ -1016,13 +1125,34 @@ function renderHero(index,animate=true){
 }
 
 function updateHero(){
-  heroItems=[...animeList].sort((a,b)=>
+  const languageFiltered=animeList.filter(anime=>{
+    if(selectedLanguage==="all")return true;
+
+    return getAnimeLanguages(anime)
+      .includes(selectedLanguage.toLowerCase());
+  });
+
+  heroItems=languageFiltered.sort((a,b)=>
     Number(Boolean(b.banner_url))-Number(Boolean(a.banner_url))||
     new Date(b.created_at||0).getTime()-new Date(a.created_at||0).getTime()
   ).slice(0,8);
 
   const dots=$("heroDots");
   dots.replaceChildren();
+
+  if(!heroItems.length){
+    heroIndex=0;
+    $("heroTitle").textContent="No Anime Available";
+    $("heroDescription").textContent=
+      "Is language mein abhi anime available nahi hai.";
+    $("heroMeta").replaceChildren();
+    $("heroWatch").href="#allAnime";
+    $("heroWatch").textContent="Explore Anime";
+    $("home").style.backgroundImage="";
+    $("home").classList.remove("has-image");
+    return;
+  }
+
   const frag=document.createDocumentFragment();
 
   heroItems.forEach((anime,i)=>{
@@ -1038,7 +1168,6 @@ function updateHero(){
   });
 
   dots.appendChild(frag);
-  if(!heroItems.length)return;
   renderHero(0,false);
 }
 
@@ -1048,11 +1177,13 @@ function restartHeroTimer(){
 }
 
 $("heroPrev").addEventListener("click",()=>{
+  if(!heroItems.length)return;
   renderHero(heroIndex-1);
   restartHeroTimer();
 });
 
 $("heroNext").addEventListener("click",()=>{
+  if(!heroItems.length)return;
   renderHero(heroIndex+1);
   restartHeroTimer();
 });
@@ -1065,7 +1196,7 @@ $("home").addEventListener("touchend",e=>{
   if(heroTouchStartX===null)return;
   const dx=e.changedTouches[0].clientX-heroTouchStartX;
   heroTouchStartX=null;
-  if(Math.abs(dx)>45){
+  if(Math.abs(dx)>45&&heroItems.length){
     renderHero(heroIndex+(dx<0?1:-1));
     restartHeroTimer();
   }
@@ -1122,9 +1253,16 @@ async function trackSiteVisit(){
 }
 
 async function startApp(){
+  loadSavedLanguage();
   trackSiteVisit();
+
   await loadAnime();
-  await Promise.allSettled([loadAnimeLikes(),loadRecentEpisodes()]);
+
+  await Promise.allSettled([
+    loadAnimeLikes(),
+    loadRecentEpisodes()
+  ]);
+
   updateHero();
   renderAll();
 }
