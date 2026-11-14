@@ -544,9 +544,13 @@ footer{
 }
 .announcement-info span{color:#858b9f}
 .announcement-info strong{color:#fff;text-align:right;overflow-wrap:anywhere}
-.announcement-okay{
-  width:100%;
+.announcement-actions{
+  display:flex;
+  gap:8px;
   margin-top:18px;
+}
+.announcement-okay{
+  flex:1;
   padding:11px;
   border:0;
   border-radius:9px;
@@ -556,6 +560,17 @@ footer{
   font-weight:900;
   cursor:pointer;
 }
+.announcement-dismiss{
+  padding:11px 15px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;
+  background:rgba(255,255,255,.06);
+  color:#d1d5db;
+  font-size:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+.announcement-dismiss[hidden]{display:none!important}
 .announcement-footer{
   margin-top:12px;
   color:#666d80;
@@ -741,7 +756,10 @@ footer{
       <div><span id="announcementThirdLabel">Expected</span><strong id="announcementExpected"></strong></div>
     </div>
 
-    <button type="button" id="announcementOkay" class="announcement-okay">Got it</button>
+    <div class="announcement-actions">
+      <button type="button" id="announcementOkay" class="announcement-okay">Got it</button>
+      <button type="button" id="announcementDismiss" class="announcement-dismiss" hidden>Close</button>
+    </div>
     <div class="announcement-footer">ANISTREAM HINDI</div>
   </div>
 </div>
@@ -796,6 +814,15 @@ function isMovie(anime){
 }
 
 /* ANNOUNCEMENT POPUP SYSTEM */
+
+function safeActionUrl(value){
+  const raw=String(value||"").trim();
+  if(!raw)return"";
+  try{
+    const url=new URL(raw,window.location.href);
+    return /^https?:$/.test(url.protocol)?url.href:"";
+  }catch{return""}
+}
 
 async function loadHomepageAnnouncement(){
   const overlay=$("announcementOverlay");
@@ -878,15 +905,33 @@ async function loadHomepageAnnouncement(){
     $("announcementAnime").textContent=announcement.anime_name||"—";
     $("announcementEpisode").textContent=announcement.episode_number||"—";
     $("announcementExpected").textContent=announcement.expected_time||"—";
-    $("announcementOkay").textContent=announcement.button_text||"Got it";
+
+    const actionLink=safeActionUrl(announcement.button_link);
+    const primaryBtn=$("announcementOkay");
+    const dismissBtn=$("announcementDismiss");
+
+    primaryBtn.textContent=announcement.button_text||(actionLink?"Open Link":"Got it");
+    dismissBtn.hidden=!actionLink;
 
     function closeAnnouncement(){
       overlay.hidden=true;
       overlay.style.display="none";
     }
 
+    primaryBtn.onclick=()=>{
+      closeAnnouncement();
+      if(actionLink){
+        const isSameOrigin=new URL(actionLink).origin===window.location.origin;
+        if(isSameOrigin){
+          window.location.href=actionLink;
+        }else{
+          window.open(actionLink,"_blank","noopener,noreferrer");
+        }
+      }
+    };
+
+    dismissBtn.onclick=closeAnnouncement;
     $("announcementClose").onclick=closeAnnouncement;
-    $("announcementOkay").onclick=closeAnnouncement;
 
     overlay.onclick=event=>{
       if(event.target===overlay)closeAnnouncement();
