@@ -787,18 +787,14 @@ function isMovie(anime){
 
 async function loadHomepageAnnouncement(){
   const overlay=$("announcementOverlay");
+  if(!overlay)return;
 
   try{
-    const now=new Date().toISOString();
-
     const {data,error}=await supabaseClient
       .from("site_announcements")
-      .select("id,is_active,announcement_type,title,message,anime_name,episode_number,expected_time,button_text,start_at,expires_at")
+      .select("*")
       .eq("is_active",true)
-      .lte("start_at",now)
-      .or("expires_at.is.null,expires_at.gt."+now)
-      .order("created_at",{ascending:false})
-      .limit(1);
+      .limit(20);
 
     if(error){
       console.warn("Announcement load failed:",error.message);
@@ -807,8 +803,27 @@ async function loadHomepageAnnouncement(){
 
     if(!data||!data.length)return;
 
-    const announcement=data[0];
-    const seenKey="anistream_announcement_seen_"+announcement.id;
+    const now=Date.now();
+    const activeAnnouncements=data.filter(item=>{
+      const startTime=item.start_at?new Date(item.start_at).getTime():0;
+      const expireTime=item.expires_at?new Date(item.expires_at).getTime():0;
+      const startOk=!startTime||isNaN(startTime)||(startTime-120000)<=now;
+      const notExpired=!expireTime||isNaN(expireTime)||expireTime>now;
+      return startOk&&notExpired;
+    });
+
+    if(!activeAnnouncements.length)return;
+
+    activeAnnouncements.sort((a,b)=>{
+      const timeA=new Date(a.updated_at||a.created_at||0).getTime()||0;
+      const timeB=new Date(b.updated_at||b.created_at||0).getTime()||0;
+      if(timeA&&timeB&&timeA!==timeB)return timeB-timeA;
+      return Number(b.id||0)-Number(a.id||0);
+    });
+
+    const announcement=activeAnnouncements[0];
+    const versionTag=announcement.updated_at||announcement.created_at||String(announcement.title||"").slice(0,20);
+    const seenKey="anistream_announcement_seen_"+announcement.id+"_"+versionTag;
 
     try{
       if(localStorage.getItem(seenKey)==="yes")return;
@@ -860,6 +875,7 @@ async function loadHomepageAnnouncement(){
       if(event.target===overlay)closeAnnouncement();
     };
 
+    overlay.removeAttribute("hidden");
     overlay.hidden=false;
 
   }catch(error){
