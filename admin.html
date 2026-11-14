@@ -98,7 +98,7 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .comment-reply-area textarea{min-height:75px}
 .reply-status{font-size:11px;color:#00e676;margin:6px 0}
 
-/* POPUP MANAGER & LIVE PREVIEW STYLES */
+/* ANNOUNCEMENT POPUP & EXACT INDEX PREVIEW */
 .popup-switch-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#07080f;border:1px solid var(--line);padding:14px 16px;border-radius:var(--radius-md);margin-bottom:14px}
 .switch-toggle{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
 .switch-toggle input{opacity:0;width:0;height:0;margin:0}
@@ -106,15 +106,27 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .switch-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
 .switch-toggle input:checked + .switch-slider{background:var(--accent-gradient);border-color:transparent;box-shadow:0 0 12px var(--accent-glow)}
 .switch-toggle input:checked + .switch-slider:before{transform:translateX(22px)}
-.popup-preview-stage{background:radial-gradient(circle at top,rgba(255,0,60,.14),#05060b 70%);border:1px dashed rgba(255,0,60,.35);border-radius:var(--radius-lg);padding:24px 16px;display:flex;justify-content:center;align-items:center}
-.popup-preview-card{width:100%;max-width:410px;background:#0d0f1a;border:1px solid rgba(255,0,60,.35);border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(0,0,0,.85),0 0 25px rgba(255,0,60,.18);position:relative}
-.popup-preview-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(4,5,8,.82);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
-.popup-preview-img{width:100%;max-height:190px;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
-.popup-preview-body{padding:18px}
-.popup-preview-badge{display:inline-block;background:rgba(255,0,60,.16);border:1px solid rgba(255,0,60,.45);color:#ff5e82;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;margin-bottom:9px;letter-spacing:.4px}
-.popup-preview-title{font-size:17px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
-.popup-preview-msg{font-size:12.5px;color:#b4b9cc;line-height:1.55;white-space:pre-wrap;margin-bottom:15px}
-.popup-preview-actions{display:flex;gap:8px}
+.grid-2col{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.grid-3col{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:10px}
+.preview-stage{background:radial-gradient(circle at top,rgba(255,0,60,.14),#05060b 75%);border:1px dashed rgba(255,0,60,.35);border-radius:var(--radius-lg);padding:24px 16px;display:flex;justify-content:center;align-items:center}
+.preview-box{position:relative;width:100%;max-width:410px;padding:27px 22px 20px;border:1px solid rgba(255,0,60,.4);border-radius:17px;background:linear-gradient(145deg,#15101a,#090b13 75%);box-shadow:0 15px 60px rgba(0,0,0,.7),0 0 30px rgba(255,0,60,.15);text-align:center}
+.preview-close{position:absolute;top:10px;right:12px;width:30px;height:30px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:20px;display:grid;place-items:center}
+.preview-icon{width:54px;height:54px;display:grid;place-items:center;margin:0 auto 13px;border-radius:15px;background:rgba(255,0,60,.13);border:1px solid rgba(255,0,60,.3);font-size:25px}
+.preview-label{color:#ff416b;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:9px}
+.preview-box h3{color:#fff;font-size:20px;font-weight:900;line-height:1.3;margin-bottom:10px;overflow-wrap:anywhere}
+.preview-box>p{color:#b7bbca;font-size:12px;line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}
+.preview-info{margin-top:16px;padding:12px;border:1px solid rgba(255,255,255,.09);border-radius:10px;background:rgba(255,255,255,.035);text-align:left}
+.preview-info div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:11px}
+.preview-info span{color:#858b9f}
+.preview-info strong{color:#fff;text-align:right;overflow-wrap:anywhere}
+.preview-okay{width:100%;margin-top:18px;padding:11px;border:0;border-radius:9px;background:linear-gradient(135deg,#ff003c,#ff2a5f);color:#fff;font-size:12px;font-weight:900}
+.preview-footer{margin-top:12px;color:#666d80;font-size:9px;letter-spacing:1px}
+.ann-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px;margin-bottom:12px}
+.ann-card.is-live{border-color:rgba(0,230,118,.4);box-shadow:0 0 18px rgba(0,230,118,.08)}
+.badge-pill{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:20px;font-size:10.5px;font-weight:800}
+.badge-live{background:rgba(0,230,118,.15);border:1px solid rgba(0,230,118,.4);color:#00e676}
+.badge-off{background:rgba(255,0,60,.15);border:1px solid rgba(255,0,60,.4);color:#ff5e82}
+.badge-type{background:#141728;border:1px solid var(--line);color:#d1d5db}
 
 @media(max-width:600px){
 .container{padding:12px}
@@ -164,8 +176,8 @@ header h1{font-size:15px}
     <button type="button" class="main-tab-btn" id="tabBtnPopup" onclick="switchSlot('popup')">📢 Popup</button>
   </div>
 
+  <!-- SLOT 1: ANIME MANAGE -->
   <div id="slotAnime">
-
     <div class="box">
       <h2>🔎 Search Anime (Ultra Auto-Fill)</h2>
       <p class="small" style="margin-bottom:8px">AniList aur MyAnimeList se anime details fetch honge.</p>
@@ -334,7 +346,7 @@ header h1{font-size:15px}
     </div>
   </div>
 
-  <!-- ANALYTICS -->
+  <!-- SLOT 2: ANALYTICS -->
   <div id="slotAnalytics" style="display:none">
     <div class="box">
       <h2>📊 Website & Anime Analytics</h2>
@@ -362,7 +374,7 @@ header h1{font-size:15px}
     </div>
   </div>
 
-  <!-- COMMENTS AND REPLIES -->
+  <!-- SLOT 3: COMMENTS -->
   <div id="slotComments" style="display:none">
     <div class="box">
       <h2>💬 Comments & Admin Replies</h2>
@@ -377,68 +389,116 @@ header h1{font-size:15px}
     </div>
   </div>
 
-  <!-- ANNOUNCEMENT POPUP MANAGER -->
+  <!-- SLOT 4: SITE ANNOUNCEMENTS MANAGER -->
   <div id="slotPopup" style="display:none">
     <div class="box">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
-        <h2 style="margin-bottom:0">📢 Home Page Announcement Popup</h2>
-        <button type="button" class="secondary" style="padding:7px 12px;font-size:11.5px" onclick="loadPopupSettings()">🔄 Reload Data</button>
+        <h2 style="margin-bottom:0" id="annFormHeading">📢 Publish Home Page Announcement</h2>
+        <button type="button" class="secondary" style="padding:7px 12px;font-size:11.5px" onclick="resetAnnouncementForm()">➕ New Popup</button>
       </div>
+
+      <input type="hidden" id="editingAnnId" value="">
 
       <div class="popup-switch-card">
         <div>
-          <div style="font-size:13.5px;font-weight:800;color:#fff" id="popupStatusHeading">Popup Status: ON</div>
-          <div class="small" style="margin-top:2px">Off karne par home page par popup show nahi hoga.</div>
+          <div style="font-size:13.5px;font-weight:800;color:#fff" id="annActiveLabel">Status: <span style="color:#00e676">🟢 Active (Live)</span></div>
+          <div class="small" style="margin-top:2px">Publish karne par yeh announcement home page par live ho jayega aur purane off ho jayenge.</div>
         </div>
         <label class="switch-toggle">
-          <input type="checkbox" id="popupActive" checked onchange="updatePopupPreview()">
+          <input type="checkbox" id="annIsActive" checked onchange="updateAnnouncementPreview()">
           <span class="switch-slider"></span>
         </label>
       </div>
 
-      <label class="small">Badge / Tag (Optional)</label>
-      <input id="popupBadge" placeholder="e.g. 🔥 NEW UPDATE / 📢 ANNOUNCEMENT" oninput="updatePopupPreview()">
+      <div class="grid-2col">
+        <div>
+          <label class="small">Announcement Type</label>
+          <select id="annType" onchange="updateAnnouncementPreview()">
+            <option value="general">📢 General Announcement</option>
+            <option value="episode_delay">⏳ Episode Delay</option>
+            <option value="stream_alert">🔴 Stream Alert</option>
+          </select>
+        </div>
+        <div>
+          <label class="small">Button Text (Default: Got it)</label>
+          <input id="annButtonText" placeholder="e.g. Got it / Samajh Gaya / Okay" oninput="updateAnnouncementPreview()">
+        </div>
+      </div>
 
       <label class="small">Popup Title *</label>
-      <input id="popupTitle" placeholder="e.g. Solo Leveling Season 2 Hindi Dub Added!" oninput="updatePopupPreview()">
+      <input id="annTitle" placeholder="e.g. Solo Leveling Episode 12 Delay Notice" oninput="updateAnnouncementPreview()">
 
-      <label class="small">Popup Message / Description *</label>
-      <textarea id="popupMessage" placeholder="Users ke liye announcement message yahan likhein..." oninput="updatePopupPreview()"></textarea>
+      <label class="small">Popup Message *</label>
+      <textarea id="annMessage" placeholder="Users ke liye announcement message yahan likhein..." oninput="updateAnnouncementPreview()"></textarea>
 
-      <label class="small">Banner / Poster Image URL (Optional)</label>
-      <input id="popupImage" placeholder="https://example.com/banner.jpg (Khali chhod sakte hain)" oninput="updatePopupPreview()">
-
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
-        <div>
-          <label class="small">Button Text (Optional)</label>
-          <input id="popupBtnText" placeholder="e.g. Watch Now / Join Telegram" oninput="updatePopupPreview()">
-        </div>
-        <div>
-          <label class="small">Button Link URL (Optional)</label>
-          <input id="popupBtnLink" placeholder="e.g. watch.html?id=solo-leveling or https://t.me/..." oninput="updatePopupPreview()">
+      <div style="background:#07080f;border:1px solid var(--line);border-radius:var(--radius-md);padding:12px 14px;margin:10px 0">
+        <div style="font-size:12px;font-weight:800;color:#ff5e82;margin-bottom:4px">🎬 Anime Details Box (Optional — Delay ya Stream Alert ke liye)</div>
+        <p class="small" style="margin-bottom:8px">Agar inme se koi field bharoge to popup ke andar info card automatically dikhega.</p>
+        <div class="grid-3col">
+          <div>
+            <label class="small">Anime Name</label>
+            <input id="annAnimeName" placeholder="e.g. Solo Leveling" oninput="updateAnnouncementPreview()">
+          </div>
+          <div>
+            <label class="small">Episode</label>
+            <input id="annEpisodeNumber" placeholder="e.g. Episode 12" oninput="updateAnnouncementPreview()">
+          </div>
+          <div>
+            <label class="small">Expected Time</label>
+            <input id="annExpectedTime" placeholder="e.g. Tomorrow 8:00 PM" oninput="updateAnnouncementPreview()">
+          </div>
         </div>
       </div>
 
-      <label class="small">Popup Version / ID (Reset "Show Once" for Users)</label>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="popupVersion" placeholder="e.g. v1" style="margin:7px 0">
-        <button type="button" class="secondary" style="white-space:nowrap;padding:11px 14px" onclick="bumpPopupVersion()">🔄 New Version</button>
+      <div class="grid-2col">
+        <div>
+          <label class="small">Start At (Khali chhodne par abhi se live hoga)</label>
+          <input type="datetime-local" id="annStartAt">
+        </div>
+        <div>
+          <label class="small">Expires At (Optional — Auto-hide time)</label>
+          <input type="datetime-local" id="annExpiresAt">
+        </div>
       </div>
-      <p class="language-help">Naya announcement daalne par "New Version" dabayein taaki purana popup close kar chuke users ko bhi naya popup dikhe.</p>
 
       <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
-        <button type="button" class="primary" style="flex:2;padding:12px" onclick="savePopupSettings()">💾 Save & Publish Popup</button>
-        <button type="button" class="secondary" style="flex:1;padding:12px" onclick="clearPopupFields()">🧹 Clear Fields</button>
+        <button type="button" class="primary" id="annSubmitBtn" style="flex:2;padding:12px" onclick="saveAnnouncement()">🚀 Publish Announcement</button>
+        <button type="button" class="secondary" id="annCancelBtn" style="flex:1;padding:12px;display:none" onclick="resetAnnouncementForm()">❌ Cancel Edit</button>
       </div>
-      <div id="popupStatusMsg"></div>
+      <div id="annFormMsg"></div>
     </div>
 
+    <!-- EXACT INDEX.HTML LIVE PREVIEW -->
     <div class="box">
-      <h2>👁️ Live Popup Preview</h2>
-      <p class="small" style="margin-bottom:12px">Home page par users ko popup kuch is tarah dikhega:</p>
-      <div class="popup-preview-stage">
-        <div class="popup-preview-card" id="popupPreviewCard"></div>
+      <h2>👁️ Live Home Page Preview</h2>
+      <p class="small" style="margin-bottom:12px">Aapke home page (`index.html`) par popup bilkul aisa dikhega:</p>
+      <div class="preview-stage">
+        <div class="preview-box" id="annPreviewBox">
+          <div class="preview-close">×</div>
+          <div class="preview-icon" id="prevIcon">📢</div>
+          <div class="preview-label" id="prevType">ANISTREAM ANNOUNCEMENT</div>
+          <h3 id="prevTitle">Announcement Title</h3>
+          <p id="prevMessage">Aapka announcement message yahan show hoga.</p>
+          <div class="preview-info" id="prevInfoBox" style="display:none">
+            <div><span>Anime</span><strong id="prevAnime">—</strong></div>
+            <div><span>Episode</span><strong id="prevEpisode">—</strong></div>
+            <div><span>Expected</span><strong id="prevExpected">—</strong></div>
+          </div>
+          <button type="button" class="preview-okay" id="prevBtn">Got it</button>
+          <div class="preview-footer">ANISTREAM HINDI</div>
+        </div>
       </div>
+    </div>
+
+    <!-- ALL ANNOUNCEMENTS LIST -->
+    <div class="box">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+        <h2 style="margin-bottom:0">📋 Saved Announcements</h2>
+        <button type="button" class="secondary" style="padding:7px 12px;font-size:11.5px" onclick="loadAnnouncementsList()">🔄 Refresh List</button>
+      </div>
+      <p class="small" style="margin-bottom:12px">Jo announcement 🟢 LIVE hai, wahi home page par har visit par dikhega.</p>
+      <div id="annListMsg"></div>
+      <div id="announcementsListContainer"><div class="empty">Announcements load ho rahe hain...</div></div>
     </div>
   </div>
 
@@ -452,7 +512,7 @@ const AROLINK_FUNCTION_URL=SUPABASE_URL+"/functions/v1/arolink-shortener";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const AVAILABLE_LANGUAGES=["Hindi","English","Japanese","Tamil","Telugu"];
 
-let selectedAnime=null,animeLibraryData=[],libraryFilter="all";
+let selectedAnime=null,animeLibraryData=[],libraryFilter="all",announcementsCache=[];
 
 function switchSlot(slotName){
   const slots={
@@ -473,7 +533,10 @@ function switchSlot(slotName){
 
   if(slotName==="analytics")loadAnalytics();
   if(slotName==="comments")loadAdminComments();
-  if(slotName==="popup")loadPopupSettings();
+  if(slotName==="popup"){
+    updateAnnouncementPreview();
+    loadAnnouncementsList();
+  }
 }
 
 async function loginAdmin(){
@@ -1665,134 +1728,302 @@ async function deleteAdminComment(commentId){
 }
 
 /* =====================================================
-   HOME PAGE ANNOUNCEMENT POPUP MANAGER
-   Note: Agar aapne index.html me table ka naam alag rakha hai,
-         to niche POPUP_TABLE ko change kar lein.
+   SITE ANNOUNCEMENTS MANAGER (Table: site_announcements)
 ===================================================== */
-const POPUP_TABLE="announcement_popup";
+const ANNOUNCEMENT_TYPES={
+  stream_alert:{label:"STREAM ALERT",icon:"🔴",badge:"🔴 Stream Alert"},
+  episode_delay:{label:"EPISODE DELAY",icon:"⏳",badge:"⏳ Episode Delay"},
+  general:{label:"ANISTREAM ANNOUNCEMENT",icon:"📢",badge:"📢 Announcement"}
+};
 
-function bumpPopupVersion(){
-  const newVer="v"+Date.now().toString().slice(-5);
-  document.getElementById("popupVersion").value=newVer;
-  setMessage(document.getElementById("popupStatusMsg"),"info","🔄 Version updated to "+newVer+". Ab Save button dabayein.");
+function toLocalDatetimeInput(isoString){
+  if(!isoString)return"";
+  const d=new Date(isoString);
+  if(isNaN(d.getTime()))return"";
+  const pad=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
 
-function clearPopupFields(){
-  ["popupBadge","popupTitle","popupMessage","popupImage","popupBtnText","popupBtnLink"].forEach(id=>{
-    document.getElementById(id).value="";
-  });
-  updatePopupPreview();
+function updateAnnouncementPreview(){
+  const isActive=document.getElementById("annIsActive").checked;
+  const type=document.getElementById("annType").value||"general";
+  const title=document.getElementById("annTitle").value.trim()||"Announcement Title";
+  const msg=document.getElementById("annMessage").value.trim()||"Aapka announcement message yahan show hoga.";
+  const animeName=document.getElementById("annAnimeName").value.trim();
+  const epNum=document.getElementById("annEpisodeNumber").value.trim();
+  const expectedTime=document.getElementById("annExpectedTime").value.trim();
+  const btnText=document.getElementById("annButtonText").value.trim()||"Got it";
+
+  const activeLabel=document.getElementById("annActiveLabel");
+  activeLabel.innerHTML=isActive
+    ?'Status: <span style="color:#00e676">🟢 Active (Live)</span>'
+    :'Status: <span style="color:#ff4d73">🔴 Inactive (Hidden)</span>';
+
+  const settings=ANNOUNCEMENT_TYPES[type]||ANNOUNCEMENT_TYPES.general;
+  document.getElementById("prevIcon").textContent=settings.icon;
+  document.getElementById("prevType").textContent=settings.label;
+  document.getElementById("prevTitle").textContent=title;
+  document.getElementById("prevMessage").textContent=msg;
+  document.getElementById("prevBtn").textContent=btnText;
+
+  const hasInfo=Boolean(animeName||epNum||expectedTime);
+  const infoBox=document.getElementById("prevInfoBox");
+  infoBox.style.display=hasInfo?"block":"none";
+  document.getElementById("prevAnime").textContent=animeName||"—";
+  document.getElementById("prevEpisode").textContent=epNum||"—";
+  document.getElementById("prevExpected").textContent=expectedTime||"—";
+
+  document.getElementById("annPreviewBox").style.opacity=isActive?"1":"0.45";
 }
 
-function updatePopupPreview(){
-  const isActive=document.getElementById("popupActive").checked;
-  const badge=document.getElementById("popupBadge").value.trim();
-  const title=document.getElementById("popupTitle").value.trim()||"Announcement Title Yahan Dikhega";
-  const msg=document.getElementById("popupMessage").value.trim()||"Aapka announcement message yahan show hoga. Users ise padh kar action button par click kar sakte hain.";
-  const image=document.getElementById("popupImage").value.trim();
-  const btnText=document.getElementById("popupBtnText").value.trim();
-  const btnLink=document.getElementById("popupBtnLink").value.trim();
+function resetAnnouncementForm(){
+  document.getElementById("editingAnnId").value="";
+  document.getElementById("annIsActive").checked=true;
+  document.getElementById("annType").value="general";
+  document.getElementById("annTitle").value="";
+  document.getElementById("annMessage").value="";
+  document.getElementById("annAnimeName").value="";
+  document.getElementById("annEpisodeNumber").value="";
+  document.getElementById("annExpectedTime").value="";
+  document.getElementById("annButtonText").value="";
+  document.getElementById("annStartAt").value="";
+  document.getElementById("annExpiresAt").value="";
 
-  const heading=document.getElementById("popupStatusHeading");
-  heading.innerHTML=isActive
-    ?'Popup Status: <span style="color:#00e676">🟢 ON (Live)</span>'
-    :'Popup Status: <span style="color:#ff4d73">🔴 OFF (Hidden)</span>';
-
-  const card=document.getElementById("popupPreviewCard");
-  card.style.opacity=isActive?"1":"0.45";
-
-  card.innerHTML=`
-    <div class="popup-preview-close">✕</div>
-    ${image?`<img class="popup-preview-img" src="${escapeHtml(image)}" alt="Popup Banner" onerror="this.style.display='none'">`:""}
-    <div class="popup-preview-body">
-      ${badge?`<div class="popup-preview-badge">${escapeHtml(badge)}</div>`:""}
-      <div class="popup-preview-title">${escapeHtml(title)}</div>
-      <div class="popup-preview-msg">${escapeHtml(msg)}</div>
-      <div class="popup-preview-actions">
-        ${btnText?`<a href="${escapeHtml(btnLink||"#")}" target="_blank" rel="noopener" class="primary" style="flex:1;text-decoration:none;padding:10px 14px">${escapeHtml(btnText)}</a>`:""}
-        <button type="button" class="secondary" style="${btnText?"":"flex:1"}">Close</button>
-      </div>
-    </div>
-  `;
+  document.getElementById("annFormHeading").textContent="📢 Publish Home Page Announcement";
+  document.getElementById("annSubmitBtn").textContent="🚀 Publish Announcement";
+  document.getElementById("annCancelBtn").style.display="none";
+  document.getElementById("annFormMsg").className="";
+  document.getElementById("annFormMsg").textContent="";
+  updateAnnouncementPreview();
 }
 
-async function loadPopupSettings(){
-  const statusEl=document.getElementById("popupStatusMsg");
-  setMessage(statusEl,"info","⏳ Popup settings load ho rahi hain...");
+function editAnnouncementItem(id){
+  const item=announcementsCache.find(a=>String(a.id)===String(id));
+  if(!item)return;
 
-  const {data,error}=await supabaseClient
-    .from(POPUP_TABLE)
-    .select("*")
-    .eq("id",1)
-    .maybeSingle();
+  document.getElementById("editingAnnId").value=String(item.id);
+  document.getElementById("annIsActive").checked=Boolean(item.is_active);
+  document.getElementById("annType").value=item.announcement_type||"general";
+  document.getElementById("annTitle").value=item.title||"";
+  document.getElementById("annMessage").value=item.message||"";
+  document.getElementById("annAnimeName").value=item.anime_name||"";
+  document.getElementById("annEpisodeNumber").value=item.episode_number||"";
+  document.getElementById("annExpectedTime").value=item.expected_time||"";
+  document.getElementById("annButtonText").value=item.button_text||"";
+  document.getElementById("annStartAt").value=toLocalDatetimeInput(item.start_at);
+  document.getElementById("annExpiresAt").value=toLocalDatetimeInput(item.expires_at);
 
-  if(error){
-    setMessage(statusEl,"error","⚠️ Load warning ("+POPUP_TABLE+"): "+error.message);
-    updatePopupPreview();
+  document.getElementById("annFormHeading").textContent="✏️ Edit Announcement";
+  document.getElementById("annSubmitBtn").textContent="💾 Update Announcement";
+  document.getElementById("annCancelBtn").style.display="inline-flex";
+  updateAnnouncementPreview();
+
+  document.getElementById("slotPopup").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+async function deactivateOtherAnnouncements(exceptId){
+  let q=supabaseClient.from("site_announcements").update({is_active:false}).eq("is_active",true);
+  if(exceptId)q=q.neq("id",exceptId);
+  await q;
+}
+
+async function saveAnnouncement(){
+  const msgEl=document.getElementById("annFormMsg");
+  const editingId=document.getElementById("editingAnnId").value.trim();
+
+  const is_active=document.getElementById("annIsActive").checked;
+  const announcement_type=document.getElementById("annType").value||"general";
+  const title=document.getElementById("annTitle").value.trim();
+  const message=document.getElementById("annMessage").value.trim();
+  const anime_name=document.getElementById("annAnimeName").value.trim()||null;
+  const episode_number=document.getElementById("annEpisodeNumber").value.trim()||null;
+  const expected_time=document.getElementById("annExpectedTime").value.trim()||null;
+  const button_text=document.getElementById("annButtonText").value.trim()||"Got it";
+
+  const startVal=document.getElementById("annStartAt").value;
+  const expiresVal=document.getElementById("annExpiresAt").value;
+
+  if(!title||!message){
+    setMessage(msgEl,"error","❌ Popup Title aur Popup Message zaroori hain.");
     return;
   }
 
-  if(data){
-    document.getElementById("popupActive").checked=data.is_active!==false;
-    document.getElementById("popupBadge").value=data.badge||"";
-    document.getElementById("popupTitle").value=data.title||"";
-    document.getElementById("popupMessage").value=data.message||"";
-    document.getElementById("popupImage").value=data.image_url||"";
-    document.getElementById("popupBtnText").value=data.button_text||"";
-    document.getElementById("popupBtnLink").value=data.button_link||"";
-    document.getElementById("popupVersion").value=data.popup_version||"v1";
-    statusEl.className="";
-    statusEl.textContent="";
-  }else{
-    document.getElementById("popupVersion").value="v1";
-    setMessage(statusEl,"info","ℹ️ Abhi koi popup saved nahi hai. Details bhar kar Save karein.");
+  const nowIso=new Date().toISOString();
+  const start_at=startVal?new Date(startVal).toISOString():nowIso;
+  const expires_at=expiresVal?new Date(expiresVal).toISOString():null;
+
+  setMessage(msgEl,"info",editingId?"⏳ Announcement update ho raha hai...":"⏳ Announcement publish ho raha hai...");
+
+  if(is_active){
+    await deactivateOtherAnnouncements(editingId||null);
   }
-
-  updatePopupPreview();
-}
-
-async function savePopupSettings(){
-  const statusEl=document.getElementById("popupStatusMsg");
-  const is_active=document.getElementById("popupActive").checked;
-  const badge=document.getElementById("popupBadge").value.trim();
-  const title=document.getElementById("popupTitle").value.trim();
-  const message=document.getElementById("popupMessage").value.trim();
-  const image_url=document.getElementById("popupImage").value.trim();
-  const button_text=document.getElementById("popupBtnText").value.trim();
-  const button_link=document.getElementById("popupBtnLink").value.trim();
-  const popup_version=document.getElementById("popupVersion").value.trim()||"v1";
-
-  if(is_active&&(!title||!message)){
-    setMessage(statusEl,"error","❌ Popup ON rakhne ke liye kam se kam Title aur Message zaroori hai.");
-    return;
-  }
-
-  setMessage(statusEl,"info","⏳ Popup save ho raha hai...");
 
   const payload={
-    id:1,
     is_active,
-    badge,
+    announcement_type,
     title,
     message,
-    image_url,
+    anime_name,
+    episode_number,
+    expected_time,
     button_text,
-    button_link,
-    popup_version,
-    updated_at:new Date().toISOString()
+    start_at,
+    expires_at
   };
 
-  const {error}=await supabaseClient
-    .from(POPUP_TABLE)
-    .upsert([payload],{onConflict:"id"});
+  let error=null;
+
+  if(editingId){
+    const res=await supabaseClient
+      .from("site_announcements")
+      .update(payload)
+      .eq("id",editingId);
+    error=res.error;
+  }else{
+    payload.created_at=nowIso;
+    const res=await supabaseClient
+      .from("site_announcements")
+      .insert([payload]);
+    error=res.error;
+  }
 
   if(error){
-    setMessage(statusEl,"error","❌ Popup save failed: "+error.message);
+    setMessage(msgEl,"error","❌ Save failed: "+error.message);
     return;
   }
 
-  setMessage(statusEl,"success","✅ Home page announcement popup successfully update ho gaya!");
-  updatePopupPreview();
+  resetAnnouncementForm();
+  setMessage(msgEl,"success",editingId?"✅ Announcement update ho gaya!":"✅ Naya announcement home page par live ho gaya!");
+  await loadAnnouncementsList();
+}
+
+async function toggleAnnouncementStatus(id,nextState){
+  const listMsg=document.getElementById("annListMsg");
+  setMessage(listMsg,"info","Status update ho raha hai...");
+
+  if(nextState){
+    await deactivateOtherAnnouncements(id);
+  }
+
+  const updateFields={is_active:nextState};
+  if(nextState)updateFields.start_at=new Date().toISOString();
+
+  const {error}=await supabaseClient
+    .from("site_announcements")
+    .update(updateFields)
+    .eq("id",id);
+
+  if(error){
+    setMessage(listMsg,"error","❌ Status update failed: "+error.message);
+    return;
+  }
+
+  setMessage(listMsg,"success",nextState?"✅ Yeh popup ab Home Page par LIVE hai.":"✅ Popup OFF (Inactive) kar diya gaya.");
+  await loadAnnouncementsList();
+}
+
+async function deleteAnnouncementItem(id){
+  if(!confirm("⚠️ Kya aap is announcement ko permanently delete karna chahte hain?"))return;
+
+  const listMsg=document.getElementById("annListMsg");
+  setMessage(listMsg,"info","Delete ho raha hai...");
+
+  const {error}=await supabaseClient
+    .from("site_announcements")
+    .delete()
+    .eq("id",id);
+
+  if(error){
+    setMessage(listMsg,"error","❌ Delete failed: "+error.message);
+    return;
+  }
+
+  if(document.getElementById("editingAnnId").value===String(id))resetAnnouncementForm();
+  setMessage(listMsg,"success","✅ Announcement delete ho gaya.");
+  await loadAnnouncementsList();
+}
+
+async function loadAnnouncementsList(){
+  const container=document.getElementById("announcementsListContainer");
+  container.innerHTML='<div class="empty">📢 Announcements load ho rahe hain...</div>';
+
+  let {data,error}=await supabaseClient
+    .from("site_announcements")
+    .select("*")
+    .order("created_at",{ascending:false});
+
+  if(error){
+    const fallback=await supabaseClient.from("site_announcements").select("*");
+    data=fallback.data;
+    error=fallback.error;
+  }
+
+  if(error){
+    container.innerHTML='<div class="message error">❌ Load failed: '+escapeHtml(error.message)+'</div>';
+    return;
+  }
+
+  announcementsCache=(data||[]).sort((a,b)=>{
+    const tA=new Date(a.created_at||a.start_at||0).getTime()||0;
+    const tB=new Date(b.created_at||b.start_at||0).getTime()||0;
+    return tB-tA;
+  });
+
+  if(!announcementsCache.length){
+    container.innerHTML='<div class="empty">Abhi koi announcement saved nahi hai. Upar form se publish karein.</div>';
+    return;
+  }
+
+  container.innerHTML="";
+  const now=Date.now();
+  const tenMinutesMs=10*60*1000;
+  let topLiveMarked=false;
+
+  announcementsCache.forEach(item=>{
+    const typeInfo=ANNOUNCEMENT_TYPES[item.announcement_type]||ANNOUNCEMENT_TYPES.general;
+    const startTime=item.start_at?new Date(item.start_at).getTime():0;
+    const expireTime=item.expires_at?new Date(item.expires_at).getTime():0;
+    const startOk=!startTime||isNaN(startTime)||(startTime-tenMinutesMs)<=now;
+    const notExpired=!expireTime||isNaN(expireTime)||expireTime>now;
+    const isCurrentlyLive=Boolean(item.is_active)&&startOk&&notExpired&&!topLiveMarked;
+    if(isCurrentlyLive)topLiveMarked=true;
+
+    const card=document.createElement("div");
+    card.className="ann-card"+(isCurrentlyLive?" is-live":"");
+
+    const infoChips=[
+      item.anime_name?`🎬 ${escapeHtml(item.anime_name)}`:"",
+      item.episode_number?`📺 ${escapeHtml(item.episode_number)}`:"",
+      item.expected_time?`⏰ ${escapeHtml(item.expected_time)}`:""
+    ].filter(Boolean).join(" • ");
+
+    card.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span class="badge-pill badge-type">${typeInfo.badge}</span>
+          ${isCurrentlyLive
+            ?'<span class="badge-pill badge-live">🟢 LIVE ON HOME PAGE</span>'
+            :(item.is_active?'<span class="badge-pill badge-type">🟡 Scheduled / Older</span>':'<span class="badge-pill badge-off">🔴 OFF</span>')}
+        </div>
+        <span class="small">${item.created_at?new Date(item.created_at).toLocaleString():""}</span>
+      </div>
+
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px">${escapeHtml(item.title||"Untitled")}</div>
+      <div style="font-size:12.5px;color:#b4b9cc;line-height:1.5;white-space:pre-wrap;margin-bottom:8px">${escapeHtml(item.message||"")}</div>
+      ${infoChips?`<div style="font-size:11.5px;color:#ff759f;font-weight:700;margin-bottom:8px">${infoChips}</div>`:""}
+      ${item.expires_at?`<div class="small" style="margin-bottom:8px">⌛ Expires: ${escapeHtml(new Date(item.expires_at).toLocaleString())}</div>`:""}
+
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+        <button type="button" class="edit-btn" onclick='editAnnouncementItem(${JSON.stringify(item.id)})'>✏️ Edit</button>
+        <button type="button" class="secondary" style="padding:8px 12px;font-size:11.5px" onclick='toggleAnnouncementStatus(${JSON.stringify(item.id)},${!item.is_active})'>
+          ${item.is_active?"⏸ Turn OFF":"▶ Turn ON"}
+        </button>
+        <button type="button" class="delete-btn" onclick='deleteAnnouncementItem(${JSON.stringify(item.id)})'>🗑️ Delete</button>
+      </div>
+    `;
+
+    container.appendChild(card);
+  });
 }
 
 /* INITIALIZATION */
