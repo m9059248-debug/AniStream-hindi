@@ -789,30 +789,43 @@ async function loadHomepageAnnouncement(){
   const overlay=$("announcementOverlay");
   if(!overlay)return;
 
+  const isDebug=new URLSearchParams(window.location.search).has("debug");
+
   try{
     const {data,error}=await supabaseClient
       .from("site_announcements")
       .select("*")
-      .eq("is_active",true)
       .limit(20);
 
     if(error){
       console.warn("Announcement load failed:",error.message);
+      if(isDebug)alert("Supabase Error (site_announcements): "+error.message);
       return;
     }
 
-    if(!data||!data.length)return;
+    if(!data||!data.length){
+      if(isDebug)alert("site_announcements table me abhi 0 rows hain. Admin Panel -> Popup tab me jakar announcement Publish karein.");
+      return;
+    }
 
     const now=Date.now();
+    const tenMinutesMs=10*60*1000;
+
     const activeAnnouncements=data.filter(item=>{
+      const isActive=item.is_active===true||item.is_active==="true"||item.is_active===1;
+      if(!isActive)return false;
+
       const startTime=item.start_at?new Date(item.start_at).getTime():0;
       const expireTime=item.expires_at?new Date(item.expires_at).getTime():0;
-      const startOk=!startTime||isNaN(startTime)||(startTime-120000)<=now;
+      const startOk=!startTime||isNaN(startTime)||(startTime-tenMinutesMs)<=now;
       const notExpired=!expireTime||isNaN(expireTime)||expireTime>now;
       return startOk&&notExpired;
     });
 
-    if(!activeAnnouncements.length)return;
+    if(!activeAnnouncements.length){
+      if(isDebug)alert("Rows mili ("+data.length+"), lekin koi bhi active/valid time window me nahi hai. Admin Panel me Start At khali chhod kar update karein.");
+      return;
+    }
 
     activeAnnouncements.sort((a,b)=>{
       const timeA=new Date(a.updated_at||a.created_at||0).getTime()||0;
@@ -822,13 +835,15 @@ async function loadHomepageAnnouncement(){
     });
 
     const announcement=activeAnnouncements[0];
-    const versionTag=announcement.updated_at||announcement.created_at||String(announcement.title||"").slice(0,20);
-    const seenKey="anistream_announcement_seen_"+announcement.id+"_"+versionTag;
+    const contentSig=String(announcement.title||"")+"_"+String(announcement.message||"").slice(0,40);
+    const seenKey="anistream_announcement_seen_"+announcement.id+"_"+contentSig;
 
-    try{
-      if(localStorage.getItem(seenKey)==="yes")return;
-    }catch(storageError){
-      console.warn("Announcement storage unavailable:",storageError);
+    if(!isDebug){
+      try{
+        if(localStorage.getItem(seenKey)==="yes")return;
+      }catch(storageError){
+        console.warn("Announcement storage unavailable:",storageError);
+      }
     }
 
     const type=String(announcement.announcement_type||"general").toLowerCase();
@@ -861,6 +876,7 @@ async function loadHomepageAnnouncement(){
 
     function closeAnnouncement(){
       overlay.hidden=true;
+      overlay.style.display="none";
       try{
         localStorage.setItem(seenKey,"yes");
       }catch(storageError){
@@ -877,9 +893,11 @@ async function loadHomepageAnnouncement(){
 
     overlay.removeAttribute("hidden");
     overlay.hidden=false;
+    overlay.style.display="flex";
 
   }catch(error){
     console.error("Announcement system error:",error);
+    if(isDebug)alert("Announcement JS Error: "+error.message);
   }
 }
 
