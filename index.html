@@ -483,6 +483,16 @@ footer{
   font-size:22px;
   cursor:pointer;
 }
+.announcement-img{
+  width:100%;
+  max-height:185px;
+  object-fit:cover;
+  border-radius:11px;
+  margin-bottom:14px;
+  border:1px solid rgba(255,255,255,.12);
+  display:block;
+}
+.announcement-img[hidden]{display:none!important}
 .announcement-icon{
   width:54px;
   height:54px;
@@ -717,6 +727,8 @@ footer{
   <div class="announcement-box" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
     <button type="button" id="announcementClose" class="announcement-close" aria-label="Close">×</button>
 
+    <img id="announcementImage" class="announcement-img" alt="Announcement Banner" hidden>
+
     <div class="announcement-icon" id="announcementIcon">📢</div>
     <div class="announcement-label" id="announcementType">ANISTREAM ANNOUNCEMENT</div>
 
@@ -726,7 +738,7 @@ footer{
     <div id="announcementAnimeInfo" class="announcement-info" hidden>
       <div><span>Anime</span><strong id="announcementAnime"></strong></div>
       <div><span>Episode</span><strong id="announcementEpisode"></strong></div>
-      <div><span>Expected</span><strong id="announcementExpected"></strong></div>
+      <div><span id="announcementThirdLabel">Expected</span><strong id="announcementExpected"></strong></div>
     </div>
 
     <button type="button" id="announcementOkay" class="announcement-okay">Got it</button>
@@ -783,35 +795,39 @@ function isMovie(anime){
   return s.includes("movie")||g.includes("movie");
 }
 
-/* ANNOUNCEMENT POPUP SYSTEM (Shows every time site is opened/refreshed) */
+/* ANNOUNCEMENT POPUP SYSTEM */
 
 async function loadHomepageAnnouncement(){
   const overlay=$("announcementOverlay");
   if(!overlay)return;
 
   try{
-    const {data,error}=await supabaseClient
+    let {data,error}=await supabaseClient
       .from("site_announcements")
       .select("*")
-      .limit(20);
+      .eq("is_active",true)
+      .order("created_at",{ascending:false})
+      .limit(10);
 
     if(error){
-      console.warn("Announcement load failed:",error.message);
-      return;
+      const fallback=await supabaseClient
+        .from("site_announcements")
+        .select("*")
+        .eq("is_active",true)
+        .limit(10);
+      data=fallback.data;
+      error=fallback.error;
     }
 
-    if(!data||!data.length)return;
+    if(error||!data||!data.length)return;
 
     const now=Date.now();
-    const tenMinutesMs=10*60*1000;
+    const thirtyMinutesMs=30*60*1000;
 
     const activeAnnouncements=data.filter(item=>{
-      const isActive=item.is_active===true||item.is_active==="true"||item.is_active===1;
-      if(!isActive)return false;
-
       const startTime=item.start_at?new Date(item.start_at).getTime():0;
       const expireTime=item.expires_at?new Date(item.expires_at).getTime():0;
-      const startOk=!startTime||isNaN(startTime)||(startTime-tenMinutesMs)<=now;
+      const startOk=!startTime||isNaN(startTime)||(startTime-thirtyMinutesMs)<=now;
       const notExpired=!expireTime||isNaN(expireTime)||expireTime>now;
       return startOk&&notExpired;
     });
@@ -819,40 +835,49 @@ async function loadHomepageAnnouncement(){
     if(!activeAnnouncements.length)return;
 
     activeAnnouncements.sort((a,b)=>{
-      const timeA=new Date(a.updated_at||a.created_at||0).getTime()||0;
-      const timeB=new Date(b.updated_at||b.created_at||0).getTime()||0;
-      if(timeA&&timeB&&timeA!==timeB)return timeB-timeA;
-      return Number(b.id||0)-Number(a.id||0);
+      const timeA=new Date(a.created_at||a.start_at||0).getTime()||0;
+      const timeB=new Date(b.created_at||b.start_at||0).getTime()||0;
+      return timeB-timeA;
     });
 
     const announcement=activeAnnouncements[0];
-
     const type=String(announcement.announcement_type||"general").toLowerCase();
 
     const typeSettings={
-      stream_alert:{label:"STREAM ALERT",icon:"🔴"},
-      episode_delay:{label:"EPISODE DELAY",icon:"⏳"},
-      general:{label:"ANISTREAM ANNOUNCEMENT",icon:"📢"}
+      stream_alert:{label:"STREAM ALERT",icon:"🔴",thirdLabel:"Audio / Status"},
+      episode_delay:{label:"EPISODE DELAY",icon:"⏳",thirdLabel:"Expected"},
+      general:{label:"ANISTREAM ANNOUNCEMENT",icon:"📢",thirdLabel:"Info"}
     };
 
     const settings=typeSettings[type]||typeSettings.general;
+
+    const imgEl=$("announcementImage");
+    const validImg=safeImageUrl(announcement.image_url);
+    if(validImg){
+      imgEl.src=validImg;
+      imgEl.hidden=false;
+      imgEl.onerror=()=>{imgEl.hidden=true;};
+    }else{
+      imgEl.removeAttribute("src");
+      imgEl.hidden=true;
+    }
 
     $("announcementIcon").textContent=settings.icon;
     $("announcementType").textContent=settings.label;
     $("announcementTitle").textContent=announcement.title||"Announcement";
     $("announcementMessage").textContent=announcement.message||"";
 
-    const hasAnimeInfo=Boolean(
+    const hasAnimeInfo=type!=="general"&&Boolean(
       announcement.anime_name||
       announcement.episode_number||
       announcement.expected_time
     );
 
     $("announcementAnimeInfo").hidden=!hasAnimeInfo;
+    $("announcementThirdLabel").textContent=settings.thirdLabel;
     $("announcementAnime").textContent=announcement.anime_name||"—";
     $("announcementEpisode").textContent=announcement.episode_number||"—";
     $("announcementExpected").textContent=announcement.expected_time||"—";
-
     $("announcementOkay").textContent=announcement.button_text||"Got it";
 
     function closeAnnouncement(){
