@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -80,8 +79,8 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .filter-tabs{display:flex;gap:6px;margin:10px 0 15px}
 .filter-tab{background:#07080f;border:1px solid var(--line);color:var(--muted);padding:7px 14px;border-radius:var(--radius-sm);font-size:11.5px;font-weight:700}
 .filter-tab.active{background:var(--accent);color:#fff;border-color:transparent;box-shadow:0 0 10px var(--accent-glow)}
-.main-nav-tabs{display:flex;gap:10px;margin-bottom:20px;background:var(--surface);padding:6px;border-radius:var(--radius-lg);border:1px solid #ff003c2e}
-.main-tab-btn{flex:1;padding:12px;background:transparent;color:var(--muted);border-radius:var(--radius-md);font-size:13.5px;font-weight:800}
+.main-nav-tabs{display:flex;gap:8px;margin-bottom:20px;background:var(--surface);padding:6px;border-radius:var(--radius-lg);border:1px solid #ff003c2e}
+.main-tab-btn{flex:1;padding:12px 8px;background:transparent;color:var(--muted);border-radius:var(--radius-md);font-size:13px;font-weight:800;white-space:nowrap}
 .main-tab-btn.active{background:var(--accent-gradient);color:#fff;box-shadow:0 4px 15px var(--accent-glow)}
 .stat-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:16px;text-align:center}
 .stat-label{color:var(--muted);font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
@@ -98,12 +97,31 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .comment-reply-area{margin-top:12px}
 .comment-reply-area textarea{min-height:75px}
 .reply-status{font-size:11px;color:#00e676;margin:6px 0}
+
+/* POPUP MANAGER & LIVE PREVIEW STYLES */
+.popup-switch-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#07080f;border:1px solid var(--line);padding:14px 16px;border-radius:var(--radius-md);margin-bottom:14px}
+.switch-toggle{position:relative;display:inline-block;width:48px;height:26px;flex-shrink:0}
+.switch-toggle input{opacity:0;width:0;height:0;margin:0}
+.switch-slider{position:absolute;cursor:pointer;inset:0;background:#1d2238;border-radius:30px;transition:.25s;border:1px solid var(--line)}
+.switch-slider:before{position:absolute;content:"";height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.25s}
+.switch-toggle input:checked + .switch-slider{background:var(--accent-gradient);border-color:transparent;box-shadow:0 0 12px var(--accent-glow)}
+.switch-toggle input:checked + .switch-slider:before{transform:translateX(22px)}
+.popup-preview-stage{background:radial-gradient(circle at top,rgba(255,0,60,.14),#05060b 70%);border:1px dashed rgba(255,0,60,.35);border-radius:var(--radius-lg);padding:24px 16px;display:flex;justify-content:center;align-items:center}
+.popup-preview-card{width:100%;max-width:410px;background:#0d0f1a;border:1px solid rgba(255,0,60,.35);border-radius:14px;overflow:hidden;box-shadow:0 18px 45px rgba(0,0,0,.85),0 0 25px rgba(255,0,60,.18);position:relative}
+.popup-preview-close{position:absolute;top:10px;right:10px;width:28px;height:28px;border-radius:50%;background:rgba(4,5,8,.82);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center}
+.popup-preview-img{width:100%;max-height:190px;object-fit:cover;display:block;border-bottom:1px solid var(--line)}
+.popup-preview-body{padding:18px}
+.popup-preview-badge{display:inline-block;background:rgba(255,0,60,.16);border:1px solid rgba(255,0,60,.45);color:#ff5e82;font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;margin-bottom:9px;letter-spacing:.4px}
+.popup-preview-title{font-size:17px;font-weight:900;color:#fff;line-height:1.3;margin-bottom:8px}
+.popup-preview-msg{font-size:12.5px;color:#b4b9cc;line-height:1.55;white-space:pre-wrap;margin-bottom:15px}
+.popup-preview-actions{display:flex;gap:8px}
+
 @media(max-width:600px){
 .container{padding:12px}
 .box{padding:14px}
 header h1{font-size:15px}
-.main-nav-tabs{gap:4px}
-.main-tab-btn{font-size:10.5px;padding:10px 5px}
+.main-nav-tabs{gap:4px;padding:4px}
+.main-tab-btn{font-size:10px;padding:10px 4px}
 .search-result{align-items:flex-start;flex-wrap:wrap}
 .search-result img{width:65px;height:90px}
 .search-info{min-width:calc(100% - 80px)}
@@ -140,9 +158,10 @@ header h1{font-size:15px}
 <div class="container">
 
   <div class="main-nav-tabs">
-    <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">➕ Anime Manage</button>
+    <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">➕ Anime</button>
     <button type="button" class="main-tab-btn" id="tabBtnAnalytics" onclick="switchSlot('analytics')">📊 Analytics</button>
     <button type="button" class="main-tab-btn" id="tabBtnComments" onclick="switchSlot('comments')">💬 Comments</button>
+    <button type="button" class="main-tab-btn" id="tabBtnPopup" onclick="switchSlot('popup')">📢 Popup</button>
   </div>
 
   <div id="slotAnime">
@@ -358,6 +377,71 @@ header h1{font-size:15px}
     </div>
   </div>
 
+  <!-- ANNOUNCEMENT POPUP MANAGER -->
+  <div id="slotPopup" style="display:none">
+    <div class="box">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+        <h2 style="margin-bottom:0">📢 Home Page Announcement Popup</h2>
+        <button type="button" class="secondary" style="padding:7px 12px;font-size:11.5px" onclick="loadPopupSettings()">🔄 Reload Data</button>
+      </div>
+
+      <div class="popup-switch-card">
+        <div>
+          <div style="font-size:13.5px;font-weight:800;color:#fff" id="popupStatusHeading">Popup Status: ON</div>
+          <div class="small" style="margin-top:2px">Off karne par home page par popup show nahi hoga.</div>
+        </div>
+        <label class="switch-toggle">
+          <input type="checkbox" id="popupActive" checked onchange="updatePopupPreview()">
+          <span class="switch-slider"></span>
+        </label>
+      </div>
+
+      <label class="small">Badge / Tag (Optional)</label>
+      <input id="popupBadge" placeholder="e.g. 🔥 NEW UPDATE / 📢 ANNOUNCEMENT" oninput="updatePopupPreview()">
+
+      <label class="small">Popup Title *</label>
+      <input id="popupTitle" placeholder="e.g. Solo Leveling Season 2 Hindi Dub Added!" oninput="updatePopupPreview()">
+
+      <label class="small">Popup Message / Description *</label>
+      <textarea id="popupMessage" placeholder="Users ke liye announcement message yahan likhein..." oninput="updatePopupPreview()"></textarea>
+
+      <label class="small">Banner / Poster Image URL (Optional)</label>
+      <input id="popupImage" placeholder="https://example.com/banner.jpg (Khali chhod sakte hain)" oninput="updatePopupPreview()">
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px">
+        <div>
+          <label class="small">Button Text (Optional)</label>
+          <input id="popupBtnText" placeholder="e.g. Watch Now / Join Telegram" oninput="updatePopupPreview()">
+        </div>
+        <div>
+          <label class="small">Button Link URL (Optional)</label>
+          <input id="popupBtnLink" placeholder="e.g. watch.html?id=solo-leveling or https://t.me/..." oninput="updatePopupPreview()">
+        </div>
+      </div>
+
+      <label class="small">Popup Version / ID (Reset "Show Once" for Users)</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input id="popupVersion" placeholder="e.g. v1" style="margin:7px 0">
+        <button type="button" class="secondary" style="white-space:nowrap;padding:11px 14px" onclick="bumpPopupVersion()">🔄 New Version</button>
+      </div>
+      <p class="language-help">Naya announcement daalne par "New Version" dabayein taaki purana popup close kar chuke users ko bhi naya popup dikhe.</p>
+
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+        <button type="button" class="primary" style="flex:2;padding:12px" onclick="savePopupSettings()">💾 Save & Publish Popup</button>
+        <button type="button" class="secondary" style="flex:1;padding:12px" onclick="clearPopupFields()">🧹 Clear Fields</button>
+      </div>
+      <div id="popupStatusMsg"></div>
+    </div>
+
+    <div class="box">
+      <h2>👁️ Live Popup Preview</h2>
+      <p class="small" style="margin-bottom:12px">Home page par users ko popup kuch is tarah dikhega:</p>
+      <div class="popup-preview-stage">
+        <div class="popup-preview-card" id="popupPreviewCard"></div>
+      </div>
+    </div>
+  </div>
+
 </div>
 </div>
 
@@ -374,7 +458,8 @@ function switchSlot(slotName){
   const slots={
     anime:document.getElementById("slotAnime"),
     analytics:document.getElementById("slotAnalytics"),
-    comments:document.getElementById("slotComments")
+    comments:document.getElementById("slotComments"),
+    popup:document.getElementById("slotPopup")
   };
 
   Object.keys(slots).forEach(key=>{
@@ -384,9 +469,11 @@ function switchSlot(slotName){
   document.getElementById("tabBtnAnime").classList.toggle("active",slotName==="anime");
   document.getElementById("tabBtnAnalytics").classList.toggle("active",slotName==="analytics");
   document.getElementById("tabBtnComments").classList.toggle("active",slotName==="comments");
+  document.getElementById("tabBtnPopup").classList.toggle("active",slotName==="popup");
 
   if(slotName==="analytics")loadAnalytics();
   if(slotName==="comments")loadAdminComments();
+  if(slotName==="popup")loadPopupSettings();
 }
 
 async function loginAdmin(){
@@ -1418,11 +1505,7 @@ async function deleteSchedule(id){
 
 /* =====================================================
    COMMENTS AND ADMIN REPLY SYSTEM
-   Table: anime_comments
-   Columns: id, anime_id, user_name, comment_text,
-            created_at, admin_reply, admin_replied_at
 ===================================================== */
-
 async function loadAdminComments(){
   const container=document.getElementById("adminCommentsList");
   const message=document.getElementById("commentsMessage");
@@ -1446,9 +1529,6 @@ async function loadAdminComments(){
   }
 
   container.innerHTML="";
-
-  /* Anime names fetch */
-  const animeIds=[...new Set(data.map(c=>String(c.anime_id)))];
 
   const {data:animeData}=await supabaseClient
     .from("anime")
@@ -1515,16 +1595,8 @@ async function loadAdminComments(){
       </div>
     `;
 
-    const saveButton=card.querySelector('[data-action="save"]');
-    const deleteButton=card.querySelector('[data-action="delete"]');
-
-    saveButton.addEventListener("click",()=>{
-      saveAdminReply(safeId);
-    });
-
-    deleteButton.addEventListener("click",()=>{
-      deleteAdminComment(safeId);
-    });
+    card.querySelector('[data-action="save"]').addEventListener("click",()=>saveAdminReply(safeId));
+    card.querySelector('[data-action="delete"]').addEventListener("click",()=>deleteAdminComment(safeId));
 
     container.appendChild(card);
   });
@@ -1590,6 +1662,137 @@ async function deleteAdminComment(commentId){
 
   setMessage(message,"success","✅ Comment successfully delete ho gaya.");
   await loadAdminComments();
+}
+
+/* =====================================================
+   HOME PAGE ANNOUNCEMENT POPUP MANAGER
+   Note: Agar aapne index.html me table ka naam alag rakha hai,
+         to niche POPUP_TABLE ko change kar lein.
+===================================================== */
+const POPUP_TABLE="announcement_popup";
+
+function bumpPopupVersion(){
+  const newVer="v"+Date.now().toString().slice(-5);
+  document.getElementById("popupVersion").value=newVer;
+  setMessage(document.getElementById("popupStatusMsg"),"info","🔄 Version updated to "+newVer+". Ab Save button dabayein.");
+}
+
+function clearPopupFields(){
+  ["popupBadge","popupTitle","popupMessage","popupImage","popupBtnText","popupBtnLink"].forEach(id=>{
+    document.getElementById(id).value="";
+  });
+  updatePopupPreview();
+}
+
+function updatePopupPreview(){
+  const isActive=document.getElementById("popupActive").checked;
+  const badge=document.getElementById("popupBadge").value.trim();
+  const title=document.getElementById("popupTitle").value.trim()||"Announcement Title Yahan Dikhega";
+  const msg=document.getElementById("popupMessage").value.trim()||"Aapka announcement message yahan show hoga. Users ise padh kar action button par click kar sakte hain.";
+  const image=document.getElementById("popupImage").value.trim();
+  const btnText=document.getElementById("popupBtnText").value.trim();
+  const btnLink=document.getElementById("popupBtnLink").value.trim();
+
+  const heading=document.getElementById("popupStatusHeading");
+  heading.innerHTML=isActive
+    ?'Popup Status: <span style="color:#00e676">🟢 ON (Live)</span>'
+    :'Popup Status: <span style="color:#ff4d73">🔴 OFF (Hidden)</span>';
+
+  const card=document.getElementById("popupPreviewCard");
+  card.style.opacity=isActive?"1":"0.45";
+
+  card.innerHTML=`
+    <div class="popup-preview-close">✕</div>
+    ${image?`<img class="popup-preview-img" src="${escapeHtml(image)}" alt="Popup Banner" onerror="this.style.display='none'">`:""}
+    <div class="popup-preview-body">
+      ${badge?`<div class="popup-preview-badge">${escapeHtml(badge)}</div>`:""}
+      <div class="popup-preview-title">${escapeHtml(title)}</div>
+      <div class="popup-preview-msg">${escapeHtml(msg)}</div>
+      <div class="popup-preview-actions">
+        ${btnText?`<a href="${escapeHtml(btnLink||"#")}" target="_blank" rel="noopener" class="primary" style="flex:1;text-decoration:none;padding:10px 14px">${escapeHtml(btnText)}</a>`:""}
+        <button type="button" class="secondary" style="${btnText?"":"flex:1"}">Close</button>
+      </div>
+    </div>
+  `;
+}
+
+async function loadPopupSettings(){
+  const statusEl=document.getElementById("popupStatusMsg");
+  setMessage(statusEl,"info","⏳ Popup settings load ho rahi hain...");
+
+  const {data,error}=await supabaseClient
+    .from(POPUP_TABLE)
+    .select("*")
+    .eq("id",1)
+    .maybeSingle();
+
+  if(error){
+    setMessage(statusEl,"error","⚠️ Load warning ("+POPUP_TABLE+"): "+error.message);
+    updatePopupPreview();
+    return;
+  }
+
+  if(data){
+    document.getElementById("popupActive").checked=data.is_active!==false;
+    document.getElementById("popupBadge").value=data.badge||"";
+    document.getElementById("popupTitle").value=data.title||"";
+    document.getElementById("popupMessage").value=data.message||"";
+    document.getElementById("popupImage").value=data.image_url||"";
+    document.getElementById("popupBtnText").value=data.button_text||"";
+    document.getElementById("popupBtnLink").value=data.button_link||"";
+    document.getElementById("popupVersion").value=data.popup_version||"v1";
+    statusEl.className="";
+    statusEl.textContent="";
+  }else{
+    document.getElementById("popupVersion").value="v1";
+    setMessage(statusEl,"info","ℹ️ Abhi koi popup saved nahi hai. Details bhar kar Save karein.");
+  }
+
+  updatePopupPreview();
+}
+
+async function savePopupSettings(){
+  const statusEl=document.getElementById("popupStatusMsg");
+  const is_active=document.getElementById("popupActive").checked;
+  const badge=document.getElementById("popupBadge").value.trim();
+  const title=document.getElementById("popupTitle").value.trim();
+  const message=document.getElementById("popupMessage").value.trim();
+  const image_url=document.getElementById("popupImage").value.trim();
+  const button_text=document.getElementById("popupBtnText").value.trim();
+  const button_link=document.getElementById("popupBtnLink").value.trim();
+  const popup_version=document.getElementById("popupVersion").value.trim()||"v1";
+
+  if(is_active&&(!title||!message)){
+    setMessage(statusEl,"error","❌ Popup ON rakhne ke liye kam se kam Title aur Message zaroori hai.");
+    return;
+  }
+
+  setMessage(statusEl,"info","⏳ Popup save ho raha hai...");
+
+  const payload={
+    id:1,
+    is_active,
+    badge,
+    title,
+    message,
+    image_url,
+    button_text,
+    button_link,
+    popup_version,
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await supabaseClient
+    .from(POPUP_TABLE)
+    .upsert([payload],{onConflict:"id"});
+
+  if(error){
+    setMessage(statusEl,"error","❌ Popup save failed: "+error.message);
+    return;
+  }
+
+  setMessage(statusEl,"success","✅ Home page announcement popup successfully update ho gaya!");
+  updatePopupPreview();
 }
 
 /* INITIALIZATION */
