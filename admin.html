@@ -111,6 +111,7 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .preview-stage{background:radial-gradient(circle at top,rgba(255,0,60,.14),#05060b 75%);border:1px dashed rgba(255,0,60,.35);border-radius:var(--radius-lg);padding:24px 16px;display:flex;justify-content:center;align-items:center}
 .preview-box{position:relative;width:100%;max-width:410px;padding:27px 22px 20px;border:1px solid rgba(255,0,60,.4);border-radius:17px;background:linear-gradient(145deg,#15101a,#090b13 75%);box-shadow:0 15px 60px rgba(0,0,0,.7),0 0 30px rgba(255,0,60,.15);text-align:center}
 .preview-close{position:absolute;top:10px;right:12px;width:30px;height:30px;border:1px solid rgba(255,255,255,.12);border-radius:50%;background:rgba(255,255,255,.06);color:#fff;font-size:20px;display:grid;place-items:center}
+.preview-img{width:100%;max-height:180px;object-fit:cover;border-radius:11px;margin-bottom:14px;border:1px solid rgba(255,255,255,.1);display:block}
 .preview-icon{width:54px;height:54px;display:grid;place-items:center;margin:0 auto 13px;border-radius:15px;background:rgba(255,0,60,.13);border:1px solid rgba(255,0,60,.3);font-size:25px}
 .preview-label{color:#ff416b;font-size:10px;font-weight:900;letter-spacing:1.5px;margin-bottom:9px}
 .preview-box h3{color:#fff;font-size:20px;font-weight:900;line-height:1.3;margin-bottom:10px;overflow-wrap:anywhere}
@@ -412,8 +413,8 @@ header h1{font-size:15px}
 
       <div class="grid-2col">
         <div>
-          <label class="small">Announcement Type</label>
-          <select id="annType" onchange="updateAnnouncementPreview()">
+          <label class="small">Announcement Type (Select karein)</label>
+          <select id="annType" onchange="handleAnnouncementTypeChange()">
             <option value="general">📢 General Announcement</option>
             <option value="episode_delay">⏳ Episode Delay</option>
             <option value="stream_alert">🔴 Stream Alert</option>
@@ -421,31 +422,35 @@ header h1{font-size:15px}
         </div>
         <div>
           <label class="small">Button Text (Default: Got it)</label>
-          <input id="annButtonText" placeholder="e.g. Got it / Samajh Gaya / Okay" oninput="updateAnnouncementPreview()">
+          <input id="annButtonText" placeholder="e.g. Got it / Samajh Gaya / Watch Now" oninput="updateAnnouncementPreview()">
         </div>
       </div>
 
       <label class="small">Popup Title *</label>
-      <input id="annTitle" placeholder="e.g. Solo Leveling Episode 12 Delay Notice" oninput="updateAnnouncementPreview()">
+      <input id="annTitle" placeholder="e.g. Site Maintenance / New Features Added!" oninput="updateAnnouncementPreview()">
 
       <label class="small">Popup Message *</label>
-      <textarea id="annMessage" placeholder="Users ke liye announcement message yahan likhein..." oninput="updateAnnouncementPreview()"></textarea>
+      <textarea id="annMessage" placeholder="Users ke liye general announcement message yahan likhein..." oninput="updateAnnouncementPreview()"></textarea>
 
-      <div style="background:#07080f;border:1px solid var(--line);border-radius:var(--radius-md);padding:12px 14px;margin:10px 0">
-        <div style="font-size:12px;font-weight:800;color:#ff5e82;margin-bottom:4px">🎬 Anime Details Box (Optional — Delay ya Stream Alert ke liye)</div>
-        <p class="small" style="margin-bottom:8px">Agar inme se koi field bharoge to popup ke andar info card automatically dikhega.</p>
+      <label class="small">🖼️ Banner / Poster Image Link (Optional)</label>
+      <input id="annImageUrl" placeholder="https://example.com/poster.jpg (Khali chhod sakte hain)" oninput="updateAnnouncementPreview()">
+
+      <!-- DYNAMIC EXTRA FIELDS (Shows specifically for Episode Delay or Stream Alert) -->
+      <div id="annExtraFieldsBox" style="display:none;background:#07080f;border:1px solid rgba(255,0,60,.28);border-radius:var(--radius-md);padding:12px 14px;margin:10px 0">
+        <div id="annExtraBoxTitle" style="font-size:12.5px;font-weight:800;color:#ff5e82;margin-bottom:4px">⏳ Episode Delay Details</div>
+        <p id="annExtraBoxHelp" class="small" style="margin-bottom:8px">Delay hone wale anime aur naye release time ki detail bharein.</p>
         <div class="grid-3col">
           <div>
-            <label class="small">Anime Name</label>
+            <label class="small" id="annField1Label">Anime Name</label>
             <input id="annAnimeName" placeholder="e.g. Solo Leveling" oninput="updateAnnouncementPreview()">
           </div>
           <div>
-            <label class="small">Episode</label>
+            <label class="small" id="annField2Label">Delayed Episode</label>
             <input id="annEpisodeNumber" placeholder="e.g. Episode 12" oninput="updateAnnouncementPreview()">
           </div>
           <div>
-            <label class="small">Expected Time</label>
-            <input id="annExpectedTime" placeholder="e.g. Tomorrow 8:00 PM" oninput="updateAnnouncementPreview()">
+            <label class="small" id="annField3Label">New Expected Time</label>
+            <input id="annExpectedTime" placeholder="e.g. Kal Raat 8:00 PM" oninput="updateAnnouncementPreview()">
           </div>
         </div>
       </div>
@@ -475,6 +480,7 @@ header h1{font-size:15px}
       <div class="preview-stage">
         <div class="preview-box" id="annPreviewBox">
           <div class="preview-close">×</div>
+          <img id="prevImage" class="preview-img" alt="Popup Banner" style="display:none" onerror="this.style.display='none'">
           <div class="preview-icon" id="prevIcon">📢</div>
           <div class="preview-label" id="prevType">ANISTREAM ANNOUNCEMENT</div>
           <h3 id="prevTitle">Announcement Title</h3>
@@ -482,7 +488,7 @@ header h1{font-size:15px}
           <div class="preview-info" id="prevInfoBox" style="display:none">
             <div><span>Anime</span><strong id="prevAnime">—</strong></div>
             <div><span>Episode</span><strong id="prevEpisode">—</strong></div>
-            <div><span>Expected</span><strong id="prevExpected">—</strong></div>
+            <div><span id="prevField3Name">Expected</span><strong id="prevExpected">—</strong></div>
           </div>
           <button type="button" class="preview-okay" id="prevBtn">Got it</button>
           <div class="preview-footer">ANISTREAM HINDI</div>
@@ -534,7 +540,7 @@ function switchSlot(slotName){
   if(slotName==="analytics")loadAnalytics();
   if(slotName==="comments")loadAdminComments();
   if(slotName==="popup"){
-    updateAnnouncementPreview();
+    handleAnnouncementTypeChange();
     loadAnnouncementsList();
   }
 }
@@ -1731,10 +1737,72 @@ async function deleteAdminComment(commentId){
    SITE ANNOUNCEMENTS MANAGER (Table: site_announcements)
 ===================================================== */
 const ANNOUNCEMENT_TYPES={
-  stream_alert:{label:"STREAM ALERT",icon:"🔴",badge:"🔴 Stream Alert"},
-  episode_delay:{label:"EPISODE DELAY",icon:"⏳",badge:"⏳ Episode Delay"},
-  general:{label:"ANISTREAM ANNOUNCEMENT",icon:"📢",badge:"📢 Announcement"}
+  stream_alert:{
+    label:"STREAM ALERT",
+    icon:"🔴",
+    badge:"🔴 Stream Alert",
+    titlePlaceholder:"e.g. 🔴 Solo Leveling Episode 12 Now Live!",
+    msgPlaceholder:"Naya episode ya movie ab Hindi Dub me streaming ke liye available hai...",
+    boxTitle:"🔴 Stream Alert Details",
+    boxHelp:"Jo episode ya movie abhi live hui hai uski details bharein.",
+    f1Label:"Anime Name",
+    f1Placeholder:"e.g. Solo Leveling",
+    f2Label:"Live Episode / Movie",
+    f2Placeholder:"e.g. Episode 12 (1080p)",
+    f3Label:"Audio / Server Status",
+    f3Placeholder:"e.g. Hindi Dub • Live Now",
+    previewField3:"Audio / Status"
+  },
+  episode_delay:{
+    label:"EPISODE DELAY",
+    icon:"⏳",
+    badge:"⏳ Episode Delay",
+    titlePlaceholder:"e.g. ⏳ Episode 12 Release Delay Notice",
+    msgPlaceholder:"Episode delay hone ka kaaran aur naya release time likhein...",
+    boxTitle:"⏳ Episode Delay Details",
+    boxHelp:"Delay hone wale anime aur naye expected time ki detail bharein.",
+    f1Label:"Anime Name",
+    f1Placeholder:"e.g. Demon Slayer",
+    f2Label:"Delayed Episode",
+    f2Placeholder:"e.g. Episode 8",
+    f3Label:"New Expected Time",
+    f3Placeholder:"e.g. Kal Raat 8:00 PM IST",
+    previewField3:"Expected"
+  },
+  general:{
+    label:"ANISTREAM ANNOUNCEMENT",
+    icon:"📢",
+    badge:"📢 Announcement",
+    titlePlaceholder:"e.g. Website New Feature / Telegram Join Update",
+    msgPlaceholder:"Users ke liye general announcement message yahan likhein...",
+    previewField3:"Info"
+  }
 };
+
+function handleAnnouncementTypeChange(){
+  const type=document.getElementById("annType").value||"general";
+  const cfg=ANNOUNCEMENT_TYPES[type]||ANNOUNCEMENT_TYPES.general;
+
+  document.getElementById("annTitle").placeholder=cfg.titlePlaceholder;
+  document.getElementById("annMessage").placeholder=cfg.msgPlaceholder;
+
+  const extraBox=document.getElementById("annExtraFieldsBox");
+  if(type==="general"){
+    extraBox.style.display="none";
+  }else{
+    extraBox.style.display="block";
+    document.getElementById("annExtraBoxTitle").textContent=cfg.boxTitle;
+    document.getElementById("annExtraBoxHelp").textContent=cfg.boxHelp;
+    document.getElementById("annField1Label").textContent=cfg.f1Label;
+    document.getElementById("annAnimeName").placeholder=cfg.f1Placeholder;
+    document.getElementById("annField2Label").textContent=cfg.f2Label;
+    document.getElementById("annEpisodeNumber").placeholder=cfg.f2Placeholder;
+    document.getElementById("annField3Label").textContent=cfg.f3Label;
+    document.getElementById("annExpectedTime").placeholder=cfg.f3Placeholder;
+  }
+
+  updateAnnouncementPreview();
+}
 
 function toLocalDatetimeInput(isoString){
   if(!isoString)return"";
@@ -1749,6 +1817,7 @@ function updateAnnouncementPreview(){
   const type=document.getElementById("annType").value||"general";
   const title=document.getElementById("annTitle").value.trim()||"Announcement Title";
   const msg=document.getElementById("annMessage").value.trim()||"Aapka announcement message yahan show hoga.";
+  const imgUrl=document.getElementById("annImageUrl").value.trim();
   const animeName=document.getElementById("annAnimeName").value.trim();
   const epNum=document.getElementById("annEpisodeNumber").value.trim();
   const expectedTime=document.getElementById("annExpectedTime").value.trim();
@@ -1766,9 +1835,19 @@ function updateAnnouncementPreview(){
   document.getElementById("prevMessage").textContent=msg;
   document.getElementById("prevBtn").textContent=btnText;
 
-  const hasInfo=Boolean(animeName||epNum||expectedTime);
+  const prevImg=document.getElementById("prevImage");
+  if(imgUrl){
+    prevImg.src=imgUrl;
+    prevImg.style.display="block";
+  }else{
+    prevImg.removeAttribute("src");
+    prevImg.style.display="none";
+  }
+
+  const hasInfo=type!=="general"&&Boolean(animeName||epNum||expectedTime);
   const infoBox=document.getElementById("prevInfoBox");
   infoBox.style.display=hasInfo?"block":"none";
+  document.getElementById("prevField3Name").textContent=settings.previewField3||"Expected";
   document.getElementById("prevAnime").textContent=animeName||"—";
   document.getElementById("prevEpisode").textContent=epNum||"—";
   document.getElementById("prevExpected").textContent=expectedTime||"—";
@@ -1782,6 +1861,7 @@ function resetAnnouncementForm(){
   document.getElementById("annType").value="general";
   document.getElementById("annTitle").value="";
   document.getElementById("annMessage").value="";
+  document.getElementById("annImageUrl").value="";
   document.getElementById("annAnimeName").value="";
   document.getElementById("annEpisodeNumber").value="";
   document.getElementById("annExpectedTime").value="";
@@ -1794,7 +1874,7 @@ function resetAnnouncementForm(){
   document.getElementById("annCancelBtn").style.display="none";
   document.getElementById("annFormMsg").className="";
   document.getElementById("annFormMsg").textContent="";
-  updateAnnouncementPreview();
+  handleAnnouncementTypeChange();
 }
 
 function editAnnouncementItem(id){
@@ -1806,6 +1886,7 @@ function editAnnouncementItem(id){
   document.getElementById("annType").value=item.announcement_type||"general";
   document.getElementById("annTitle").value=item.title||"";
   document.getElementById("annMessage").value=item.message||"";
+  document.getElementById("annImageUrl").value=item.image_url||"";
   document.getElementById("annAnimeName").value=item.anime_name||"";
   document.getElementById("annEpisodeNumber").value=item.episode_number||"";
   document.getElementById("annExpectedTime").value=item.expected_time||"";
@@ -1816,7 +1897,7 @@ function editAnnouncementItem(id){
   document.getElementById("annFormHeading").textContent="✏️ Edit Announcement";
   document.getElementById("annSubmitBtn").textContent="💾 Update Announcement";
   document.getElementById("annCancelBtn").style.display="inline-flex";
-  updateAnnouncementPreview();
+  handleAnnouncementTypeChange();
 
   document.getElementById("slotPopup").scrollIntoView({behavior:"smooth",block:"start"});
 }
@@ -1835,9 +1916,10 @@ async function saveAnnouncement(){
   const announcement_type=document.getElementById("annType").value||"general";
   const title=document.getElementById("annTitle").value.trim();
   const message=document.getElementById("annMessage").value.trim();
-  const anime_name=document.getElementById("annAnimeName").value.trim()||null;
-  const episode_number=document.getElementById("annEpisodeNumber").value.trim()||null;
-  const expected_time=document.getElementById("annExpectedTime").value.trim()||null;
+  const image_url=document.getElementById("annImageUrl").value.trim()||null;
+  const anime_name=announcement_type==="general"?null:(document.getElementById("annAnimeName").value.trim()||null);
+  const episode_number=announcement_type==="general"?null:(document.getElementById("annEpisodeNumber").value.trim()||null);
+  const expected_time=announcement_type==="general"?null:(document.getElementById("annExpectedTime").value.trim()||null);
   const button_text=document.getElementById("annButtonText").value.trim()||"Got it";
 
   const startVal=document.getElementById("annStartAt").value;
@@ -1863,6 +1945,7 @@ async function saveAnnouncement(){
     announcement_type,
     title,
     message,
+    image_url,
     anime_name,
     episode_number,
     expected_time,
@@ -1888,7 +1971,11 @@ async function saveAnnouncement(){
   }
 
   if(error){
-    setMessage(msgEl,"error","❌ Save failed: "+error.message);
+    if(String(error.message||"").includes("image_url")){
+      setMessage(msgEl,"error","❌ Pehle Supabase SQL Editor me ye run karein: alter table public.site_announcements add column if not exists image_url text;");
+    }else{
+      setMessage(msgEl,"error","❌ Save failed: "+error.message);
+    }
     return;
   }
 
@@ -2008,6 +2095,7 @@ async function loadAnnouncementsList(){
         <span class="small">${item.created_at?new Date(item.created_at).toLocaleString():""}</span>
       </div>
 
+      ${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="Banner" style="width:100%;max-height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px;border:1px solid var(--line)" onerror="this.style.display='none'">`:""}
       <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px">${escapeHtml(item.title||"Untitled")}</div>
       <div style="font-size:12.5px;color:#b4b9cc;line-height:1.5;white-space:pre-wrap;margin-bottom:8px">${escapeHtml(item.message||"")}</div>
       ${infoChips?`<div style="font-size:11.5px;color:#ff759f;font-weight:700;margin-bottom:8px">${infoChips}</div>`:""}
