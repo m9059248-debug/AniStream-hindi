@@ -783,13 +783,11 @@ function isMovie(anime){
   return s.includes("movie")||g.includes("movie");
 }
 
-/* ANNOUNCEMENT POPUP SYSTEM */
+/* ANNOUNCEMENT POPUP SYSTEM (Shows every time site is opened/refreshed) */
 
 async function loadHomepageAnnouncement(){
   const overlay=$("announcementOverlay");
   if(!overlay)return;
-
-  const isDebug=new URLSearchParams(window.location.search).has("debug");
 
   try{
     const {data,error}=await supabaseClient
@@ -799,14 +797,10 @@ async function loadHomepageAnnouncement(){
 
     if(error){
       console.warn("Announcement load failed:",error.message);
-      if(isDebug)alert("Supabase Error (site_announcements): "+error.message);
       return;
     }
 
-    if(!data||!data.length){
-      if(isDebug)alert("site_announcements table me abhi 0 rows hain. Admin Panel -> Popup tab me jakar announcement Publish karein.");
-      return;
-    }
+    if(!data||!data.length)return;
 
     const now=Date.now();
     const tenMinutesMs=10*60*1000;
@@ -822,10 +816,7 @@ async function loadHomepageAnnouncement(){
       return startOk&&notExpired;
     });
 
-    if(!activeAnnouncements.length){
-      if(isDebug)alert("Rows mili ("+data.length+"), lekin koi bhi active/valid time window me nahi hai. Admin Panel me Start At khali chhod kar update karein.");
-      return;
-    }
+    if(!activeAnnouncements.length)return;
 
     activeAnnouncements.sort((a,b)=>{
       const timeA=new Date(a.updated_at||a.created_at||0).getTime()||0;
@@ -835,16 +826,6 @@ async function loadHomepageAnnouncement(){
     });
 
     const announcement=activeAnnouncements[0];
-    const contentSig=String(announcement.title||"")+"_"+String(announcement.message||"").slice(0,40);
-    const seenKey="anistream_announcement_seen_"+announcement.id+"_"+contentSig;
-
-    if(!isDebug){
-      try{
-        if(localStorage.getItem(seenKey)==="yes")return;
-      }catch(storageError){
-        console.warn("Announcement storage unavailable:",storageError);
-      }
-    }
 
     const type=String(announcement.announcement_type||"general").toLowerCase();
 
@@ -877,11 +858,6 @@ async function loadHomepageAnnouncement(){
     function closeAnnouncement(){
       overlay.hidden=true;
       overlay.style.display="none";
-      try{
-        localStorage.setItem(seenKey,"yes");
-      }catch(storageError){
-        console.warn("Could not save announcement status:",storageError);
-      }
     }
 
     $("announcementClose").onclick=closeAnnouncement;
@@ -897,7 +873,6 @@ async function loadHomepageAnnouncement(){
 
   }catch(error){
     console.error("Announcement system error:",error);
-    if(isDebug)alert("Announcement JS Error: "+error.message);
   }
 }
 
