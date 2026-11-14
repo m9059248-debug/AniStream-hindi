@@ -10,7 +10,7 @@
 <meta name="description" content="Stream high-quality Anime Series and Anime Movies with Hindi audio on demand.">
 
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://m9059248-debug.github.io/AnimeHindiZone/">
+<meta property="og:url" content="https://m9059248-debug.github.io/AniStream-hindi/">
 <meta property="og:title" content="AniStream — Watch Anime in Hindi">
 <meta property="og:description" content="Stream high-quality Anime Series and Anime Movies in Hindi Dub on AniStream.">
 <meta property="og:image" content="https://i.ibb.co/Rk6PK7GP/uploaded-image.jpg">
@@ -20,7 +20,7 @@
 <meta property="og:image:height" content="640">
 
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://m9059248-debug.github.io/AnimeHindiZone/">
+<meta name="twitter:url" content="https://m9059248-debug.github.io/AniStream-hindi/">
 <meta name="twitter:title" content="AniStream — Watch Anime in Hindi">
 <meta name="twitter:description" content="Stream high-quality Anime Series and Anime Movies in Hindi Dub on AniStream.">
 <meta name="twitter:image" content="https://i.ibb.co/Rk6PK7GP/uploaded-image.jpg">
@@ -442,6 +442,126 @@ footer{
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+/* ANNOUNCEMENT POPUP */
+.announcement-overlay[hidden]{display:none!important}
+.announcement-overlay{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.82);
+  backdrop-filter:blur(9px);
+  -webkit-backdrop-filter:blur(9px);
+  animation:announcementFade .2s ease;
+}
+.announcement-box{
+  position:relative;
+  width:100%;
+  max-width:410px;
+  max-height:85vh;
+  overflow-y:auto;
+  padding:27px 22px 20px;
+  border:1px solid rgba(255,0,60,.4);
+  border-radius:17px;
+  background:linear-gradient(145deg,#15101a,#090b13 75%);
+  box-shadow:0 15px 60px rgba(0,0,0,.7),0 0 30px rgba(255,0,60,.15);
+  text-align:center;
+  animation:announcementPop .25s ease;
+}
+.announcement-close{
+  position:absolute;
+  top:10px;
+  right:12px;
+  width:30px;
+  height:30px;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:50%;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+}
+.announcement-icon{
+  width:54px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 13px;
+  border-radius:15px;
+  background:rgba(255,0,60,.13);
+  border:1px solid rgba(255,0,60,.3);
+  font-size:25px;
+}
+.announcement-label{
+  color:#ff416b;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:1.5px;
+  margin-bottom:9px;
+}
+.announcement-box h2{
+  color:#fff;
+  font-size:21px;
+  font-weight:900;
+  line-height:1.3;
+  margin-bottom:10px;
+  overflow-wrap:anywhere;
+}
+.announcement-box>p{
+  color:#b7bbca;
+  font-size:12px;
+  line-height:1.7;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.announcement-info{
+  margin-top:16px;
+  padding:12px;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+  text-align:left;
+}
+.announcement-info[hidden]{display:none!important}
+.announcement-info div{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:5px 0;
+  font-size:11px;
+}
+.announcement-info span{color:#858b9f}
+.announcement-info strong{color:#fff;text-align:right;overflow-wrap:anywhere}
+.announcement-okay{
+  width:100%;
+  margin-top:18px;
+  padding:11px;
+  border:0;
+  border-radius:9px;
+  background:linear-gradient(135deg,#ff003c,#ff2a5f);
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+.announcement-footer{
+  margin-top:12px;
+  color:#666d80;
+  font-size:9px;
+  letter-spacing:1px;
+}
+@keyframes announcementFade{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes announcementPop{
+  from{opacity:0;transform:scale(.94) translateY(10px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+
 .bottom-nav{display:none}
 @media(max-width:720px){
   .nav{min-height:52px;padding:0 12px}
@@ -593,6 +713,28 @@ footer{
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
+<!-- HOMEPAGE ANNOUNCEMENT POPUP -->
+<div id="announcementOverlay" class="announcement-overlay" hidden>
+  <div class="announcement-box" role="dialog" aria-modal="true" aria-labelledby="announcementTitle">
+    <button type="button" id="announcementClose" class="announcement-close" aria-label="Close">×</button>
+
+    <div class="announcement-icon" id="announcementIcon">📢</div>
+    <div class="announcement-label" id="announcementType">ANISTREAM ANNOUNCEMENT</div>
+
+    <h2 id="announcementTitle">Announcement</h2>
+    <p id="announcementMessage"></p>
+
+    <div id="announcementAnimeInfo" class="announcement-info" hidden>
+      <div><span>Anime</span><strong id="announcementAnime"></strong></div>
+      <div><span>Episode</span><strong id="announcementEpisode"></strong></div>
+      <div><span>Expected</span><strong id="announcementExpected"></strong></div>
+    </div>
+
+    <button type="button" id="announcementOkay" class="announcement-okay">Got it</button>
+    <div class="announcement-footer">ANISTREAM HINDI</div>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -642,6 +784,90 @@ function isMovie(anime){
   return s.includes("movie")||g.includes("movie");
 }
 
+/* ANNOUNCEMENT POPUP SYSTEM */
+
+async function loadHomepageAnnouncement(){
+  const overlay=$("announcementOverlay");
+
+  try{
+    const now=new Date().toISOString();
+
+    const {data,error}=await supabaseClient
+      .from("site_announcements")
+      .select("id,is_active,announcement_type,title,message,anime_name,episode_number,expected_time,button_text,start_at,expires_at")
+      .eq("is_active",true)
+      .lte("start_at",now)
+      .or("expires_at.is.null,expires_at.gt."+now)
+      .order("created_at",{ascending:false})
+      .limit(1);
+
+    if(error){
+      console.warn("Announcement load failed:",error.message);
+      return;
+    }
+
+    if(!data||!data.length)return;
+
+    const announcement=data[0];
+    const seenKey="anistream_announcement_seen_"+announcement.id;
+
+    try{
+      if(localStorage.getItem(seenKey)==="yes")return;
+    }catch(storageError){
+      console.warn("Announcement storage unavailable:",storageError);
+    }
+
+    const type=String(announcement.announcement_type||"general").toLowerCase();
+
+    const typeSettings={
+      stream_alert:{label:"STREAM ALERT",icon:"🔴"},
+      episode_delay:{label:"EPISODE DELAY",icon:"⏳"},
+      general:{label:"ANISTREAM ANNOUNCEMENT",icon:"📢"}
+    };
+
+    const settings=typeSettings[type]||typeSettings.general;
+
+    $("announcementIcon").textContent=settings.icon;
+    $("announcementType").textContent=settings.label;
+    $("announcementTitle").textContent=announcement.title||"Announcement";
+    $("announcementMessage").textContent=announcement.message||"";
+
+    const hasAnimeInfo=Boolean(
+      announcement.anime_name||
+      announcement.episode_number||
+      announcement.expected_time
+    );
+
+    $("announcementAnimeInfo").hidden=!hasAnimeInfo;
+    $("announcementAnime").textContent=announcement.anime_name||"—";
+    $("announcementEpisode").textContent=announcement.episode_number||"—";
+    $("announcementExpected").textContent=announcement.expected_time||"—";
+
+    $("announcementOkay").textContent=announcement.button_text||"Got it";
+
+    function closeAnnouncement(){
+      overlay.hidden=true;
+      try{
+        localStorage.setItem(seenKey,"yes");
+      }catch(storageError){
+        console.warn("Could not save announcement status:",storageError);
+      }
+    }
+
+    $("announcementClose").onclick=closeAnnouncement;
+    $("announcementOkay").onclick=closeAnnouncement;
+
+    overlay.onclick=event=>{
+      if(event.target===overlay)closeAnnouncement();
+    };
+
+    overlay.hidden=false;
+
+  }catch(error){
+    console.error("Announcement system error:",error);
+  }
+}
+
 /* LANGUAGE SYSTEM */
 
 const SUPPORTED_LANGUAGES=[
@@ -659,21 +885,16 @@ function loadSavedLanguage(){
   try{
     const saved=localStorage.getItem("anistream_selected_language");
     const allowed=[...SUPPORTED_LANGUAGES,"all"];
-
     selectedLanguage=allowed.includes(saved)?saved:"Hindi";
   }catch{
     selectedLanguage="Hindi";
   }
-
   languageSelect.value=selectedLanguage;
 }
 
 function saveSelectedLanguage(){
   try{
-    localStorage.setItem(
-      "anistream_selected_language",
-      selectedLanguage
-    );
+    localStorage.setItem("anistream_selected_language",selectedLanguage);
   }catch(error){
     console.warn("Language preference save failed:",error);
   }
@@ -899,7 +1120,6 @@ function getFilteredAnime(){
       genre.split(",").some(g=>g.trim()===selectedGenre.toLowerCase());
 
     const languages=getAnimeLanguages(a);
-
     const languageMatch=selectedLanguage==="all"||
       languages.includes(selectedLanguage.toLowerCase());
 
@@ -1037,8 +1257,6 @@ function renderAll(){
     return Number(b.id||0)-Number(a.id||0);
   });
 
-  const languageName=selectedLanguage==="all"?"":selectedLanguage;
-
   renderGrid(
     $("ongoingGrid"),
     ongoingList,
@@ -1127,9 +1345,7 @@ function renderHero(index,animate=true){
 function updateHero(){
   const languageFiltered=animeList.filter(anime=>{
     if(selectedLanguage==="all")return true;
-
-    return getAnimeLanguages(anime)
-      .includes(selectedLanguage.toLowerCase());
+    return getAnimeLanguages(anime).includes(selectedLanguage.toLowerCase());
   });
 
   heroItems=languageFiltered.sort((a,b)=>
@@ -1143,8 +1359,7 @@ function updateHero(){
   if(!heroItems.length){
     heroIndex=0;
     $("heroTitle").textContent="No Anime Available";
-    $("heroDescription").textContent=
-      "Is language mein abhi anime available nahi hai.";
+    $("heroDescription").textContent="Is language mein abhi anime available nahi hai.";
     $("heroMeta").replaceChildren();
     $("heroWatch").href="#allAnime";
     $("heroWatch").textContent="Explore Anime";
@@ -1254,6 +1469,10 @@ async function trackSiteVisit(){
 
 async function startApp(){
   loadSavedLanguage();
+
+  // Homepage announcement load
+  loadHomepageAnnouncement();
+
   trackSiteVisit();
 
   await loadAnime();
