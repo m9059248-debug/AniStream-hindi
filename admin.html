@@ -120,7 +120,10 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .preview-info div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-size:11px}
 .preview-info span{color:#858b9f}
 .preview-info strong{color:#fff;text-align:right;overflow-wrap:anywhere}
-.preview-okay{width:100%;margin-top:18px;padding:11px;border:0;border-radius:9px;background:linear-gradient(135deg,#ff003c,#ff2a5f);color:#fff;font-size:12px;font-weight:900}
+.preview-actions{display:flex;gap:8px;margin-top:18px}
+.preview-okay{flex:1;padding:11px;border:0;border-radius:9px;background:linear-gradient(135deg,#ff003c,#ff2a5f);color:#fff;font-size:12px;font-weight:900}
+.preview-dismiss{padding:11px 14px;border:1px solid rgba(255,255,255,.12);border-radius:9px;background:rgba(255,255,255,.06);color:#d1d5db;font-size:12px;font-weight:800}
+.preview-link-hint{margin-top:8px;font-size:10.5px;color:#00e676;word-break:break-all}
 .preview-footer{margin-top:12px;color:#666d80;font-size:9px;letter-spacing:1px}
 .ann-card{background:var(--surface-card);border:1px solid var(--line);border-radius:var(--radius-md);padding:14px;margin-bottom:12px}
 .ann-card.is-live{border-color:rgba(0,230,118,.4);box-shadow:0 0 18px rgba(0,230,118,.08)}
@@ -411,20 +414,12 @@ header h1{font-size:15px}
         </label>
       </div>
 
-      <div class="grid-2col">
-        <div>
-          <label class="small">Announcement Type (Select karein)</label>
-          <select id="annType" onchange="handleAnnouncementTypeChange()">
-            <option value="general">📢 General Announcement</option>
-            <option value="episode_delay">⏳ Episode Delay</option>
-            <option value="stream_alert">🔴 Stream Alert</option>
-          </select>
-        </div>
-        <div>
-          <label class="small">Button Text (Default: Got it)</label>
-          <input id="annButtonText" placeholder="e.g. Got it / Samajh Gaya / Watch Now" oninput="updateAnnouncementPreview()">
-        </div>
-      </div>
+      <label class="small">Announcement Type (Select karein)</label>
+      <select id="annType" onchange="handleAnnouncementTypeChange()">
+        <option value="general">📢 General Announcement</option>
+        <option value="episode_delay">⏳ Episode Delay</option>
+        <option value="stream_alert">🔴 Stream Alert</option>
+      </select>
 
       <label class="small">Popup Title *</label>
       <input id="annTitle" placeholder="e.g. Site Maintenance / New Features Added!" oninput="updateAnnouncementPreview()">
@@ -434,6 +429,17 @@ header h1{font-size:15px}
 
       <label class="small">🖼️ Banner / Poster Image Link (Optional)</label>
       <input id="annImageUrl" placeholder="https://example.com/poster.jpg (Khali chhod sakte hain)" oninput="updateAnnouncementPreview()">
+
+      <div class="grid-2col">
+        <div>
+          <label class="small">🔘 Button Text (Default: Got it)</label>
+          <input id="annButtonText" placeholder="e.g. Watch Now / Join Telegram / Got it" oninput="updateAnnouncementPreview()">
+        </div>
+        <div>
+          <label class="small">🔗 Button Link URL (Optional)</label>
+          <input id="annButtonLink" placeholder="e.g. anime-details.html?id=solo-leveling ya https://t.me/..." oninput="updateAnnouncementPreview()">
+        </div>
+      </div>
 
       <!-- DYNAMIC EXTRA FIELDS (Shows specifically for Episode Delay or Stream Alert) -->
       <div id="annExtraFieldsBox" style="display:none;background:#07080f;border:1px solid rgba(255,0,60,.28);border-radius:var(--radius-md);padding:12px 14px;margin:10px 0">
@@ -490,7 +496,11 @@ header h1{font-size:15px}
             <div><span>Episode</span><strong id="prevEpisode">—</strong></div>
             <div><span id="prevField3Name">Expected</span><strong id="prevExpected">—</strong></div>
           </div>
-          <button type="button" class="preview-okay" id="prevBtn">Got it</button>
+          <div class="preview-actions">
+            <button type="button" class="preview-okay" id="prevBtn">Got it</button>
+            <button type="button" class="preview-dismiss" id="prevDismissBtn" style="display:none">Close</button>
+          </div>
+          <div class="preview-link-hint" id="prevLinkHint" style="display:none"></div>
           <div class="preview-footer">ANISTREAM HINDI</div>
         </div>
       </div>
@@ -1821,7 +1831,8 @@ function updateAnnouncementPreview(){
   const animeName=document.getElementById("annAnimeName").value.trim();
   const epNum=document.getElementById("annEpisodeNumber").value.trim();
   const expectedTime=document.getElementById("annExpectedTime").value.trim();
-  const btnText=document.getElementById("annButtonText").value.trim()||"Got it";
+  const btnText=document.getElementById("annButtonText").value.trim()||(document.getElementById("annButtonLink").value.trim()?"Open Link":"Got it");
+  const btnLink=document.getElementById("annButtonLink").value.trim();
 
   const activeLabel=document.getElementById("annActiveLabel");
   activeLabel.innerHTML=isActive
@@ -1834,6 +1845,17 @@ function updateAnnouncementPreview(){
   document.getElementById("prevTitle").textContent=title;
   document.getElementById("prevMessage").textContent=msg;
   document.getElementById("prevBtn").textContent=btnText;
+
+  const dismissBtn=document.getElementById("prevDismissBtn");
+  const linkHint=document.getElementById("prevLinkHint");
+  if(btnLink){
+    dismissBtn.style.display="inline-flex";
+    linkHint.style.display="block";
+    linkHint.textContent="🔗 Click URL: "+btnLink;
+  }else{
+    dismissBtn.style.display="none";
+    linkHint.style.display="none";
+  }
 
   const prevImg=document.getElementById("prevImage");
   if(imgUrl){
@@ -1866,6 +1888,7 @@ function resetAnnouncementForm(){
   document.getElementById("annEpisodeNumber").value="";
   document.getElementById("annExpectedTime").value="";
   document.getElementById("annButtonText").value="";
+  document.getElementById("annButtonLink").value="";
   document.getElementById("annStartAt").value="";
   document.getElementById("annExpiresAt").value="";
 
@@ -1891,6 +1914,7 @@ function editAnnouncementItem(id){
   document.getElementById("annEpisodeNumber").value=item.episode_number||"";
   document.getElementById("annExpectedTime").value=item.expected_time||"";
   document.getElementById("annButtonText").value=item.button_text||"";
+  document.getElementById("annButtonLink").value=item.button_link||"";
   document.getElementById("annStartAt").value=toLocalDatetimeInput(item.start_at);
   document.getElementById("annExpiresAt").value=toLocalDatetimeInput(item.expires_at);
 
@@ -1920,7 +1944,8 @@ async function saveAnnouncement(){
   const anime_name=announcement_type==="general"?null:(document.getElementById("annAnimeName").value.trim()||null);
   const episode_number=announcement_type==="general"?null:(document.getElementById("annEpisodeNumber").value.trim()||null);
   const expected_time=announcement_type==="general"?null:(document.getElementById("annExpectedTime").value.trim()||null);
-  const button_text=document.getElementById("annButtonText").value.trim()||"Got it";
+  const button_link=document.getElementById("annButtonLink").value.trim()||null;
+  const button_text=document.getElementById("annButtonText").value.trim()||(button_link?"Open Link":"Got it");
 
   const startVal=document.getElementById("annStartAt").value;
   const expiresVal=document.getElementById("annExpiresAt").value;
@@ -1950,6 +1975,7 @@ async function saveAnnouncement(){
     episode_number,
     expected_time,
     button_text,
+    button_link,
     start_at,
     expires_at
   };
@@ -1971,8 +1997,9 @@ async function saveAnnouncement(){
   }
 
   if(error){
-    if(String(error.message||"").includes("image_url")){
-      setMessage(msgEl,"error","❌ Pehle Supabase SQL Editor me ye run karein: alter table public.site_announcements add column if not exists image_url text;");
+    const errMsg=String(error.message||"");
+    if(errMsg.includes("button_link")||errMsg.includes("image_url")){
+      setMessage(msgEl,"error","❌ Pehle Supabase SQL Editor me ye run karein: alter table public.site_announcements add column if not exists button_link text, add column if not exists image_url text;");
     }else{
       setMessage(msgEl,"error","❌ Save failed: "+error.message);
     }
@@ -2098,7 +2125,8 @@ async function loadAnnouncementsList(){
       ${item.image_url?`<img src="${escapeHtml(item.image_url)}" alt="Banner" style="width:100%;max-height:130px;object-fit:cover;border-radius:8px;margin-bottom:8px;border:1px solid var(--line)" onerror="this.style.display='none'">`:""}
       <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:5px">${escapeHtml(item.title||"Untitled")}</div>
       <div style="font-size:12.5px;color:#b4b9cc;line-height:1.5;white-space:pre-wrap;margin-bottom:8px">${escapeHtml(item.message||"")}</div>
-      ${infoChips?`<div style="font-size:11.5px;color:#ff759f;font-weight:700;margin-bottom:8px">${infoChips}</div>`:""}
+      ${infoChips?`<div style="font-size:11.5px;color:#ff759f;font-weight:700;margin-bottom:6px">${infoChips}</div>`:""}
+      ${item.button_link?`<div style="font-size:11px;color:#00e676;word-break:break-all;margin-bottom:6px">🔗 Button (${escapeHtml(item.button_text||"Open Link")}): ${escapeHtml(item.button_link)}</div>`:""}
       ${item.expires_at?`<div class="small" style="margin-bottom:8px">⌛ Expires: ${escapeHtml(new Date(item.expires_at).toLocaleString())}</div>`:""}
 
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
