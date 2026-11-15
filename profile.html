@@ -1,1 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#040508">
+<title>AniStream — User Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#040508;--surface:#0d101a;--surface2:#141827;--line:rgba(255,255,255,.09);--text:#fff;--muted:#9299ad;--red:#ff003c;--red2:#ff2a5f}
+*{box-sizing:border-box;margin:0;padding:0}
+body{min-height:100vh;background:radial-gradient(ellipse at top,rgba(255,0,60,.10),transparent 45%),var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding:20px 14px 45px}
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit}
+.topbar{max-width:980px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{font-size:19px;font-weight:900;letter-spacing:-.6px}.brand b{color:var(--red)}
+.back{padding:9px 13px;border:1px solid var(--line);border-radius:9px;color:#ddd;font-size:12px;font-weight:700}
+.wrap{max-width:560px;margin:0 auto}
+.heading{margin-bottom:18px}.heading small{color:var(--red2);font-size:10px;font-weight:900;letter-spacing:1.5px}.heading h1{font-size:26px;font-weight:900;margin:5px 0}.heading p{font-size:12px;color:var(--muted);line-height:1.6}
+.panel{background:linear-gradient(145deg,#111522,#090b12);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 15px 50px rgba(0,0,0,.25)}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:17px;background:#080a11;padding:5px;border-radius:10px}
+.tabs button{border:0;background:transparent;color:var(--muted);padding:10px;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer}
+.tabs button.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+form{display:grid;gap:11px}
+.field{display:grid;gap:6px}.field label{font-size:11px;color:#c5c9d5;font-weight:700}
+.field input,.field textarea{width:100%;background:#080b13;border:1px solid var(--line);border-radius:9px;padding:12px;color:#fff;font-size:12px;outline:none}
+.field input:focus,.field textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,0,60,.10)}
+.field textarea{resize:vertical;min-height:78px}
+.primary,.google,.secondary{width:100%;border:0;border-radius:9px;padding:12px;font-size:12px;font-weight:900;cursor:pointer}
+.primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
+.primary:disabled{opacity:.55;cursor:wait}
+.google{background:#fff;color:#171717}
+.secondary{background:#171c2b;color:#fff;border:1px solid var(--line)}
+.or{display:flex;align-items:center;gap:10px;color:#737b90;font-size:10px;margin:14px 0}.or:before,.or:after{content:"";height:1px;background:var(--line);flex:1}
+.forgot{background:none;border:0;color:#ff6686;font-size:11px;font-weight:700;text-align:right;cursor:pointer;margin-top:1px}
+.profile-message{display:none;margin:0 0 13px;padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
+.profile-message.show{display:block}.profile-message.info{background:#111b2c;color:#bcd6ff;border:1px solid #243b60}.profile-message.success{background:#0d251c;color:#8be0b4;border:1px solid #1b6243}.profile-message.error{background:#2a1018;color:#ff9caf;border:1px solid #713044}
+[hidden]{display:none!important}
+.account-head{display:flex;align-items:center;gap:14px;padding-bottom:17px;border-bottom:1px solid var(--line);margin-bottom:17px}
+.avatar{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--red);background:#1b2030}
+.avatar-fallback{display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--red),#6e1834);font-size:25px;font-weight:900}
+.account-head h2{font-size:18px;font-weight:900;overflow-wrap:anywhere}.account-head p{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.photo-actions{display:flex;gap:8px;margin:0 0 17px}.photo-actions label,.photo-actions button{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer}
+.upload-label{background:rgba(255,0,60,.13);border:1px solid rgba(255,0,60,.35);color:#ff6b8c}
+.photo-remove{background:#171c2b;border:1px solid var(--line);color:#ddd}
+.photo-actions input{display:none}
+.account-form{display:grid;gap:12px}
+.privacy{display:flex;align-items:flex-start;gap:9px;color:#c1c6d4;font-size:11px;line-height:1.5;padding:11px;background:#090c14;border:1px solid var(--line);border-radius:9px}
+.privacy input{accent-color:var(--red);margin-top:2px}
+.account-meta{font-size:10px;color:#737b90;margin-top:13px}
+.account-actions{display:flex;gap:8px;margin-top:15px}.account-actions button{flex:1}
+.danger-link{display:block;width:100%;margin-top:13px;background:none;border:0;color:#8e94a9;text-decoration:underline;font-size:10px;cursor:pointer}
+.footer{text-align:center;color:#646b7d;font-size:10px;margin-top:22px}
+@media(max-width:480px){body{padding:15px 10px 35px}.panel{padding:16px}.heading h1{font-size:23px}.avatar{width:66px;height:66px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="index.html">Ani<b>Stream</b></a>
+  <a class="back" href="index.html">← Back to Home</a>
+</header>
 
+<main class="wrap">
+  <div class="heading">
+    <small>ANISTREAM HINDI ACCOUNT</small>
+    <h1>Your Profile</h1>
+    <p>Create your AniStream account, personalize your profile and manage your sign-in details.</p>
+  </div>
+
+  <div id="profileMessage" class="profile-message" role="status" aria-live="polite"></div>
+
+  <section id="authSection" class="panel">
+    <div class="tabs">
+      <button type="button" id="loginTab" class="active">Login</button>
+      <button type="button" id="signupTab">Create Account</button>
+    </div>
+
+    <form id="loginForm">
+      <div class="field"><label for="loginEmail">Email Address</label><input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email" required></div>
+      <div class="field"><label for="loginPassword">Password</label><input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
+      <button class="primary" id="loginSubmit" type="submit">Login</button>
+      <button class="forgot" id="forgotPassword" type="button">Forgot password?</button>
+    </form>
+
+    <form id="signupForm" hidden>
+      <div class="field"><label for="signupName">Your Name</label><input id="signupName" type="text" maxlength="60" autocomplete="name" placeholder="Enter your display name" required></div>
+      <div class="field"><label for="signupUsername">Username</label><input id="signupUsername" type="text" maxlength="24" autocomplete="username" placeholder="e.g. anime_fan123" pattern="[a-zA-Z0-9_]{3,24}" required></div>
+      <div class="field"><label for="signupEmail">Email Address</label><input id="signupEmail" type="email" autocomplete="email" placeholder="Enter your email" required></div>
+      <div class="field"><label for="signupPassword">Password (minimum 8 characters)</label><input id="signupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Create password" required></div>
+      <button class="primary" id="signupSubmit" type="submit">Create Account</button>
+    </form>
+
+    <div class="or">OR CONTINUE WITH</div>
+    <button class="google" id="googleLogin" type="button">Continue with Google</button>
+  </section>
+
+  <section id="accountSection" class="panel" hidden>
+    <div class="account-head">
+      <div id="profileAvatar" class="avatar avatar-fallback">A</div>
+      <div><h2 id="profileName">AniStream User</h2><p id="profileEmail">user@email.com</p></div>
+    </div>
+
+    <div class="photo-actions">
+      <label class="upload-label" for="photoInput">📷 Change Photo</label>
+      <input id="photoInput" type="file" accept="image/*">
+      <button class="photo-remove" id="removePhoto" type="button">Remove Photo</button>
+    </div>
+
+    <div class="account-form">
+      <div class="field"><label for="displayNameInput">Display Name</label><input id="displayNameInput" type="text" maxlength="60" placeholder="Your name"></div>
+      <div class="field"><label for="usernameInput">Username</label><input id="usernameInput" type="text" maxlength="24" placeholder="your_username"></div>
+      <div class="field"><label for="bioInput">Bio</label><textarea id="bioInput" maxlength="160" placeholder="Tell something about yourself…"></textarea></div>
+      <label class="privacy"><input id="privacyInput" type="checkbox" checked><span><strong>Private profile</strong><br>Your profile details are intended for your own account view. This setting is saved in your account metadata.</span></label>
+      <button class="primary" id="profileSave" type="button">Save Changes</button>
+    </div>
+
+    <div class="account-meta">Member since: <strong id="joinedDate">—</strong></div>
+    <div class="account-actions"><button class="secondary" id="logoutButton" type="button">Logout</button></div>
+    <button class="danger-link" id="deleteAccountInfo" type="button">Need to delete your account?</button>
+  </section>
+
+  <div class="footer">© 2026 AniStream Hindi · Your anime space</div>
+</main>
+
+<script type="module" src="profile.js"></script>
+</body>
+</html>
