@@ -1,107 +1,132 @@
 
 /* ==========================================
-   AniStream Hindi - Profile System
-   Matching your profile.html IDs
+   AniStream Hindi - Universal Profile System
 ========================================== */
 
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
-);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let currentUser = null;
 
-const $ = id => document.getElementById(id);
+const el = (...ids) => {
+  for (const id of ids) {
+    const node = document.getElementById(id);
+    if (node) return node;
+  }
+  return null;
+};
 
-function message(text, type = "info") {
-  const el = $("profileMessage");
-  if (!el) return;
+function msg(text, type = "info") {
+  const box = el("profileMessage");
+  if (!box) {
+    console.log(text);
+    return;
+  }
 
-  el.textContent = text;
-  el.className = "profile-message show " + type;
+  box.textContent = text;
+  box.className = "profile-message show " + type;
 }
 
-function clearMessage() {
-  const el = $("profileMessage");
-  if (!el) return;
-  el.textContent = "";
-  el.className = "profile-message";
+function clearMsg() {
+  const box = el("profileMessage");
+  if (box) {
+    box.textContent = "";
+    box.className = "profile-message";
+  }
 }
 
 function showLogin() {
-  if ($("authSection")) $("authSection").hidden = false;
-  if ($("accountSection")) $("accountSection").hidden = true;
+  const auth = el("authSection", "authPanel");
+  const account = el("accountSection", "profilePanel");
+
+  if (auth) auth.hidden = false;
+  if (account) account.hidden = true;
 }
 
 function showAccount() {
-  if ($("authSection")) $("authSection").hidden = true;
-  if ($("accountSection")) $("accountSection").hidden = false;
+  const auth = el("authSection", "authPanel");
+  const account = el("accountSection", "profilePanel");
+
+  if (auth) auth.hidden = true;
+  if (account) account.hidden = false;
+}
+
+function userName(user) {
+  const m = user.user_metadata || {};
+
+  return m.full_name ||
+         m.name ||
+         m.username ||
+         user.email?.split("@")[0] ||
+         "AniStream User";
 }
 
 function switchTab(tab) {
   const login = tab === "login";
 
-  $("loginForm").hidden = !login;
-  $("signupForm").hidden = login;
+  const loginForm = el("loginForm");
+  const signupForm = el("signupForm");
 
-  $("loginTab").classList.toggle("active", login);
-  $("signupTab").classList.toggle("active", !login);
+  if (loginForm) loginForm.hidden = !login;
+  if (signupForm) signupForm.hidden = login;
 
-  clearMessage();
-}
+  el("loginTab")?.classList.toggle("active", login);
+  el("signupTab")?.classList.toggle("active", !login);
 
-function displayName(user) {
-  const meta = user.user_metadata || {};
-
-  return meta.full_name ||
-         meta.name ||
-         meta.username ||
-         user.email?.split("@")[0] ||
-         "AniStream User";
+  clearMsg();
 }
 
 /* ==========================================
-   AVATAR
+   PROFILE AVATAR
 ========================================== */
 
-async function showAvatar(user) {
-  const box = $("profileAvatar");
-  if (!box) return;
-
+async function renderAvatar(user) {
   const meta = user.user_metadata || {};
-  const path = meta.avatar_path;
+  const name = userName(user);
+  const letter = name.charAt(0).toUpperCase();
+
+  const oldAvatar = el("profileAvatar");
+  const newAvatar = el("avatarPreview");
+  const initial = el("profileInitial");
 
   let imageUrl = meta.avatar_url || meta.picture || "";
 
-  if (path) {
-    const { data, error } = await db.storage
+  if (meta.avatar_path) {
+    const { data } = await db.storage
       .from("avatars")
-      .createSignedUrl(path, 3600);
+      .createSignedUrl(meta.avatar_path, 3600);
 
-    if (!error && data?.signedUrl) {
-      imageUrl = data.signedUrl;
+    if (data?.signedUrl) imageUrl = data.signedUrl;
+  }
+
+  if (oldAvatar) {
+    oldAvatar.replaceChildren();
+
+    if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "Profile photo";
+      img.className = "avatar";
+      oldAvatar.appendChild(img);
+      oldAvatar.className = "avatar";
+    } else {
+      oldAvatar.textContent = letter;
+      oldAvatar.className = "avatar avatar-fallback";
     }
   }
 
-  if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
-    box.innerHTML = "";
+  if (initial) initial.textContent = letter;
 
-    const img = document.createElement("img");
-    img.src = imageUrl;
-    img.alt = "Profile photo";
-    img.className = "avatar";
-    img.onerror = () => {
-      box.textContent = displayName(user).charAt(0).toUpperCase();
-      box.className = "avatar avatar-fallback";
-    };
-
-    box.appendChild(img);
-  } else {
-    box.textContent = displayName(user).charAt(0).toUpperCase();
-    box.className = "avatar avatar-fallback";
+  if (newAvatar) {
+    if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
+      newAvatar.src = imageUrl;
+      newAvatar.style.display = "block";
+    } else {
+      newAvatar.removeAttribute("src");
+      newAvatar.style.display = "none";
+    }
   }
 }
 
@@ -117,31 +142,45 @@ async function loadProfile(user) {
   }
 
   currentUser = user;
+
   const meta = user.user_metadata || {};
+  const name = userName(user);
 
   showAccount();
 
-  $("profileName").textContent = displayName(user);
-  $("profileEmail").textContent = user.email || "";
+  if (el("profileName")) {
+    el("profileName").textContent = name;
+  }
 
-  $("displayNameInput").value =
-    meta.full_name || meta.name || "";
+  if (el("profileEmail")) {
+    el("profileEmail").textContent = user.email || "";
+  }
 
-  $("usernameInput").value =
-    meta.username || "";
+  if (el("displayNameInput")) {
+    el("displayNameInput").value =
+      meta.full_name || meta.name || "";
+  }
 
-  $("bioInput").value =
-    meta.bio || "";
+  if (el("usernameInput")) {
+    el("usernameInput").value = meta.username || "";
+  }
 
-  $("privacyInput").checked =
-    meta.private_profile !== false;
+  if (el("bioInput")) {
+    el("bioInput").value = meta.bio || "";
+  }
 
-  $("joinedDate").textContent =
-    user.created_at
+  if (el("privacyInput")) {
+    el("privacyInput").checked =
+      meta.private_profile !== false;
+  }
+
+  if (el("joinedDate")) {
+    el("joinedDate").textContent = user.created_at
       ? new Date(user.created_at).toLocaleDateString()
       : "—";
+  }
 
-  await showAvatar(user);
+  await renderAvatar(user);
 }
 
 /* ==========================================
@@ -150,41 +189,40 @@ async function loadProfile(user) {
 
 async function signupUser(event) {
   event.preventDefault();
-  clearMessage();
+  clearMsg();
 
-  const name = $("signupName").value.trim();
-  const username = $("signupUsername").value.trim();
-  const email = $("signupEmail").value.trim();
-  const password = $("signupPassword").value;
+  const name = el("signupName")?.value.trim();
+  const username =
+    el("signupUsername")?.value.trim() || name?.replace(/\s+/g, "_");
 
-  if (!name || !username || !email || !password) {
-    return message("Please fill all fields.", "error");
-  }
+  const email = el("signupEmail")?.value.trim();
+  const password = el("signupPassword")?.value;
 
-  if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
-    return message(
-      "Username must be 3-24 characters (letters, numbers and _).",
-      "error"
-    );
+  if (!name || !email || !password) {
+    return msg("Please fill all required fields.", "error");
   }
 
   if (password.length < 8) {
-    return message(
-      "Password must be at least 8 characters.",
-      "error"
-    );
+    return msg("Password must be at least 8 characters.", "error");
   }
 
-  const button = $("signupSubmit");
-  button.disabled = true;
-  button.textContent = "Creating Account...";
+  if (username && !/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+    return msg("Username must use 3-24 letters, numbers or underscores.", "error");
+  }
+
+  const button = el("signupSubmit", "signupButton");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Creating Account...";
+  }
 
   try {
     const { data, error } = await db.auth.signUp({
       email,
       password,
       options: {
-        emailRedirectTo: window.location.href,
+        emailRedirectTo: window.location.origin +
+          window.location.pathname,
         data: {
           full_name: name,
           username: username,
@@ -198,20 +236,19 @@ async function signupUser(event) {
 
     if (data.session && data.user) {
       await loadProfile(data.user);
-      message("Account created successfully!", "success");
+      msg("Account created successfully!", "success");
     } else {
-      message(
-        "Account created! Please verify your email, then login.",
-        "success"
-      );
       switchTab("login");
+      msg("Account created! Please verify your email, then login.", "success");
     }
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   } finally {
-    button.disabled = false;
-    button.textContent = "Create Account";
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Create Account";
+    }
   }
 }
 
@@ -221,14 +258,16 @@ async function signupUser(event) {
 
 async function loginUser(event) {
   event.preventDefault();
-  clearMessage();
+  clearMsg();
 
-  const email = $("loginEmail").value.trim();
-  const password = $("loginPassword").value;
+  const email = el("loginEmail")?.value.trim();
+  const password = el("loginPassword")?.value;
 
-  const button = $("loginSubmit");
-  button.disabled = true;
-  button.textContent = "Logging in...";
+  const button = el("loginSubmit", "loginButton");
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Logging in...";
+  }
 
   try {
     const { data, error } = await db.auth.signInWithPassword({
@@ -239,13 +278,15 @@ async function loginUser(event) {
     if (error) throw error;
 
     await loadProfile(data.user);
-    message("Login successful!", "success");
+    msg("Login successful!", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   } finally {
-    button.disabled = false;
-    button.textContent = "Login";
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Login";
+    }
   }
 }
 
@@ -254,27 +295,37 @@ async function loginUser(event) {
 ========================================== */
 
 async function googleLogin() {
-  clearMessage();
+  clearMsg();
 
-  const button = $("googleLogin");
-  button.disabled = true;
-  button.textContent = "Connecting to Google...";
+  const button = el("googleLogin", "googleLoginBtn");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Connecting...";
+  }
 
   try {
+    const redirectUrl = new URL(
+      "profile.html",
+      window.location.href
+    ).href;
+
     const { error } = await db.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.origin +
-                    window.location.pathname
+        redirectTo: redirectUrl
       }
     });
 
     if (error) throw error;
 
   } catch (error) {
-    message(error.message, "error");
-    button.disabled = false;
-    button.textContent = "Continue with Google";
+    msg(error.message, "error");
+
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Continue with Google";
+    }
   }
 }
 
@@ -283,29 +334,25 @@ async function googleLogin() {
 ========================================== */
 
 async function forgotPassword() {
-  clearMessage();
+  clearMsg();
 
-  const email = $("loginEmail").value.trim();
+  const email = el("loginEmail")?.value.trim();
 
   if (!email) {
-    return message("Enter your email address first.", "error");
+    return msg("Enter your email address first.", "error");
   }
 
   try {
-    const { error } = await db.auth.resetPasswordForEmail(
-      email,
-      {
-        redirectTo: window.location.origin +
-                    window.location.pathname
-      }
-    );
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: new URL("profile.html", window.location.href).href
+    });
 
     if (error) throw error;
 
-    message("Password reset email sent!", "success");
+    msg("Password reset email sent!", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   }
 }
 
@@ -316,51 +363,52 @@ async function forgotPassword() {
 async function saveProfile() {
   if (!currentUser) return;
 
-  clearMessage();
+  clearMsg();
 
-  const name = $("displayNameInput").value.trim();
-  const username = $("usernameInput").value.trim();
-  const bio = $("bioInput").value.trim();
-  const isPrivate = $("privacyInput").checked;
+  const name =
+    el("displayNameInput")?.value.trim() ||
+    currentUser.user_metadata?.full_name ||
+    userName(currentUser);
 
-  if (!name || !username) {
-    return message("Name and username are required.", "error");
+  const username = el("usernameInput")?.value.trim();
+  const bio = el("bioInput")?.value.trim() || "";
+  const privacy = el("privacyInput")?.checked ?? true;
+
+  if (!username) {
+    return msg("Please enter a username.", "error");
   }
 
   if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
-    return message(
-      "Username must be 3-24 characters (letters, numbers and _).",
-      "error"
-    );
+    return msg("Username must be 3-24 characters.", "error");
   }
 
-  const button = $("profileSave");
-  button.disabled = true;
+  const button = el("profileSave", "saveProfileBtn");
+  if (button) button.disabled = true;
 
   try {
     const { data, error } = await db.auth.updateUser({
       data: {
         full_name: name,
-        username: username,
-        bio: bio,
-        private_profile: isPrivate
+        username,
+        bio,
+        private_profile: privacy
       }
     });
 
     if (error) throw error;
 
     await loadProfile(data.user);
-    message("Profile updated successfully!", "success");
+    msg("Profile updated successfully!", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   } finally {
-    button.disabled = false;
+    if (button) button.disabled = false;
   }
 }
 
 /* ==========================================
-   UPLOAD PHOTO
+   PHOTO UPLOAD
 ========================================== */
 
 async function uploadPhoto(event) {
@@ -370,16 +418,15 @@ async function uploadPhoto(event) {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    return message("Please select an image.", "error");
+    return msg("Select a valid image.", "error");
   }
 
   if (file.size > 5 * 1024 * 1024) {
-    return message("Image must be under 5 MB.", "error");
+    return msg("Image must be under 5 MB.", "error");
   }
 
   try {
     const oldPath = currentUser.user_metadata?.avatar_path;
-
     const extension = file.name.split(".").pop().toLowerCase();
     const path = `${currentUser.id}/${Date.now()}.${extension}`;
 
@@ -396,7 +443,10 @@ async function uploadPhoto(event) {
       data: { avatar_path: path }
     });
 
-    if (error) throw error;
+    if (error) {
+      await db.storage.from("avatars").remove([path]);
+      throw error;
+    }
 
     currentUser = data.user;
 
@@ -405,10 +455,10 @@ async function uploadPhoto(event) {
     }
 
     await loadProfile(currentUser);
-    message("Profile photo updated!", "success");
+    msg("Profile photo updated!", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   }
 
   event.target.value = "";
@@ -424,30 +474,25 @@ async function removePhoto() {
   const path = currentUser.user_metadata?.avatar_path;
 
   if (!path) {
-    return message(
-      "No uploaded profile photo found.",
-      "error"
-    );
+    return msg("No uploaded photo found.", "error");
   }
 
   if (!confirm("Remove your profile photo?")) return;
 
   try {
-    const { error: updateError } = await db.auth.updateUser({
+    const { data, error } = await db.auth.updateUser({
       data: { avatar_path: null }
     });
 
-    if (updateError) throw updateError;
+    if (error) throw error;
 
     await db.storage.from("avatars").remove([path]);
 
-    const { data } = await db.auth.getUser();
-
     await loadProfile(data.user);
-    message("Profile photo removed.", "success");
+    msg("Profile photo removed.", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   }
 }
 
@@ -460,63 +505,48 @@ async function logoutUser() {
 
   try {
     const { error } = await db.auth.signOut();
-
     if (error) throw error;
 
     currentUser = null;
     showLogin();
     switchTab("login");
-    message("Logged out successfully.", "success");
+    msg("Logged out successfully.", "success");
 
   } catch (error) {
-    message(error.message, "error");
+    msg(error.message, "error");
   }
 }
 
 /* ==========================================
-   DELETE ACCOUNT INFO
-========================================== */
-
-function deleteAccountInfo() {
-  message(
-    "For account deletion, please contact the AniStream administrator. Your account has not been deleted.",
-    "info"
-  );
-}
-
-/* ==========================================
-   INITIALIZE
+   INIT
 ========================================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
-
-  $("loginTab").addEventListener("click", () => switchTab("login"));
-  $("signupTab").addEventListener("click", () => switchTab("signup"));
-
-  $("loginForm").addEventListener("submit", loginUser);
-  $("signupForm").addEventListener("submit", signupUser);
-
-  $("googleLogin").addEventListener("click", googleLogin);
-  $("forgotPassword").addEventListener("click", forgotPassword);
-
-  $("profileSave").addEventListener("click", saveProfile);
-  $("logoutButton").addEventListener("click", logoutUser);
-
-  $("photoInput").addEventListener("change", uploadPhoto);
-  $("removePhoto").addEventListener("click", removePhoto);
-
-  $("deleteAccountInfo").addEventListener(
-    "click",
-    deleteAccountInfo
-  );
-
-  switchTab("login");
-  showLogin();
-
-  // Restore existing login session
   try {
-    const { data, error } = await db.auth.getSession();
+    // Show login form by default
+    showLogin();
+    switchTab("login");
 
+    el("loginTab")?.addEventListener("click", () => switchTab("login"));
+    el("signupTab")?.addEventListener("click", () => switchTab("signup"));
+
+    el("loginForm")?.addEventListener("submit", loginUser);
+    el("signupForm")?.addEventListener("submit", signupUser);
+
+    el("googleLogin", "googleLoginBtn")?.addEventListener("click", googleLogin);
+    el("forgotPassword", "forgotPasswordBtn")?.addEventListener("click", forgotPassword);
+
+    el("profileSave", "saveProfileBtn")?.addEventListener("click", saveProfile);
+    el("logoutButton", "logoutBtn")?.addEventListener("click", logoutUser);
+
+    el("photoInput", "avatarInput")?.addEventListener("change", uploadPhoto);
+    el("removePhoto", "deleteAvatarBtn")?.addEventListener("click", removePhoto);
+
+    el("deleteAccountInfo")?.addEventListener("click", () => {
+      msg("Please contact the AniStream administrator to request account deletion.", "info");
+    });
+
+    const { data, error } = await db.auth.getSession();
     if (error) throw error;
 
     if (data.session?.user) {
@@ -525,22 +555,18 @@ document.addEventListener("DOMContentLoaded", async () => {
       showLogin();
     }
 
-  } catch (error) {
-    console.error("Session error:", error);
-    message("Unable to load account: " + error.message, "error");
-    showLogin();
-  }
-
-  // Update UI when authentication changes
-  db.auth.onAuthStateChange((event, session) => {
-    setTimeout(async () => {
+    db.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
         currentUser = null;
         showLogin();
       } else if (session?.user) {
-        await loadProfile(session.user);
+        setTimeout(() => loadProfile(session.user), 0);
       }
-    }, 0);
-  });
+    });
 
+  } catch (error) {
+    console.error("AniStream Profile Error:", error);
+    showLogin();
+    msg("Profile error: " + error.message, "error");
+  }
 });
