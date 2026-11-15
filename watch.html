@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#08090d">
 <title>Watch Anime - AniStream</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -303,7 +305,7 @@ video, iframe {
   font-weight: 800;
 }
 
-/* ============ WATCH MORE ANIME ============ */
+/* WATCH MORE ANIME */
 
 .recommend-section {
   background: var(--surface);
@@ -344,10 +346,7 @@ video, iframe {
   padding-bottom: 8px;
 }
 
-.recommend-row::-webkit-scrollbar {
-  height: 4px;
-}
-
+.recommend-row::-webkit-scrollbar { height: 4px; }
 .recommend-row::-webkit-scrollbar-thumb {
   background: #343746;
   border-radius: 10px;
@@ -378,9 +377,7 @@ video, iframe {
   background: #08090d;
 }
 
-.recommend-info {
-  padding: 8px;
-}
+.recommend-info { padding: 8px; }
 
 .recommend-title {
   color: #fff;
@@ -439,9 +436,7 @@ video, iframe {
     width: 116px;
   }
 
-  .recommend-image {
-    height: 154px;
-  }
+  .recommend-image { height: 154px; }
 }
 </style>
 </head>
@@ -461,7 +456,6 @@ video, iframe {
 
   <a href="index.html" class="back">‹ Back to Home</a>
 
-  <!-- VIDEO PLAYER CARD -->
   <div class="video-box">
     <div id="videoContainer" class="video-wrapper">
       <div class="message">Video load ho raha hai...</div>
@@ -477,7 +471,6 @@ video, iframe {
     </div>
   </div>
 
-  <!-- CONTROLS & QUALITIES -->
   <div id="controlsSection" class="section-box">
 
     <div class="audio-card">
@@ -494,32 +487,22 @@ video, iframe {
       </p>
     </div>
 
-    <div class="section-title">
-      🎥 Video Quality
-    </div>
+    <div class="section-title">🎥 Video Quality</div>
 
     <div id="qualityButtons" class="quality-buttons"></div>
-
     <div id="currentStatus" class="current-status"></div>
-
     <div id="linkButtons" class="link-buttons"></div>
 
   </div>
 
-  <!-- EPISODES LIST -->
   <div class="section-box">
-
-    <div class="section-title">
-      📺 Select Episode
-    </div>
+    <div class="section-title">📺 Select Episode</div>
 
     <div id="episodeNav">
       <div class="message">Episodes load ho rahe hain...</div>
     </div>
-
   </div>
 
-  <!-- WATCH MORE ANIME -->
   <section class="recommend-section">
     <div class="recommend-heading">
       <h2>🔥 Watch More Anime</h2>
@@ -569,6 +552,8 @@ let selectedQuality = "720p";
 let fallbackVideoUrl = "";
 let selectToken = 0;
 
+/* ---------- SAFE HELPERS ---------- */
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g, "&amp;")
@@ -590,6 +575,117 @@ function safeUrl(value) {
 
   } catch {
     return "";
+  }
+}
+
+/* =====================================================
+   WATCH HISTORY SYSTEM
+   One anime = one history record per logged-in user.
+   Rewatching updates the existing record.
+===================================================== */
+
+async function recordWatchHistory(episodeData) {
+
+  if (!animeId || !episodeData) return;
+
+  try {
+
+    // Check whether a user is logged in.
+    const { data: authData, error: authError } =
+      await supabaseClient.auth.getUser();
+
+    if (authError) {
+      console.error("Watch history auth error:", authError);
+      return;
+    }
+
+    const user = authData?.user;
+
+    // Guest users ki history save nahi hogi.
+    if (!user) {
+      console.log("Guest user: Watch history not saved.");
+      return;
+    }
+
+    // Anime table se poster aur correct title fetch karo.
+    let animeData = null;
+
+    const { data: animeByAnimeId, error: animeIdError } =
+      await supabaseClient
+        .from("anime")
+        .select("anime_id,id,title,thumbnail_url")
+        .eq("anime_id", String(animeId))
+        .maybeSingle();
+
+    if (animeIdError) {
+      console.warn("Anime ID lookup:", animeIdError.message);
+    }
+
+    animeData = animeByAnimeId;
+
+    // Agar anime_id se nahi mila toh id se try karo.
+    if (!animeData) {
+
+      const { data: animeById, error: animeTableIdError } =
+        await supabaseClient
+          .from("anime")
+          .select("anime_id,id,title,thumbnail_url")
+          .eq("id", animeId)
+          .maybeSingle();
+
+      if (animeTableIdError) {
+        console.warn("Anime table ID lookup:", animeTableIdError.message);
+      }
+
+      animeData = animeById;
+    }
+
+    const animeTitle =
+      animeData?.title ||
+      episodeData.anime_title ||
+      "Anime " + animeId;
+
+    const animeThumbnail =
+      safeUrl(animeData?.thumbnail_url) || null;
+
+    const episodeValue = String(
+      episodeData.episode_number ?? episodeNumber
+    );
+
+    const watchUrl =
+      "watch.html?id=" +
+      encodeURIComponent(animeId) +
+      "&episode=" +
+      encodeURIComponent(episodeValue);
+
+    const historyRecord = {
+      user_id: user.id,
+      anime_id: String(animeId),
+      anime_title: animeTitle,
+      anime_thumbnail: animeThumbnail,
+      episode_number: episodeValue,
+      watched_at: new Date().toISOString(),
+      watch_url: watchUrl
+    };
+
+    // Same user + same anime = update existing row.
+    const { error: historyError } = await supabaseClient
+      .from("watch_history")
+      .upsert(historyRecord, {
+        onConflict: "user_id,anime_id"
+      });
+
+    if (historyError) {
+      console.error("Watch history save failed:", historyError);
+      return;
+    }
+
+    console.log("Watch history successfully updated:", animeTitle);
+
+  } catch (error) {
+
+    console.error("Watch history error:", error);
+
   }
 }
 
@@ -621,7 +717,6 @@ async function convertLink(url) {
   for (let attempt = 0; attempt < 2; attempt++) {
 
     const ctrl = new AbortController();
-
     const timer = setTimeout(() => ctrl.abort(), 10000);
 
     try {
@@ -637,7 +732,6 @@ async function convertLink(url) {
         const out = safeUrl(json.url) || safe;
 
         convertCache.set(safe, out);
-
         return out;
       }
 
@@ -659,7 +753,6 @@ async function convertLink(url) {
   }
 
   convertFailed = true;
-
   return safe;
 }
 
@@ -668,7 +761,6 @@ async function convertLink(url) {
 function getViewerId() {
 
   const key = "anistream_viewer_id";
-
   let id = localStorage.getItem(key);
 
   if (!id) {
@@ -751,7 +843,6 @@ async function loadAnimeLanguage() {
       langs.forEach(lang => {
 
         const pill = document.createElement("span");
-
         pill.className = "lang-pill";
 
         let icon = "🌐";
@@ -765,7 +856,6 @@ async function loadAnimeLanguage() {
         }
 
         pill.textContent = icon + " " + lang;
-
         languageTags.appendChild(pill);
 
       });
@@ -810,6 +900,7 @@ function createRecommendationCard(anime) {
   image.loading = "lazy";
   image.alt = title;
   image.src = imageUrl || "";
+
   image.onerror = function() {
     this.style.display = "none";
   };
@@ -846,20 +937,13 @@ async function loadRecommendations() {
 
   try {
 
-    /*
-      Anime table se existing records load honge.
-      id desc ka matlab newest records pehle.
-    */
-
     const { data, error } = await supabaseClient
       .from("anime")
       .select("*")
       .order("id", { ascending: false })
       .limit(80);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (!data || data.length === 0) {
 
@@ -869,7 +953,6 @@ async function loadRecommendations() {
       return;
     }
 
-    // Current anime ko recommendation se remove karo.
     const currentId = String(animeId ?? "");
 
     const otherAnime = data.filter(anime => {
@@ -890,7 +973,6 @@ async function loadRecommendations() {
       return;
     }
 
-    // Current anime ke genre find karo.
     const currentAnime = data.find(anime => {
 
       const identifier = getAnimeIdentifier(anime);
@@ -902,7 +984,6 @@ async function loadRecommendations() {
 
     const currentGenres = normalizeGenre(currentAnime?.genre);
 
-    // Same genre wale anime ko priority do.
     const scoredAnime = otherAnime.map((anime, index) => {
 
       const genres = normalizeGenre(anime.genre);
@@ -929,7 +1010,6 @@ async function loadRecommendations() {
 
     });
 
-    // Maximum 20 recommendations.
     const finalRecommendations = scoredAnime
       .slice(0, 20)
       .map(item => item.anime);
@@ -975,9 +1055,7 @@ async function loadEpisode() {
   ) {
 
     showError("Anime ID ya Episode number missing hai.");
-
     episodeTitle.textContent = "Episode unavailable";
-
     return;
   }
 
@@ -991,14 +1069,12 @@ async function loadEpisode() {
   if (error) {
 
     showError("Episode load failed: " + error.message);
-
     return;
   }
 
   if (!data) {
 
     showError("Ye episode nahi mila.");
-
     return;
   }
 
@@ -1012,6 +1088,10 @@ async function loadEpisode() {
     (data.anime_title || "Anime") + " - Ep " + data.episode_number;
 
   fallbackVideoUrl = data.video_url || "";
+
+  // Save the user's watch history for this anime.
+  // Same anime dobara dekhne par existing row update hogi.
+  await recordWatchHistory(data);
 
   await loadQualityLinks(data.anime_title);
 
@@ -1033,9 +1113,7 @@ function showError(message) {
 async function loadQualityLinks(animeTitle) {
 
   qualityLinks = [];
-
   qualityButtons.innerHTML = "";
-
   linkButtons.innerHTML = "";
 
   if (!animeTitle || !episodeNumber) {
@@ -1043,7 +1121,6 @@ async function loadQualityLinks(animeTitle) {
     if (fallbackVideoUrl) {
 
       loadVideo(await convertLink(fallbackVideoUrl));
-
       updateStatusDisplay();
     }
 
@@ -1098,7 +1175,6 @@ async function loadQualityLinks(animeTitle) {
   } else if (fallbackVideoUrl) {
 
     loadVideo(await convertLink(fallbackVideoUrl));
-
     updateStatusDisplay();
 
   } else {
@@ -1136,7 +1212,6 @@ async function selectQuality(quality) {
   const [streamUrl, downloadUrl] = await Promise.all([
 
     convertLink(selected.stream_url),
-
     convertLink(selected.download_url)
 
   ]);
@@ -1158,8 +1233,6 @@ async function selectQuality(quality) {
 
   }
 
-  /* Open Stream button intentionally removed */
-
   linkButtons.innerHTML = "";
 
   if (downloadUrl) {
@@ -1167,13 +1240,9 @@ async function selectQuality(quality) {
     const downloadButton = document.createElement("a");
 
     downloadButton.className = "download-btn";
-
     downloadButton.href = downloadUrl;
-
     downloadButton.target = "_blank";
-
     downloadButton.rel = "noopener noreferrer";
-
     downloadButton.textContent = "⬇ Download (" + quality + ")";
 
     linkButtons.appendChild(downloadButton);
@@ -1202,14 +1271,12 @@ function loadVideo(url) {
   if (!safe) {
 
     showError("Video URL available nahi hai.");
-
     return;
   }
 
   videoContainer.innerHTML = "";
 
   const parsed = new URL(safe);
-
   const path = parsed.pathname.toLowerCase();
 
   const isEmbedHost =
@@ -1263,9 +1330,7 @@ function renderIframe(safe) {
   const iframe = document.createElement("iframe");
 
   iframe.src = safe;
-
   iframe.allowFullscreen = true;
-
   iframe.referrerPolicy = "no-referrer";
 
   iframe.setAttribute(
@@ -1319,7 +1384,6 @@ async function loadEpisodeList() {
   episodeNav.innerHTML = "";
 
   const episodeButtons = document.createElement("div");
-
   episodeButtons.className = "episode-nav";
 
   data.forEach(episode => {
@@ -1340,9 +1404,7 @@ async function loadEpisodeList() {
     if (
       Number(episode.episode_number) === Number(episodeNumber)
     ) {
-
       link.classList.add("active");
-
     }
 
     episodeButtons.appendChild(link);
@@ -1355,9 +1417,7 @@ async function loadEpisodeList() {
 /* ---------- START ---------- */
 
 loadEpisode();
-
 loadEpisodeList();
-
 loadRecommendations();
 
 </script>
