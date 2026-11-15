@@ -1,14 +1,19 @@
 
 /* ==========================================
    AniStream Hindi - Universal Profile System
+   + Automatic Watch History Display
 ========================================== */
 
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 let currentUser = null;
+let historyRequest = 0;
 
 const el = (...ids) => {
   for (const id of ids) {
@@ -18,8 +23,13 @@ const el = (...ids) => {
   return null;
 };
 
+/* ==========================================
+   MESSAGE
+========================================== */
+
 function msg(text, type = "info") {
   const box = el("profileMessage");
+
   if (!box) {
     console.log(text);
     return;
@@ -31,37 +41,56 @@ function msg(text, type = "info") {
 
 function clearMsg() {
   const box = el("profileMessage");
+
   if (box) {
     box.textContent = "";
     box.className = "profile-message";
   }
 }
 
+/* ==========================================
+   SHOW / HIDE SECTIONS
+========================================== */
+
 function showLogin() {
-  const auth = el("authSection", "authPanel");
-  const account = el("accountSection", "profilePanel");
+  const auth = el("authPanel");
+  const account = el("profilePanel");
+  const history = el("watchHistoryPanel");
 
   if (auth) auth.hidden = false;
   if (account) account.hidden = true;
+  if (history) history.hidden = true;
+
+  clearHistory();
 }
 
 function showAccount() {
-  const auth = el("authSection", "authPanel");
-  const account = el("accountSection", "profilePanel");
+  const auth = el("authPanel");
+  const account = el("profilePanel");
+  const history = el("watchHistoryPanel");
 
   if (auth) auth.hidden = true;
   if (account) account.hidden = false;
+  if (history) history.hidden = false;
 }
+
+/* ==========================================
+   USER NAME
+========================================== */
 
 function userName(user) {
-  const m = user.user_metadata || {};
+  const meta = user.user_metadata || {};
 
-  return m.full_name ||
-         m.name ||
-         m.username ||
-         user.email?.split("@")[0] ||
-         "AniStream User";
+  return meta.full_name ||
+    meta.name ||
+    meta.username ||
+    user.email?.split("@")[0] ||
+    "AniStream User";
 }
+
+/* ==========================================
+   LOGIN / SIGNUP TABS
+========================================== */
 
 function switchTab(tab) {
   const login = tab === "login";
@@ -85,47 +114,33 @@ function switchTab(tab) {
 async function renderAvatar(user) {
   const meta = user.user_metadata || {};
   const name = userName(user);
-  const letter = name.charAt(0).toUpperCase();
 
-  const oldAvatar = el("profileAvatar");
-  const newAvatar = el("avatarPreview");
   const initial = el("profileInitial");
+  const preview = el("avatarPreview");
 
   let imageUrl = meta.avatar_url || meta.picture || "";
 
   if (meta.avatar_path) {
-    const { data } = await db.storage
+    const { data, error } = await db.storage
       .from("avatars")
       .createSignedUrl(meta.avatar_path, 3600);
 
-    if (data?.signedUrl) imageUrl = data.signedUrl;
-  }
-
-  if (oldAvatar) {
-    oldAvatar.replaceChildren();
-
-    if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = "Profile photo";
-      img.className = "avatar";
-      oldAvatar.appendChild(img);
-      oldAvatar.className = "avatar";
-    } else {
-      oldAvatar.textContent = letter;
-      oldAvatar.className = "avatar avatar-fallback";
+    if (!error && data?.signedUrl) {
+      imageUrl = data.signedUrl;
     }
   }
 
-  if (initial) initial.textContent = letter;
+  if (initial) {
+    initial.textContent = name.charAt(0).toUpperCase();
+  }
 
-  if (newAvatar) {
+  if (preview) {
     if (imageUrl && /^https?:\/\//i.test(imageUrl)) {
-      newAvatar.src = imageUrl;
-      newAvatar.style.display = "block";
+      preview.src = imageUrl;
+      preview.style.display = "block";
     } else {
-      newAvatar.removeAttribute("src");
-      newAvatar.style.display = "none";
+      preview.removeAttribute("src");
+      preview.style.display = "none";
     }
   }
 }
@@ -156,11 +171,6 @@ async function loadProfile(user) {
     el("profileEmail").textContent = user.email || "";
   }
 
-  if (el("displayNameInput")) {
-    el("displayNameInput").value =
-      meta.full_name || meta.name || "";
-  }
-
   if (el("usernameInput")) {
     el("usernameInput").value = meta.username || "";
   }
@@ -169,18 +179,16 @@ async function loadProfile(user) {
     el("bioInput").value = meta.bio || "";
   }
 
-  if (el("privacyInput")) {
-    el("privacyInput").checked =
-      meta.private_profile !== false;
-  }
-
   if (el("joinedDate")) {
     el("joinedDate").textContent = user.created_at
-      ? new Date(user.created_at).toLocaleDateString()
+      ? new Date(user.created_at).toLocaleDateString("en-IN")
       : "—";
   }
 
   await renderAvatar(user);
+
+  // Load user's anime history
+  await loadWatchHistory(user.id);
 }
 
 /* ==========================================
@@ -192,9 +200,7 @@ async function signupUser(event) {
   clearMsg();
 
   const name = el("signupName")?.value.trim();
-  const username =
-    el("signupUsername")?.value.trim() || name?.replace(/\s+/g, "_");
-
+  const username = name?.replace(/\s+/g, "_");
   const email = el("signupEmail")?.value.trim();
   const password = el("signupPassword")?.value;
 
@@ -210,7 +216,8 @@ async function signupUser(event) {
     return msg("Username must use 3-24 letters, numbers or underscores.", "error");
   }
 
-  const button = el("signupSubmit", "signupButton");
+  const button = el("signupButton");
+
   if (button) {
     button.disabled = true;
     button.textContent = "Creating Account...";
@@ -221,8 +228,11 @@ async function signupUser(event) {
       email,
       password,
       options: {
-        emailRedirectTo: window.location.origin +
-          window.location.pathname,
+        emailRedirectTo: new URL(
+          "profile.html",
+          window.location.href
+        ).href,
+
         data: {
           full_name: name,
           username: username,
@@ -239,7 +249,10 @@ async function signupUser(event) {
       msg("Account created successfully!", "success");
     } else {
       switchTab("login");
-      msg("Account created! Please verify your email, then login.", "success");
+      msg(
+        "Account created! Please verify your email, then login.",
+        "success"
+      );
     }
 
   } catch (error) {
@@ -263,7 +276,8 @@ async function loginUser(event) {
   const email = el("loginEmail")?.value.trim();
   const password = el("loginPassword")?.value;
 
-  const button = el("loginSubmit", "loginButton");
+  const button = el("loginButton");
+
   if (button) {
     button.disabled = true;
     button.textContent = "Logging in...";
@@ -278,6 +292,7 @@ async function loginUser(event) {
     if (error) throw error;
 
     await loadProfile(data.user);
+
     msg("Login successful!", "success");
 
   } catch (error) {
@@ -297,7 +312,7 @@ async function loginUser(event) {
 async function googleLogin() {
   clearMsg();
 
-  const button = el("googleLogin", "googleLoginBtn");
+  const button = el("googleLoginBtn");
 
   if (button) {
     button.disabled = true;
@@ -344,7 +359,10 @@ async function forgotPassword() {
 
   try {
     const { error } = await db.auth.resetPasswordForEmail(email, {
-      redirectTo: new URL("profile.html", window.location.href).href
+      redirectTo: new URL(
+        "profile.html",
+        window.location.href
+      ).href
     });
 
     if (error) throw error;
@@ -365,45 +383,50 @@ async function saveProfile() {
 
   clearMsg();
 
-  const name =
-    el("displayNameInput")?.value.trim() ||
-    currentUser.user_metadata?.full_name ||
-    userName(currentUser);
-
   const username = el("usernameInput")?.value.trim();
   const bio = el("bioInput")?.value.trim() || "";
-  const privacy = el("privacyInput")?.checked ?? true;
 
   if (!username) {
     return msg("Please enter a username.", "error");
   }
 
   if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
-    return msg("Username must be 3-24 characters.", "error");
+    return msg(
+      "Username must be 3-24 letters, numbers or underscores.",
+      "error"
+    );
   }
 
-  const button = el("profileSave", "saveProfileBtn");
-  if (button) button.disabled = true;
+  const button = el("saveProfileBtn");
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Saving...";
+  }
 
   try {
     const { data, error } = await db.auth.updateUser({
       data: {
-        full_name: name,
         username,
-        bio,
-        private_profile: privacy
+        bio
       }
     });
 
     if (error) throw error;
 
-    await loadProfile(data.user);
+    currentUser = data.user;
+
+    await loadProfile(currentUser);
+
     msg("Profile updated successfully!", "success");
 
   } catch (error) {
     msg(error.message, "error");
   } finally {
-    if (button) button.disabled = false;
+    if (button) {
+      button.disabled = false;
+      button.textContent = "Save Changes";
+    }
   }
 }
 
@@ -426,8 +449,12 @@ async function uploadPhoto(event) {
   }
 
   try {
+    msg("Uploading photo...", "info");
+
     const oldPath = currentUser.user_metadata?.avatar_path;
+
     const extension = file.name.split(".").pop().toLowerCase();
+
     const path = `${currentUser.id}/${Date.now()}.${extension}`;
 
     const { error: uploadError } = await db.storage
@@ -440,7 +467,9 @@ async function uploadPhoto(event) {
     if (uploadError) throw uploadError;
 
     const { data, error } = await db.auth.updateUser({
-      data: { avatar_path: path }
+      data: {
+        avatar_path: path
+      }
     });
 
     if (error) {
@@ -455,6 +484,7 @@ async function uploadPhoto(event) {
     }
 
     await loadProfile(currentUser);
+
     msg("Profile photo updated!", "success");
 
   } catch (error) {
@@ -481,18 +511,257 @@ async function removePhoto() {
 
   try {
     const { data, error } = await db.auth.updateUser({
-      data: { avatar_path: null }
+      data: {
+        avatar_path: null
+      }
     });
 
     if (error) throw error;
 
     await db.storage.from("avatars").remove([path]);
 
-    await loadProfile(data.user);
+    currentUser = data.user;
+
+    await loadProfile(currentUser);
+
     msg("Profile photo removed.", "success");
 
   } catch (error) {
     msg(error.message, "error");
+  }
+}
+
+/* ==========================================
+   WATCH HISTORY - CLEAR
+========================================== */
+
+function clearHistory() {
+  const list = el("historyList");
+  const count = el("historyCount");
+  const empty = el("historyEmpty");
+  const loading = el("historyLoading");
+
+  if (list) list.replaceChildren();
+  if (count) count.textContent = "0 Anime";
+  if (empty) empty.hidden = true;
+  if (loading) loading.hidden = true;
+}
+
+/* ==========================================
+   WATCH HISTORY - DATE
+========================================== */
+
+function formatWatchDate(date) {
+  if (!date) return "Date unavailable";
+
+  const parsed = new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return "Date unavailable";
+  }
+
+  return parsed.toLocaleString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+/* ==========================================
+   WATCH HISTORY - SAFE IMAGE
+========================================== */
+
+function safeImage(url) {
+  if (!url) return "";
+
+  try {
+    const parsed = new URL(url, window.location.origin);
+
+    if (
+      parsed.protocol === "https:" ||
+      parsed.protocol === "http:"
+    ) {
+      return parsed.href;
+    }
+  } catch (error) {}
+
+  return "";
+}
+
+/* ==========================================
+   WATCH HISTORY - RENDER
+========================================== */
+
+function renderWatchHistory(records) {
+  const list = el("historyList");
+  const count = el("historyCount");
+  const empty = el("historyEmpty");
+
+  if (!list) return;
+
+  list.replaceChildren();
+
+  if (!records.length) {
+    if (count) count.textContent = "0 Anime";
+    if (empty) empty.hidden = false;
+    return;
+  }
+
+  if (empty) empty.hidden = true;
+
+  if (count) {
+    count.textContent =
+      records.length + (records.length === 1 ? " Anime" : " Anime");
+  }
+
+  records.forEach((anime) => {
+    const card = document.createElement("article");
+    card.className = "history-card";
+
+    const poster = document.createElement("img");
+    poster.className = "history-poster";
+    poster.alt = anime.anime_title || "Anime poster";
+    poster.loading = "lazy";
+
+    poster.src = safeImage(anime.anime_thumbnail) ||
+      "https://placehold.co/160x220/141827/ffffff?text=AniStream";
+
+    poster.onerror = () => {
+      poster.src = "https://placehold.co/160x220/141827/ffffff?text=AniStream";
+    };
+
+    const info = document.createElement("div");
+    info.className = "history-info";
+
+    const title = document.createElement("h3");
+    title.textContent = anime.anime_title || "Unknown Anime";
+
+    const episode = document.createElement("div");
+    episode.className = "history-episode";
+
+    episode.textContent = anime.episode_number
+      ? "Last watched: Episode " + anime.episode_number
+      : "Episode information unavailable";
+
+    const date = document.createElement("div");
+    date.className = "history-date";
+
+    date.textContent = "Watched: " + formatWatchDate(anime.watched_at);
+
+    const watchLink = document.createElement("a");
+    watchLink.className = "history-watch";
+    watchLink.textContent = "▶ Watch Again";
+
+    let watchUrl = anime.watch_url;
+
+    if (!watchUrl && anime.anime_id) {
+      watchUrl = "watch.html?id=" +
+        encodeURIComponent(anime.anime_id) +
+        "&episode=" +
+        encodeURIComponent(anime.episode_number || 1);
+    }
+
+    if (watchUrl) {
+      try {
+        const parsed = new URL(watchUrl, window.location.href);
+
+        if (
+          parsed.origin === window.location.origin &&
+          ["http:", "https:"].includes(parsed.protocol)
+        ) {
+          watchLink.href = parsed.href;
+        } else {
+          watchLink.hidden = true;
+        }
+      } catch (error) {
+        watchLink.hidden = true;
+      }
+    } else {
+      watchLink.hidden = true;
+    }
+
+    info.append(title, episode, date, watchLink);
+    card.append(poster, info);
+
+    list.appendChild(card);
+  });
+}
+
+/* ==========================================
+   WATCH HISTORY - LOAD FROM SUPABASE
+========================================== */
+
+async function loadWatchHistory(userId) {
+  if (!userId) return;
+
+  const requestId = ++historyRequest;
+
+  const list = el("historyList");
+  const loading = el("historyLoading");
+  const empty = el("historyEmpty");
+  const count = el("historyCount");
+
+  if (list) list.replaceChildren();
+  if (empty) empty.hidden = true;
+  if (loading) loading.hidden = false;
+  if (count) count.textContent = "Loading...";
+
+  try {
+    const { data, error } = await db
+      .from("watch_history")
+      .select(
+        "id,user_id,anime_id,anime_title,anime_thumbnail,episode_number,watched_at,watch_url"
+      )
+      .eq("user_id", userId)
+      .order("watched_at", { ascending: false })
+      .limit(100);
+
+    if (error) throw error;
+
+    // Prevent an old user's request from updating the current profile
+    if (
+      requestId !== historyRequest ||
+      !currentUser ||
+      currentUser.id !== userId
+    ) {
+      return;
+    }
+
+    // One card per anime, newest record first
+    const uniqueAnime = new Map();
+
+    (data || []).forEach((item) => {
+      const key = String(item.anime_id || item.id);
+
+      if (!uniqueAnime.has(key)) {
+        uniqueAnime.set(key, item);
+      }
+    });
+
+    renderWatchHistory(Array.from(uniqueAnime.values()));
+
+  } catch (error) {
+    console.error("Watch History Error:", error);
+
+    if (requestId !== historyRequest) return;
+
+    if (list) list.replaceChildren();
+
+    if (count) count.textContent = "Unavailable";
+
+    if (empty) {
+      empty.hidden = false;
+      empty.querySelector("h3").textContent = "History Could Not Load";
+      empty.querySelector("p").textContent =
+        "Please check your watch_history database and try again.";
+    }
+
+  } finally {
+    if (requestId === historyRequest && loading) {
+      loading.hidden = true;
+    }
   }
 }
 
@@ -505,11 +774,15 @@ async function logoutUser() {
 
   try {
     const { error } = await db.auth.signOut();
+
     if (error) throw error;
 
     currentUser = null;
+    historyRequest++;
+
     showLogin();
     switchTab("login");
+
     msg("Logged out successfully.", "success");
 
   } catch (error) {
@@ -518,35 +791,44 @@ async function logoutUser() {
 }
 
 /* ==========================================
-   INIT
+   AUTH INITIALIZATION
 ========================================== */
 
 document.addEventListener("DOMContentLoaded", async () => {
+
   try {
-    // Show login form by default
     showLogin();
     switchTab("login");
 
-    el("loginTab")?.addEventListener("click", () => switchTab("login"));
-    el("signupTab")?.addEventListener("click", () => switchTab("signup"));
+    // Tab events
+    el("loginTab")?.addEventListener("click", () => {
+      switchTab("login");
+    });
 
+    el("signupTab")?.addEventListener("click", () => {
+      switchTab("signup");
+    });
+
+    // Authentication
     el("loginForm")?.addEventListener("submit", loginUser);
     el("signupForm")?.addEventListener("submit", signupUser);
 
-    el("googleLogin", "googleLoginBtn")?.addEventListener("click", googleLogin);
-    el("forgotPassword", "forgotPasswordBtn")?.addEventListener("click", forgotPassword);
+    el("googleLoginBtn")?.addEventListener("click", googleLogin);
 
-    el("profileSave", "saveProfileBtn")?.addEventListener("click", saveProfile);
-    el("logoutButton", "logoutBtn")?.addEventListener("click", logoutUser);
+    el("forgotPasswordBtn")?.addEventListener("click", forgotPassword);
 
-    el("photoInput", "avatarInput")?.addEventListener("change", uploadPhoto);
-    el("removePhoto", "deleteAvatarBtn")?.addEventListener("click", removePhoto);
+    // Profile
+    el("saveProfileBtn")?.addEventListener("click", saveProfile);
+    el("logoutBtn")?.addEventListener("click", logoutUser);
 
-    el("deleteAccountInfo")?.addEventListener("click", () => {
-      msg("Please contact the AniStream administrator to request account deletion.", "info");
-    });
+    // Avatar
+    el("avatarInput")?.addEventListener("change", uploadPhoto);
 
+    el("deleteAvatarBtn")?.addEventListener("click", removePhoto);
+
+    // Get current session
     const { data, error } = await db.auth.getSession();
+
     if (error) throw error;
 
     if (data.session?.user) {
@@ -555,18 +837,35 @@ document.addEventListener("DOMContentLoaded", async () => {
       showLogin();
     }
 
+    // Auth state listener
     db.auth.onAuthStateChange((event, session) => {
+
       if (event === "SIGNED_OUT") {
         currentUser = null;
+        historyRequest++;
         showLogin();
-      } else if (session?.user) {
-        setTimeout(() => loadProfile(session.user), 0);
+      }
+
+      else if (
+        session?.user &&
+        ["SIGNED_IN", "INITIAL_SESSION", "USER_UPDATED"].includes(event)
+      ) {
+        setTimeout(() => {
+          if (currentUser?.id !== session.user.id) {
+            loadProfile(session.user);
+          }
+        }, 0);
       }
     });
 
   } catch (error) {
     console.error("AniStream Profile Error:", error);
+
     showLogin();
-    msg("Profile error: " + error.message, "error");
+
+    msg(
+      "Profile error: " + error.message,
+      "error"
+    );
   }
 });
