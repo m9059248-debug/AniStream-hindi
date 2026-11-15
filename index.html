@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,12 +34,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root {
+:root{
   --bg:#040508;
   --surface:#0a0c14;
   --surface-2:#101322;
   --surface-card:#0d0f1a;
-  --surface-card-hover:#141728;
   --line:rgba(255,255,255,.08);
   --line-strong:rgba(255,0,60,.35);
   --text:#fff;
@@ -105,6 +105,7 @@ header{
 }
 .logo span{color:#fff}
 .logo b{color:var(--accent);text-shadow:0 0 10px var(--accent-glow)}
+
 .nav-links{display:flex;align-items:center;gap:16px}
 .nav-links a{
   font-size:12px;
@@ -113,6 +114,49 @@ header{
   transition:all .15s ease;
 }
 .nav-links a:hover{color:#fff;text-shadow:0 0 8px rgba(255,255,255,.4)}
+
+/* PROFILE NAVIGATION */
+.profile-nav{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:6px 12px;
+  border:1px solid rgba(255,0,60,.4);
+  border-radius:999px;
+  background:rgba(255,0,60,.09);
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+  flex-shrink:0;
+  transition:.2s;
+}
+.profile-nav:hover{
+  background:rgba(255,0,60,.2);
+  border-color:#ff003c;
+}
+.profile-avatar{
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #ff003c;
+  display:none;
+}
+.profile-initial{
+  width:25px;
+  height:25px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:linear-gradient(135deg,#ff003c,#ff2a5f);
+  color:white;
+  font-size:11px;
+  font-weight:900;
+}
+.profile-nav.logged-in .profile-avatar{display:block}
+.profile-nav.logged-in .profile-initial{display:none}
 
 .hero{
   position:relative;
@@ -544,53 +588,33 @@ footer{
 }
 .announcement-info span{color:#858b9f}
 .announcement-info strong{color:#fff;text-align:right;overflow-wrap:anywhere}
-.announcement-actions{
-  display:flex;
-  gap:8px;
-  margin-top:18px;
-}
+.announcement-actions{display:flex;gap:8px;margin-top:18px}
 .announcement-okay{
-  flex:1;
-  padding:11px;
-  border:0;
-  border-radius:9px;
+  flex:1;padding:11px;border:0;border-radius:9px;
   background:linear-gradient(135deg,#ff003c,#ff2a5f);
-  color:#fff;
-  font-size:12px;
-  font-weight:900;
-  cursor:pointer;
+  color:#fff;font-size:12px;font-weight:900;cursor:pointer;
 }
 .announcement-dismiss{
-  padding:11px 15px;
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:9px;
-  background:rgba(255,255,255,.06);
-  color:#d1d5db;
-  font-size:12px;
-  font-weight:800;
-  cursor:pointer;
+  padding:11px 15px;border:1px solid rgba(255,255,255,.12);
+  border-radius:9px;background:rgba(255,255,255,.06);
+  color:#d1d5db;font-size:12px;font-weight:800;cursor:pointer;
 }
 .announcement-dismiss[hidden]{display:none!important}
-.announcement-footer{
-  margin-top:12px;
-  color:#666d80;
-  font-size:9px;
-  letter-spacing:1px;
-}
-@keyframes announcementFade{
-  from{opacity:0}
-  to{opacity:1}
-}
+.announcement-footer{margin-top:12px;color:#666d80;font-size:9px;letter-spacing:1px}
+@keyframes announcementFade{from{opacity:0}to{opacity:1}}
 @keyframes announcementPop{
   from{opacity:0;transform:scale(.94) translateY(10px)}
   to{opacity:1;transform:scale(1) translateY(0)}
 }
 
 .bottom-nav{display:none}
+
 @media(max-width:720px){
-  .nav{min-height:52px;padding:0 12px}
+  .nav{min-height:52px;padding:0 10px;gap:5px}
   .logo{font-size:15px}
-  .nav-links a{display:none}
+  .nav-links{display:none}
+  .profile-nav{padding:5px 9px;font-size:10px}
+  .profile-avatar,.profile-initial{width:23px;height:23px}
   .hero{min-height:270px}
   .hero-content{padding:25px 12px 45px}
   .hero h1{font-size:22px}
@@ -625,6 +649,7 @@ footer{
       <span class="logo-badge">PRO</span>
       <span>Ani<b>Stream</b></span>
     </a>
+
     <nav class="nav-links">
       <a href="#home">Home</a>
       <a href="#ongoing">⚡ Ongoing</a>
@@ -632,6 +657,12 @@ footer{
       <a href="#movies">🎬 Movies</a>
       <a href="#allAnime">📚 All Anime</a>
     </nav>
+
+    <a href="profile.html" class="profile-nav" id="profileNav">
+      <img id="profileNavAvatar" class="profile-avatar" alt="Profile">
+      <span id="profileNavInitial" class="profile-initial">U</span>
+      <span id="profileNavText">Login</span>
+    </a>
   </div>
 </header>
 
@@ -733,6 +764,7 @@ footer{
   <a href="#ongoing"><span>⚡</span>Ongoing</a>
   <a href="#series"><span>📺</span>Series</a>
   <a href="#movies"><span>🎬</span>Movies</a>
+  <a href="profile.html"><span>👤</span>Profile</a>
 </nav>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
@@ -769,14 +801,16 @@ footer{
 
 const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-const supabaseClient = window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
 let animeList=[],animeLikeCounts={},likedAnimeIds=new Set(),likeBusyIds=new Set();
 let selectedGenre="all";
 let selectedLanguage="Hindi";
 let toastTimer=null,searchDebounceTimer=null;
 let heroItems=[],heroIndex=0,heroTimer=null,heroTouchStartX=null;
-
 let recentEpisodesMap={};
 const TWO_HOURS_MS=2*60*60*1000;
 
@@ -811,6 +845,88 @@ function isMovie(anime){
   const s=String(anime.season||"").toLowerCase();
   const g=String(anime.genre||"").toLowerCase();
   return s.includes("movie")||g.includes("movie");
+}
+
+/* ================================
+   ANISTREAM PROFILE AUTH SYSTEM
+================================ */
+
+function getProfileName(user){
+  const metadata=user?.user_metadata||{};
+
+  return (
+    metadata.username ||
+    metadata.full_name ||
+    metadata.name ||
+    user?.email?.split("@")[0] ||
+    "User"
+  );
+}
+
+function getProfileAvatar(user){
+  const metadata=user?.user_metadata||{};
+
+  return (
+    metadata.avatar_url ||
+    metadata.picture ||
+    ""
+  );
+}
+
+function updateProfileNavigation(user){
+  const nav=$("profileNav");
+  const avatar=$("profileNavAvatar");
+  const initial=$("profileNavInitial");
+  const text=$("profileNavText");
+
+  if(!nav||!avatar||!initial||!text)return;
+
+  if(!user){
+    nav.classList.remove("logged-in");
+    avatar.removeAttribute("src");
+    text.textContent="Login";
+    initial.textContent="U";
+    return;
+  }
+
+  const username=getProfileName(user);
+  const avatarUrl=safeImageUrl(getProfileAvatar(user));
+
+  text.textContent=username.length>14
+    ?username.slice(0,12)+"…"
+    :username;
+
+  initial.textContent=username.charAt(0).toUpperCase()||"U";
+
+  if(avatarUrl){
+    avatar.onload=()=>nav.classList.add("logged-in");
+    avatar.onerror=()=>{
+      nav.classList.remove("logged-in");
+      avatar.removeAttribute("src");
+    };
+    avatar.src=avatarUrl;
+  }else{
+    nav.classList.remove("logged-in");
+    avatar.removeAttribute("src");
+  }
+}
+
+async function initializeProfileNavigation(){
+  try{
+    const {data,error}=await supabaseClient.auth.getSession();
+
+    if(error)throw error;
+
+    updateProfileNavigation(data?.session?.user||null);
+
+    supabaseClient.auth.onAuthStateChange((event,session)=>{
+      updateProfileNavigation(session?.user||null);
+    });
+
+  }catch(error){
+    console.warn("Profile session error:",error);
+    updateProfileNavigation(null);
+  }
 }
 
 /* ANNOUNCEMENT POPUP SYSTEM */
@@ -1504,6 +1620,7 @@ genreSelect.addEventListener("change",()=>setGenre(genreSelect.value));
 
 document.querySelectorAll(".bottom-nav a").forEach(a=>{
   a.addEventListener("click",()=>{
+    if(a.getAttribute("href")==="profile.html")return;
     document.querySelectorAll(".bottom-nav a").forEach(x=>x.classList.remove("active"));
     a.classList.add("active");
   });
@@ -1548,9 +1665,7 @@ async function trackSiteVisit(){
 async function startApp(){
   loadSavedLanguage();
 
-  // Homepage announcement load
   loadHomepageAnnouncement();
-
   trackSiteVisit();
 
   await loadAnime();
@@ -1563,6 +1678,9 @@ async function startApp(){
   updateHero();
   renderAll();
 }
+
+/* START PROFILE SESSION CHECK */
+initializeProfileNavigation();
 
 startApp().catch(error=>{
   console.error("App error:",error);
