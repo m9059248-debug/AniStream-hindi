@@ -12,149 +12,369 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-:root{--bg:#040508;--surface:#0d101a;--surface2:#141827;--line:rgba(255,255,255,.09);--text:#fff;--muted:#9299ad;--red:#ff003c;--red2:#ff2a5f}
+:root{
+--bg:#040508;
+--surface:#0d101a;
+--surface2:#141827;
+--line:rgba(255,255,255,.09);
+--text:#fff;
+--muted:#9299ad;
+--red:#ff003c;
+--red2:#ff2a5f
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{min-height:100vh;background:radial-gradient(ellipse at top,rgba(255,0,60,.10),transparent 45%),var(--bg);color:var(--text);font-family:'Plus Jakarta Sans',system-ui,sans-serif;padding:20px 14px 45px}
+body{
+min-height:100vh;
+background:radial-gradient(ellipse at top,rgba(255,0,60,.10),transparent 45%),var(--bg);
+color:var(--text);
+font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+padding:20px 14px 45px
+}
 a{color:inherit;text-decoration:none}
 button,input,textarea{font:inherit}
-.topbar{max-width:980px;margin:0 auto 24px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{font-size:19px;font-weight:900;letter-spacing:-.6px}.brand b{color:var(--red)}
-.back{padding:9px 13px;border:1px solid var(--line);border-radius:9px;color:#ddd;font-size:12px;font-weight:700}
+.topbar{
+max-width:980px;margin:0 auto 24px;
+display:flex;align-items:center;justify-content:space-between;gap:12px
+}
+.brand{font-size:19px;font-weight:900;letter-spacing:-.6px}
+.brand b{color:var(--red)}
+.back{
+padding:9px 13px;border:1px solid var(--line);
+border-radius:9px;color:#ddd;font-size:12px;font-weight:700
+}
 .wrap{max-width:560px;margin:0 auto}
-.heading{margin-bottom:18px}.heading small{color:var(--red2);font-size:10px;font-weight:900;letter-spacing:1.5px}.heading h1{font-size:26px;font-weight:900;margin:5px 0}.heading p{font-size:12px;color:var(--muted);line-height:1.6}
-.panel{background:linear-gradient(145deg,#111522,#090b12);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 15px 50px rgba(0,0,0,.25)}
-.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:17px;background:#080a11;padding:5px;border-radius:10px}
-.tabs button{border:0;background:transparent;color:var(--muted);padding:10px;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer}
+.heading{margin-bottom:18px}
+.heading small{color:var(--red2);font-size:10px;font-weight:900;letter-spacing:1.5px}
+.heading h1{font-size:26px;font-weight:900;margin:5px 0}
+.heading p{font-size:12px;color:var(--muted);line-height:1.6}
+.panel{
+background:linear-gradient(145deg,#111522,#090b12);
+border:1px solid var(--line);border-radius:16px;
+padding:20px;box-shadow:0 15px 50px rgba(0,0,0,.25)
+}
+.tabs{
+display:grid;grid-template-columns:1fr 1fr;gap:7px;
+margin-bottom:17px;background:#080a11;padding:5px;border-radius:10px
+}
+.tabs button{
+border:0;background:transparent;color:var(--muted);
+padding:10px;border-radius:7px;font-size:12px;font-weight:800;cursor:pointer
+}
 .tabs button.active{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
 form{display:grid;gap:11px}
-.field{display:grid;gap:6px}.field label{font-size:11px;color:#c5c9d5;font-weight:700}
-.field input,.field textarea{width:100%;background:#080b13;border:1px solid var(--line);border-radius:9px;padding:12px;color:#fff;font-size:12px;outline:none}
-.field input:focus,.field textarea:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,0,60,.10)}
+.field{display:grid;gap:6px}
+.field label{font-size:11px;color:#c5c9d5;font-weight:700}
+.field input,.field textarea{
+width:100%;background:#080b13;border:1px solid var(--line);
+border-radius:9px;padding:12px;color:#fff;font-size:12px;outline:none
+}
+.field input:focus,.field textarea:focus{
+border-color:var(--red);box-shadow:0 0 0 3px rgba(255,0,60,.10)
+}
 .field textarea{resize:vertical;min-height:78px}
-.primary,.google,.secondary{width:100%;border:0;border-radius:9px;padding:12px;font-size:12px;font-weight:900;cursor:pointer}
+.primary,.google,.secondary{
+width:100%;border:0;border-radius:9px;padding:12px;
+font-size:12px;font-weight:900;cursor:pointer
+}
 .primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff}
 .primary:disabled{opacity:.55;cursor:wait}
 .google{background:#fff;color:#171717}
 .secondary{background:#171c2b;color:#fff;border:1px solid var(--line)}
-.or{display:flex;align-items:center;gap:10px;color:#737b90;font-size:10px;margin:14px 0}.or:before,.or:after{content:"";height:1px;background:var(--line);flex:1}
-.forgot{background:none;border:0;color:#ff6686;font-size:11px;font-weight:700;text-align:right;cursor:pointer;margin-top:1px}
-.profile-message{display:none;margin:0 0 13px;padding:10px 12px;border-radius:8px;font-size:11px;line-height:1.5;overflow-wrap:anywhere}
-.profile-message.show{display:block}.profile-message.info{background:#111b2c;color:#bcd6ff;border:1px solid #243b60}.profile-message.success{background:#0d251c;color:#8be0b4;border:1px solid #1b6243}.profile-message.error{background:#2a1018;color:#ff9caf;border:1px solid #713044}
+.or{display:flex;align-items:center;gap:10px;color:#737b90;font-size:10px;margin:14px 0}
+.or:before,.or:after{content:"";height:1px;background:var(--line);flex:1}
+.forgot{
+background:none;border:0;color:#ff6686;font-size:11px;font-weight:700;
+text-align:right;cursor:pointer;margin-top:1px
+}
+.profile-message{
+display:none;margin:0 0 13px;padding:10px 12px;border-radius:8px;
+font-size:11px;line-height:1.5;overflow-wrap:anywhere
+}
+.profile-message.show{display:block}
+.profile-message.info{background:#111b2c;color:#bcd6ff;border:1px solid #243b60}
+.profile-message.success{background:#0d251c;color:#8be0b4;border:1px solid #1b6243}
+.profile-message.error{background:#2a1018;color:#ff9caf;border:1px solid #713044}
 [hidden]{display:none!important}
-.account-head{display:flex;align-items:center;gap:14px;padding-bottom:17px;border-bottom:1px solid var(--line);margin-bottom:17px}
+
+.account-head{
+display:flex;align-items:center;gap:14px;
+padding-bottom:17px;border-bottom:1px solid var(--line);margin-bottom:17px
+}
 .avatar-wrap{width:76px;height:76px;position:relative;flex-shrink:0}
-.avatar{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--red);background:#1b2030}
-.avatar-fallback{display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--red),#6e1834);font-size:25px;font-weight:900}
-.account-head h2{font-size:18px;font-weight:900;overflow-wrap:anywhere}.account-head p{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
-.photo-actions{display:flex;gap:8px;margin:0 0 17px}.photo-actions label,.photo-actions button{flex:1;text-align:center;padding:10px;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer}
-.upload-label{background:rgba(255,0,60,.13);border:1px solid rgba(255,0,60,.35);color:#ff6b8c}
+.avatar{
+width:76px;height:76px;border-radius:50%;object-fit:cover;
+border:2px solid var(--red);background:#1b2030
+}
+.avatar-fallback{
+display:grid;place-items:center;color:#fff;
+background:linear-gradient(135deg,var(--red),#6e1834);
+font-size:25px;font-weight:900
+}
+.account-head h2{font-size:18px;font-weight:900;overflow-wrap:anywhere}
+.account-head p{font-size:11px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.photo-actions{display:flex;gap:8px;margin:0 0 17px}
+.photo-actions label,.photo-actions button{
+flex:1;text-align:center;padding:10px;border-radius:8px;
+font-size:11px;font-weight:800;cursor:pointer
+}
+.upload-label{
+background:rgba(255,0,60,.13);
+border:1px solid rgba(255,0,60,.35);color:#ff6b8c
+}
 .photo-remove{background:#171c2b;border:1px solid var(--line);color:#ddd}
 .photo-actions input{display:none}
 .account-form{display:grid;gap:12px}
-.privacy{display:flex;align-items:flex-start;gap:9px;color:#c1c6d4;font-size:11px;line-height:1.5;padding:11px;background:#090c14;border:1px solid var(--line);border-radius:9px}
+.privacy{
+display:flex;align-items:flex-start;gap:9px;color:#c1c6d4;
+font-size:11px;line-height:1.5;padding:11px;
+background:#090c14;border:1px solid var(--line);border-radius:9px
+}
 .privacy input{accent-color:var(--red);margin-top:2px}
 .account-meta{font-size:10px;color:#737b90;margin-top:13px}
-.account-actions{display:flex;gap:8px;margin-top:15px}.account-actions button{flex:1}
-.danger-link{display:block;width:100%;margin-top:13px;background:none;border:0;color:#8e94a9;text-decoration:underline;font-size:10px;cursor:pointer}
+.account-actions{display:flex;gap:8px;margin-top:15px}
+.account-actions button{flex:1}
+.danger-link{
+display:block;width:100%;margin-top:13px;background:none;border:0;
+color:#8e94a9;text-decoration:underline;font-size:10px;cursor:pointer
+}
+
+/* WATCH HISTORY */
+.history-panel{
+margin-top:17px;
+background:linear-gradient(145deg,#111522,#090b12);
+border:1px solid var(--line);
+border-radius:16px;
+padding:18px;
+}
+.history-heading{
+display:flex;align-items:center;justify-content:space-between;
+gap:10px;margin-bottom:16px
+}
+.history-title{display:flex;align-items:center;gap:9px}
+.history-icon{
+width:35px;height:35px;border-radius:10px;
+display:grid;place-items:center;
+background:rgba(255,0,60,.13);
+color:#ff5578;font-size:18px
+}
+.history-title h2{font-size:15px;font-weight:900}
+.history-title p{font-size:10px;color:var(--muted);margin-top:3px}
+.history-count{
+background:#1b2030;border:1px solid var(--line);
+padding:6px 10px;border-radius:20px;
+font-size:10px;color:#ff829d;font-weight:800
+}
+.history-list{display:grid;gap:11px}
+.history-card{
+display:flex;gap:12px;padding:10px;
+background:#090c14;border:1px solid var(--line);
+border-radius:11px;min-width:0;
+transition:.2s
+}
+.history-card:hover{border-color:rgba(255,0,60,.45)}
+.history-poster{
+width:76px;height:104px;flex-shrink:0;
+object-fit:cover;border-radius:7px;background:#171c2b
+}
+.history-info{
+flex:1;min-width:0;display:flex;flex-direction:column;
+justify-content:center;gap:6px
+}
+.history-info h3{
+font-size:12px;font-weight:900;
+white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+}
+.history-episode{font-size:10px;color:#ff7894;font-weight:800}
+.history-date{font-size:9px;color:var(--muted)}
+.history-watch{
+display:inline-flex;align-items:center;justify-content:center;
+background:linear-gradient(135deg,var(--red),var(--red2));
+padding:7px 11px;border-radius:7px;
+font-size:10px;font-weight:900;width:max-content;margin-top:3px
+}
+.history-empty{
+padding:27px 15px;text-align:center;
+background:#090c14;border:1px dashed #34394a;border-radius:11px
+}
+.empty-icon{font-size:30px;margin-bottom:10px}
+.history-empty h3{font-size:13px;margin-bottom:6px}
+.history-empty p{font-size:10px;color:var(--muted);line-height:1.7}
+.history-loading{
+text-align:center;color:var(--muted);
+padding:22px;font-size:11px
+}
+.history-note{
+font-size:9px;color:#747d91;line-height:1.6;
+margin-top:13px
+}
 .footer{text-align:center;color:#646b7d;font-size:10px;margin-top:22px}
-@media(max-width:480px){body{padding:15px 10px 35px}.panel{padding:16px}.heading h1{font-size:23px}.avatar,.avatar-wrap{width:66px;height:66px}}
+
+@media(max-width:480px){
+body{padding:15px 10px 35px}
+.panel{padding:16px}
+.heading h1{font-size:23px}
+.avatar,.avatar-wrap{width:66px;height:66px}
+.history-panel{padding:14px}
+.history-poster{width:70px;height:96px}
+}
 </style>
 </head>
 
 <body>
+
 <header class="topbar">
-  <a class="brand" href="index.html">Ani<b>Stream</b></a>
-  <a class="back" href="index.html">← Back to Home</a>
+<a class="brand" href="index.html">Ani<b>Stream</b></a>
+<a class="back" href="index.html">← Back to Home</a>
 </header>
 
 <main class="wrap">
-  <div class="heading">
-    <small>ANISTREAM HINDI ACCOUNT</small>
-    <h1>Your Profile</h1>
-    <p>Create your AniStream account, personalize your profile and manage your sign-in details.</p>
-  </div>
 
-  <div id="profileMessage" class="profile-message" role="status" aria-live="polite"></div>
+<div class="heading">
+<small>ANISTREAM HINDI ACCOUNT</small>
+<h1>Your Profile</h1>
+<p>Create your AniStream account, personalize your profile and manage your sign-in details.</p>
+</div>
 
-  <section id="authPanel" class="panel">
-    <div class="tabs">
-      <button type="button" id="loginTab" class="active">Login</button>
-      <button type="button" id="signupTab">Create Account</button>
-    </div>
+<div id="profileMessage" class="profile-message" role="status" aria-live="polite"></div>
 
-    <form id="loginForm">
-      <div class="field">
-        <label for="loginEmail">Email Address</label>
-        <input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email" required>
-      </div>
-      <div class="field">
-        <label for="loginPassword">Password</label>
-        <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
-      </div>
-      <button class="primary" id="loginButton" type="submit">Login</button>
-      <button class="forgot" id="forgotPasswordBtn" type="button">Forgot password?</button>
-    </form>
+<!-- LOGIN / SIGNUP -->
+<section id="authPanel" class="panel">
 
-    <form id="signupForm" hidden>
-      <div class="field">
-        <label for="signupName">Your Name</label>
-        <input id="signupName" type="text" maxlength="60" autocomplete="name" placeholder="Enter your display name" required>
-      </div>
-      <div class="field">
-        <label for="signupEmail">Email Address</label>
-        <input id="signupEmail" type="email" autocomplete="email" placeholder="Enter your email" required>
-      </div>
-      <div class="field">
-        <label for="signupPassword">Password (minimum 8 characters)</label>
-        <input id="signupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Create password" required>
-      </div>
-      <button class="primary" id="signupButton" type="submit">Create Account</button>
-    </form>
+<div class="tabs">
+<button type="button" id="loginTab" class="active">Login</button>
+<button type="button" id="signupTab">Create Account</button>
+</div>
 
-    <div class="or">OR CONTINUE WITH</div>
-    <button class="google" id="googleLoginBtn" type="button">Continue with Google</button>
-  </section>
+<form id="loginForm">
+<div class="field">
+<label for="loginEmail">Email Address</label>
+<input id="loginEmail" type="email" autocomplete="email" placeholder="Enter your email" required>
+</div>
 
-  <section id="profilePanel" class="panel" hidden>
-    <div class="account-head">
-      <div class="avatar-wrap">
-        <div id="profileInitial" class="avatar avatar-fallback">A</div>
-        <img id="avatarPreview" class="avatar" alt="Profile photo" style="display:none;position:absolute;inset:0">
-      </div>
-      <div>
-        <h2 id="profileName">AniStream User</h2>
-        <p id="profileEmail">user@email.com</p>
-      </div>
-    </div>
+<div class="field">
+<label for="loginPassword">Password</label>
+<input id="loginPassword" type="password" autocomplete="current-password" placeholder="Enter password" required>
+</div>
 
-    <div class="photo-actions">
-      <label class="upload-label" for="avatarInput">📷 Change Photo</label>
-      <input id="avatarInput" type="file" accept="image/*">
-      <button class="photo-remove" id="deleteAvatarBtn" type="button">Remove Photo</button>
-    </div>
+<button class="primary" id="loginButton" type="submit">Login</button>
+<button class="forgot" id="forgotPasswordBtn" type="button">Forgot password?</button>
+</form>
 
-    <div class="account-form">
-      <div class="field">
-        <label for="usernameInput">Username</label>
-        <input id="usernameInput" type="text" maxlength="24" placeholder="your_username">
-      </div>
-      <div class="field">
-        <label for="bioInput">Bio</label>
-        <textarea id="bioInput" maxlength="160" placeholder="Tell something about yourself…"></textarea>
-      </div>
-      <button class="primary" id="saveProfileBtn" type="button">Save Changes</button>
-    </div>
+<form id="signupForm" hidden>
+<div class="field">
+<label for="signupName">Your Name</label>
+<input id="signupName" type="text" maxlength="60" autocomplete="name" placeholder="Enter your display name" required>
+</div>
 
-    <div class="account-meta">Member since: <strong id="joinedDate">—</strong></div>
-    <div class="account-actions">
-      <button class="secondary" id="logoutBtn" type="button">Logout</button>
-    </div>
-  </section>
+<div class="field">
+<label for="signupEmail">Email Address</label>
+<input id="signupEmail" type="email" autocomplete="email" placeholder="Enter your email" required>
+</div>
 
-  <div class="footer">© 2026 AniStream Hindi · Your anime space</div>
+<div class="field">
+<label for="signupPassword">Password (minimum 8 characters)</label>
+<input id="signupPassword" type="password" minlength="8" autocomplete="new-password" placeholder="Create password" required>
+</div>
+
+<button class="primary" id="signupButton" type="submit">Create Account</button>
+</form>
+
+<div class="or">OR CONTINUE WITH</div>
+<button class="google" id="googleLoginBtn" type="button">Continue with Google</button>
+
+</section>
+
+<!-- USER PROFILE -->
+<section id="profilePanel" class="panel" hidden>
+
+<div class="account-head">
+<div class="avatar-wrap">
+<div id="profileInitial" class="avatar avatar-fallback">A</div>
+<img id="avatarPreview" class="avatar" alt="Profile photo" style="display:none;position:absolute;inset:0">
+</div>
+
+<div>
+<h2 id="profileName">AniStream User</h2>
+<p id="profileEmail">user@email.com</p>
+</div>
+</div>
+
+<div class="photo-actions">
+<label class="upload-label" for="avatarInput">📷 Change Photo</label>
+<input id="avatarInput" type="file" accept="image/*">
+<button class="photo-remove" id="deleteAvatarBtn" type="button">Remove Photo</button>
+</div>
+
+<div class="account-form">
+
+<div class="field">
+<label for="usernameInput">Username</label>
+<input id="usernameInput" type="text" maxlength="24" placeholder="your_username">
+</div>
+
+<div class="field">
+<label for="bioInput">Bio</label>
+<textarea id="bioInput" maxlength="160" placeholder="Tell something about yourself…"></textarea>
+</div>
+
+<button class="primary" id="saveProfileBtn" type="button">Save Changes</button>
+
+</div>
+
+<div class="account-meta">Member since: <strong id="joinedDate">—</strong></div>
+
+<div class="account-actions">
+<button class="secondary" id="logoutBtn" type="button">Logout</button>
+</div>
+
+</section>
+
+<!-- WATCH HISTORY -->
+<section id="watchHistoryPanel" class="history-panel" hidden>
+
+<div class="history-heading">
+
+<div class="history-title">
+<div class="history-icon">▶</div>
+<div>
+<h2>My Watched Anime</h2>
+<p>Your personal anime watching history</p>
+</div>
+</div>
+
+<span class="history-count" id="historyCount">0 Anime</span>
+
+</div>
+
+<div id="historyLoading" class="history-loading" hidden>
+Loading your anime history...
+</div>
+
+<div id="historyList" class="history-list"></div>
+
+<div id="historyEmpty" class="history-empty" hidden>
+<div class="empty-icon">🍿</div>
+<h3>No Anime Watched Yet</h3>
+<p>
+Start watching anime on AniStream Hindi.<br>
+Your watched anime will automatically appear here.
+</p>
+</div>
+
+<p class="history-note">
+Your watching history is private and visible only to your account.
+</p>
+
+</section>
+
+<div class="footer">
+© 2026 AniStream Hindi · Your anime space
+</div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="profile.js"></script>
+
 </body>
 </html>
