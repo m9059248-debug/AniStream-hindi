@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#040508">
 <title>Anime Details — AniStream</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,50 +14,41 @@
 
 <style>
 :root {
-  --bg: #040508;
-  --surface: #0a0c14;
-  --surface-2: #101322;
-  --surface-card: #0d0f1a;
-  --surface-card-hover: #141728;
-  --line: rgba(255,255,255,.08);
-  --line-strong: rgba(255,0,60,.35);
-  --text: #fff;
-  --muted: #8e94a9;
-  --accent: #ff003c;
-  --accent-2: #ff2a5f;
-  --accent-gradient: linear-gradient(135deg,#ff003c 0%,#ff2a5f 100%);
-  --accent-glow: rgba(255,0,60,.45);
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-full: 9999px;
+  --bg:#040508;
+  --surface:#0a0c14;
+  --surface-2:#101322;
+  --card:#0d0f1a;
+  --line:rgba(255,255,255,.08);
+  --accent:#ff003c;
+  --accent2:#ff2a5f;
+  --muted:#8e94a9;
+  --gradient:linear-gradient(135deg,#ff003c,#ff2a5f);
 }
 
-* { box-sizing:border-box; margin:0; padding:0; }
+*{box-sizing:border-box;margin:0;padding:0}
 
-body {
-  font-family:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
   background:var(--bg);
-  color:var(--text);
+  color:#fff;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
 }
 
-a { color:inherit; text-decoration:none; }
-button,input,textarea { font:inherit; outline:none; }
+a{color:inherit;text-decoration:none}
+button,input,textarea{font:inherit;outline:none}
 
-header {
-  background:rgba(4,5,8,.92);
+header{
+  background:rgba(4,5,8,.94);
   border-bottom:1px solid rgba(255,0,60,.18);
   padding:10px 16px;
   position:sticky;
   top:0;
   z-index:100;
   backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
 }
 
-.nav {
+.nav{
   max-width:1100px;
   margin:auto;
   display:flex;
@@ -63,75 +56,55 @@ header {
   justify-content:space-between;
 }
 
-.logo {
+.logo{
   display:flex;
   align-items:center;
   gap:7px;
   font-size:17px;
   font-weight:900;
-  letter-spacing:-.5px;
 }
 
-.logo-badge {
-  background:var(--accent-gradient);
-  color:#fff;
-  font-size:10px;
-  font-weight:900;
+.logo-badge{
+  background:var(--gradient);
   padding:3px 6px;
-  border-radius:var(--radius-sm);
-  box-shadow:0 0 10px var(--accent-glow);
+  border-radius:5px;
+  font-size:10px;
 }
 
-.logo span { color:#fff; }
-.logo b { color:var(--accent); text-shadow:0 0 10px var(--accent-glow); }
+.logo b{color:var(--accent)}
 
-.nav a {
+.nav a:not(.logo){
   font-size:12px;
-  font-weight:600;
+  font-weight:700;
   color:var(--muted);
-  margin-left:12px;
-  transition:all .15s ease;
 }
 
-.nav a:hover {
-  color:#fff;
-  text-shadow:0 0 8px rgba(255,255,255,.4);
-}
-
-.container {
+.container{
   max-width:1100px;
   margin:auto;
   padding:14px 10px 60px;
 }
 
-.back {
-  display:inline-flex;
-  align-items:center;
-  gap:4px;
+.back{
+  display:inline-block;
   color:var(--accent);
   font-size:11.5px;
   font-weight:800;
   margin-bottom:10px;
-  transition:transform .15s ease;
-}
-
-.back:hover {
-  transform:translateX(-2px);
-  color:#ff3b68;
 }
 
 /* HERO */
-.hero {
-  border-radius:var(--radius-md);
+
+.hero{
+  border-radius:10px;
   overflow:hidden;
   position:relative;
   background:var(--surface);
   border:1px solid rgba(255,0,60,.18);
   margin-bottom:14px;
-  box-shadow:0 4px 20px rgba(0,0,0,.6);
 }
 
-.hero-bg {
+.hero-bg{
   position:absolute;
   inset:0;
   width:100%;
@@ -140,13 +113,13 @@ header {
   opacity:.22;
 }
 
-.hero-overlay {
+.hero-overlay{
   position:absolute;
   inset:0;
   background:linear-gradient(to top,#040508 10%,rgba(4,5,8,.78) 60%,transparent);
 }
 
-.hero-content {
+.hero-content{
   position:relative;
   z-index:2;
   display:flex;
@@ -155,35 +128,33 @@ header {
   padding:16px 14px;
 }
 
-.poster {
+.poster{
   width:105px;
   height:155px;
   object-fit:cover;
-  border-radius:var(--radius-sm);
+  border-radius:6px;
   background:#0d0f1a;
-  border:1px solid var(--line-strong);
-  box-shadow:0 0 14px rgba(255,0,60,.2);
+  border:1px solid rgba(255,0,60,.35);
   flex-shrink:0;
 }
 
-.info { flex:1; min-width:0; }
+.info{flex:1;min-width:0}
 
-.info h1 {
+.info h1{
   font-size:18px;
   font-weight:800;
   line-height:1.25;
   margin-bottom:6px;
-  color:#fff;
 }
 
-.tags {
+.tags{
   display:flex;
   flex-wrap:wrap;
   gap:4px;
   margin-bottom:6px;
 }
 
-.tag {
+.tag{
   background:rgba(255,0,60,.12);
   border:1px solid rgba(255,0,60,.35);
   color:#ff3b68;
@@ -193,13 +164,13 @@ header {
   font-weight:700;
 }
 
-.meta {
+.meta{
   color:var(--muted);
   font-size:11px;
   margin:3px 0 6px;
 }
 
-.description {
+.description{
   color:#a4a9bd;
   line-height:1.45;
   font-size:11.5px;
@@ -208,106 +179,90 @@ header {
 }
 
 /* SHARE */
-.share-box {
+
+.share-box{
   background:var(--surface);
   border:1px solid var(--line);
-  border-radius:var(--radius-md);
+  border-radius:10px;
   padding:10px 12px;
   margin-bottom:14px;
 }
 
-.share-title {
+.share-title{
   color:var(--accent);
   font-size:12.5px;
   font-weight:800;
   margin-bottom:8px;
-  text-shadow:0 0 8px var(--accent-glow);
 }
 
-.share-buttons {
+.share-buttons{
   display:flex;
   flex-wrap:wrap;
   gap:6px;
 }
 
-.share-btn {
+.share-btn{
   border:none;
   cursor:pointer;
   color:#fff;
   padding:6px 12px;
-  border-radius:var(--radius-sm);
+  border-radius:5px;
   font-size:11px;
   font-weight:700;
   display:inline-flex;
   align-items:center;
   justify-content:center;
   gap:4px;
-  transition:all .18s ease;
 }
 
-.share-main {
-  background:var(--accent-gradient);
-  box-shadow:0 2px 10px var(--accent-glow);
-}
+.share-main{background:var(--gradient)}
+.copy-btn{background:#141728;border:1px solid var(--line)}
+.whatsapp-btn{background:#128c7e}
+.telegram-btn{background:#229ed9}
 
-.share-main:hover {
-  transform:translateY(-2px);
-  box-shadow:0 4px 16px rgba(255,0,60,.7);
-}
-
-.copy-btn {
-  background:#141728;
-  border:1px solid var(--line);
-}
-
-.copy-btn:hover { border-color:var(--accent); color:#fff; }
-.whatsapp-btn { background:#128c7e; }
-.whatsapp-btn:hover { background:#0e7266; }
-.telegram-btn { background:#229ed9; }
-.telegram-btn:hover { background:#1b85b8; }
-
-.share-message {
+.share-message{
   color:#00e676;
   font-size:11px;
   margin-top:6px;
   display:none;
 }
 
-/* GENERAL SECTIONS */
-.section {
+/* SECTIONS */
+
+.section{
   background:var(--surface);
   border:1px solid var(--line);
-  border-radius:var(--radius-md);
+  border-radius:10px;
   padding:14px 12px;
   margin-bottom:14px;
 }
 
-.section h2 {
+.section h2{
   color:var(--accent);
   font-size:14.5px;
   font-weight:800;
   margin-bottom:12px;
-  text-shadow:0 0 10px var(--accent-glow);
   display:flex;
   align-items:center;
   gap:6px;
 }
 
 /* EPISODES */
-@keyframes rotateEpisodeGlow {
-  0% { transform:rotate(0deg); }
-  100% { transform:rotate(360deg); }
+
+@keyframes rotateEpisodeGlow{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
 }
 
-.episodes {
+.episodes{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(115px,1fr));
   gap:10px;
 }
 
-.episode-btn {
+.episode-btn{
   position:relative;
-  border-radius:var(--radius-md);
+  border-radius:10px;
   padding:10px 14px;
   text-align:center;
   display:flex;
@@ -315,91 +270,51 @@ header {
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  text-decoration:none;
   z-index:1;
-  transition:transform .2s ease,box-shadow .2s ease;
   box-shadow:0 2px 10px rgba(0,0,0,.5);
 }
 
-.episode-btn::before {
+.episode-btn:before{
   content:'';
   position:absolute;
   top:-50%;
   left:-50%;
   width:200%;
   height:200%;
-  background:conic-gradient(
-    transparent 0deg,
-    rgba(255,0,60,.4) 60deg,
-    #ff003c 110deg,
-    #fff 140deg,
-    #ff2a5f 170deg,
-    transparent 230deg
-  );
+  background:conic-gradient(transparent 0deg,rgba(255,0,60,.4) 60deg,#ff003c 110deg,#fff 140deg,#ff2a5f 170deg,transparent 230deg);
   animation:rotateEpisodeGlow 3s linear infinite;
   z-index:-2;
 }
 
-.episode-btn::after {
+.episode-btn:after{
   content:'';
   position:absolute;
   inset:1.5px;
   background:#0d0f1a;
-  border-radius:calc(var(--radius-md) - 1.5px);
+  border-radius:8px;
   z-index:-1;
-  transition:background .2s ease;
 }
 
-.episode-btn:hover {
-  transform:translateY(-3px) scale(1.02);
-  box-shadow:0 0 18px rgba(255,0,60,.65),0 0 22px rgba(255,255,255,.25);
-}
-
-.episode-btn:hover::after { background:#141728; }
-
-.episode-btn .ep-num {
-  font-size:12px;
-  font-weight:800;
-  color:#fff;
-  letter-spacing:.3px;
-  text-shadow:0 0 8px rgba(255,255,255,.6);
-}
-
-.episode-btn .ep-tag {
-  font-size:9px;
-  font-weight:800;
-  color:#ff3b68;
-  margin-top:3px;
-  display:flex;
-  align-items:center;
-  gap:3px;
-  letter-spacing:.4px;
-}
-
-.episode-btn:hover .ep-tag {
-  color:#fff;
-  text-shadow:0 0 6px var(--accent-glow);
-}
+.ep-num{font-size:12px;font-weight:800}
+.ep-tag{font-size:9px;font-weight:800;color:#ff3b68;margin-top:3px}
 
 /* INFO PILLS */
-.info-pills-grid {
+
+.info-pills-grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
   gap:8px;
   margin-top:8px;
 }
 
-.info-pill {
-  background:var(--surface-card);
+.info-pill{
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius:var(--radius-sm);
+  border-radius:5px;
   padding:8px 10px;
-  transition:border-color .15s ease;
 }
 
-.info-pill:hover { border-color:rgba(255,0,60,.35); }
-
-.info-pill span {
+.info-pill span{
   display:block;
   font-size:9.5px;
   color:var(--muted);
@@ -408,56 +323,40 @@ header {
   margin-bottom:3px;
 }
 
-.info-pill strong {
-  font-size:12px;
-  color:#fff;
-  font-weight:800;
-}
+.info-pill strong{font-size:12px;font-weight:800}
 
 /* TRAILER */
-.trailer-wrap {
+
+.trailer-wrap{
   position:relative;
   width:100%;
   aspect-ratio:16/9;
-  border-radius:var(--radius-sm);
+  border-radius:5px;
   overflow:hidden;
   background:#000;
-  border:1px solid var(--line);
 }
 
-.trailer-wrap iframe {
-  width:100%;
-  height:100%;
-  border:0;
-}
+.trailer-wrap iframe{width:100%;height:100%;border:0}
 
 /* RELATIONS AND RECOMMENDATIONS */
-.relation-grid,.rec-grid {
+
+.relation-grid,.rec-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(135px,1fr));
   gap:10px;
 }
 
-.rel-card {
-  background:var(--surface-card);
+.rel-card{
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius:var(--radius-sm);
+  border-radius:5px;
   overflow:hidden;
   display:flex;
   flex-direction:column;
-  transition:all .2s ease;
-  text-decoration:none;
   color:inherit;
-  cursor:pointer;
 }
 
-.rel-card:hover {
-  transform:translateY(-4px);
-  border-color:var(--accent);
-  box-shadow:0 4px 18px rgba(255,0,60,.3);
-}
-
-.rel-thumb {
+.rel-thumb{
   width:100%;
   aspect-ratio:2/3;
   object-fit:cover;
@@ -465,119 +364,100 @@ header {
   display:block;
 }
 
-.rel-body {
+.rel-body{
   padding:7px 8px;
   display:flex;
   flex-direction:column;
   flex:1;
 }
 
-.rel-type {
+.rel-type{
   font-size:8.5px;
   font-weight:800;
   color:var(--accent);
   text-transform:uppercase;
-  letter-spacing:.4px;
 }
 
-.rel-title {
+.rel-title{
   font-size:11px;
   font-weight:700;
-  color:#fff;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   margin-top:2px;
 }
 
-.rel-meta {
+.rel-meta{
   font-size:9px;
   color:var(--muted);
   margin-top:2px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
 
 /* CHARACTERS */
-.character-grid {
+
+.character-grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
   gap:10px;
 }
 
-.char-card {
-  background:var(--surface-card);
+.char-card{
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius:var(--radius-sm);
+  border-radius:5px;
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:8px 10px;
   gap:8px;
-  transition:all .2s ease;
 }
 
-.char-card:hover {
-  transform:translateY(-2px);
-  border-color:var(--accent);
-  box-shadow:0 4px 16px rgba(255,0,60,.25);
-}
-
-.char-part,.va-part {
+.char-part,.va-part{
   display:flex;
   align-items:center;
   gap:8px;
   min-width:0;
 }
 
-.va-part {
-  flex-direction:row-reverse;
-  text-align:right;
-}
+.va-part{flex-direction:row-reverse;text-align:right}
 
-.actor-img {
+.actor-img{
   width:42px;
   height:56px;
   object-fit:cover;
   border-radius:4px;
   background:#090a12;
-  border:1px solid var(--line);
   flex-shrink:0;
 }
 
-.actor-text { min-width:0; }
+.actor-text{min-width:0}
 
-.actor-name {
+.actor-name{
   font-size:11.5px;
   font-weight:700;
-  color:#fff;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   max-width:90px;
 }
 
-.actor-sub {
+.actor-sub{
   font-size:9.5px;
   color:var(--muted);
   display:block;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:90px;
 }
 
 /* COMMENTS */
-.comment-form {
-  background:var(--surface-card);
+
+.comment-form{
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius:var(--radius-sm);
+  border-radius:6px;
   padding:10px;
   margin-bottom:12px;
 }
 
-.comment-input,.comment-textarea {
+.comment-input,.comment-textarea{
   width:100%;
   padding:8px 12px;
   background:#07080f;
@@ -585,23 +465,21 @@ header {
   border-radius:5px;
   color:#fff;
   font-size:12px;
-  transition:border-color .2s ease,box-shadow .2s ease;
 }
 
-.comment-input:focus,.comment-textarea:focus {
-  border-color:var(--accent);
-  box-shadow:0 0 10px rgba(255,0,60,.25);
-}
-
-.comment-textarea {
-  min-height:55px;
+.comment-textarea{
+  min-height:65px;
   resize:vertical;
   margin-top:6px;
-  line-height:1.35;
+  line-height:1.5;
 }
 
-.comment-btn {
-  background:var(--accent-gradient);
+.comment-input:focus,.comment-textarea:focus{
+  border-color:var(--accent);
+}
+
+.comment-btn{
+  background:var(--gradient);
   color:#fff;
   border:none;
   padding:8px 16px;
@@ -610,44 +488,110 @@ header {
   font-weight:800;
   cursor:pointer;
   margin-top:6px;
-  box-shadow:0 2px 10px var(--accent-glow);
-  transition:all .2s ease;
 }
 
-.comment-btn:hover {
-  transform:translateY(-1px);
-  box-shadow:0 4px 16px rgba(255,0,60,.6);
+.comment-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 
-.comment-card {
-  background:var(--surface-card);
+/* PROFILE IN COMMENTS */
+
+.comment-profile{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.comment-profile-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#181b29;
+  border:2px solid var(--accent);
+  flex-shrink:0;
+}
+
+.comment-profile-name{
+  font-size:12px;
+  font-weight:800;
+}
+
+.comment-profile-status{
+  font-size:10px;
+  color:#00e676;
+  margin-top:3px;
+}
+
+.comment-login-link{
+  display:inline-block;
+  color:#ff5578;
+  font-size:12px;
+  font-weight:800;
+  margin:8px 0;
+}
+
+.comment-card{
+  background:var(--card);
   border:1px solid var(--line);
-  border-radius:var(--radius-sm);
+  border-radius:6px;
   padding:10px;
   margin-bottom:8px;
 }
 
-.comment-header {
+.comment-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
   gap:8px;
-  margin-bottom:5px;
+  margin-bottom:7px;
 }
 
-.comment-author {
+.comment-author-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.comment-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#181b29;
+  border:1px solid rgba(255,0,60,.4);
+  flex-shrink:0;
+}
+
+.comment-author-info{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  gap:2px;
+}
+
+.comment-author{
   font-weight:800;
   color:#ff3b68;
   font-size:11.5px;
+  overflow-wrap:anywhere;
 }
 
-.comment-date {
+.comment-member{
+  font-size:9px;
+  color:var(--muted);
+}
+
+.comment-date{
   color:var(--muted);
   font-size:9.5px;
   white-space:nowrap;
 }
 
-.comment-body {
+.comment-body{
   color:#d1d5db;
   font-size:11.5px;
   line-height:1.5;
@@ -656,7 +600,8 @@ header {
 }
 
 /* ADMIN REPLY */
-.admin-reply {
+
+.admin-reply{
   margin-top:10px;
   margin-left:12px;
   padding:10px;
@@ -666,7 +611,7 @@ header {
   border-radius:7px;
 }
 
-.admin-reply-header {
+.admin-reply-header{
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -675,7 +620,7 @@ header {
   margin-bottom:6px;
 }
 
-.admin-name {
+.admin-name{
   display:flex;
   align-items:center;
   gap:6px;
@@ -684,25 +629,22 @@ header {
   font-weight:900;
 }
 
-.admin-badge {
+.admin-badge{
   display:inline-flex;
-  align-items:center;
-  background:var(--accent-gradient);
+  background:var(--gradient);
   color:#fff;
   padding:3px 7px;
   border-radius:4px;
   font-size:8px;
   font-weight:900;
-  letter-spacing:.5px;
-  box-shadow:0 0 9px rgba(255,0,60,.25);
 }
 
-.admin-reply-date {
+.admin-reply-date{
   color:var(--muted);
   font-size:9px;
 }
 
-.admin-reply-text {
+.admin-reply-text{
   color:#f0dce2;
   font-size:11.5px;
   line-height:1.55;
@@ -710,24 +652,24 @@ header {
   overflow-wrap:anywhere;
 }
 
-.loading,.error,.empty {
+.loading,.error,.empty{
   text-align:center;
   color:var(--muted);
   padding:16px 8px;
   font-size:11.5px;
 }
 
-.error { color:#ff3b68; }
+.error{color:#ff3b68}
 
-@media(max-width:480px) {
-  .hero-content { padding:12px 10px; gap:10px; }
-  .poster { width:85px; height:125px; }
-  .info h1 { font-size:16px; }
-  .share-buttons { display:grid; grid-template-columns:repeat(2,1fr); }
-  .episodes { grid-template-columns:repeat(auto-fill,minmax(95px,1fr)); gap:8px; }
-  .character-grid { grid-template-columns:1fr; }
-  .relation-grid,.rec-grid { grid-template-columns:repeat(3,1fr); gap:6px; }
-  .admin-reply { margin-left:6px; }
+@media(max-width:480px){
+  .hero-content{padding:12px 10px;gap:10px}
+  .poster{width:85px;height:125px}
+  .info h1{font-size:16px}
+  .share-buttons{display:grid;grid-template-columns:repeat(2,1fr)}
+  .episodes{grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:8px}
+  .character-grid{grid-template-columns:1fr}
+  .relation-grid,.rec-grid{grid-template-columns:repeat(3,1fr);gap:6px}
+  .admin-reply{margin-left:6px}
 }
 </style>
 </head>
@@ -740,13 +682,12 @@ header {
       <span class="logo-badge">PRO</span>
       <span>Ani<b>Stream</b></span>
     </a>
-    <div>
-      <a href="index.html">Home</a>
-    </div>
+    <div><a href="index.html">Home</a></div>
   </div>
 </header>
 
 <div class="container">
+
   <a href="index.html" class="back">‹ Back to Home</a>
 
   <div id="animeContainer">
@@ -755,12 +696,14 @@ header {
 
   <div class="share-box">
     <div class="share-title">📤 Share Anime</div>
+
     <div class="share-buttons">
       <button class="share-btn share-main" onclick="shareAnime()">📤 Share</button>
       <button class="share-btn copy-btn" onclick="copyAnimeLink()">📋 Copy Link</button>
       <a id="whatsappShare" class="share-btn whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a>
       <a id="telegramShare" class="share-btn telegram-btn" href="#" target="_blank" rel="noopener noreferrer">✈️ Telegram</a>
     </div>
+
     <div id="shareMessage" class="share-message">Link copied successfully!</div>
   </div>
 
@@ -798,14 +741,32 @@ header {
     <div class="rec-grid" id="recGrid"></div>
   </div>
 
-  <!-- COMMENTS WITH ADMIN REPLIES -->
+  <!-- PROFILE CONNECTED COMMENTS -->
+
   <div class="section">
     <h2>💬 Comments</h2>
 
     <div class="comment-form">
-      <input type="text" id="commentUserName" class="comment-input" placeholder="Aapka Name" maxlength="30">
-      <textarea id="commentTextInput" class="comment-textarea" placeholder="Apna comment likhein..." maxlength="500"></textarea>
-      <button type="button" class="comment-btn" onclick="postComment()">Post Comment</button>
+
+      <div id="commentProfileInfo">
+        <div class="loading">Profile loading...</div>
+      </div>
+
+      <textarea
+        id="commentTextInput"
+        class="comment-textarea"
+        placeholder="Apna comment likhein..."
+        maxlength="500">
+      </textarea>
+
+      <button
+        type="button"
+        class="comment-btn"
+        id="postCommentButton"
+        onclick="postComment()">
+        Post Comment
+      </button>
+
       <div id="commentPostMessage" style="font-size:11px;margin-top:5px;"></div>
     </div>
 
@@ -813,11 +774,19 @@ header {
       <div class="loading">Comments load ho rahe hain...</div>
     </div>
   </div>
+
 </div>
 
 <script>
-const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+/* ===================================
+   SUPABASE CONFIGURATION
+=================================== */
+
+const SUPABASE_URL =
+  "https://gmacsiymybvfcxydvkla.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
@@ -829,12 +798,22 @@ const animeId = params.get("id");
 
 let dbAnimeList = [];
 
+let currentAuthUser = null;
+let currentCommentProfile = null;
+let authListenerRegistered = false;
+
 const animeContainer = document.getElementById("animeContainer");
 const episodeContainer = document.getElementById("episodeContainer");
 const commentsContainer = document.getElementById("commentsContainer");
 const shareMessage = document.getElementById("shareMessage");
 const whatsappShare = document.getElementById("whatsappShare");
 const telegramShare = document.getElementById("telegramShare");
+const commentProfileInfo = document.getElementById("commentProfileInfo");
+const postCommentButton = document.getElementById("postCommentButton");
+
+/* ===================================
+   COMMON HELPERS
+=================================== */
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -845,14 +824,14 @@ function escapeHtml(value) {
     .replace(/'/g,"&#039;");
 }
 
-function formatDate(dateValue, includeTime = false) {
+function formatDate(dateValue,includeTime=false) {
   if (!dateValue) return "";
 
   const date = new Date(dateValue);
 
   if (Number.isNaN(date.getTime())) return "";
 
-  return date.toLocaleString("en-IN", includeTime
+  return date.toLocaleString("en-IN",includeTime
     ? {
         day:"numeric",
         month:"short",
@@ -868,13 +847,189 @@ function formatDate(dateValue, includeTime = false) {
   );
 }
 
+/* ===================================
+   PROFILE SYSTEM
+=================================== */
+
+/*
+  Existing profile.js system:
+  username
+  full_name
+  avatar_path
+  avatar_url
+  picture (Google)
+*/
+
+function getProfileDetails(user) {
+  const meta = user?.user_metadata || {};
+
+  const name =
+    meta.username ||
+    meta.full_name ||
+    meta.name ||
+    user?.email?.split("@")[0] ||
+    "AniStream User";
+
+  return {
+    name:String(name).trim(),
+    avatarPath:meta.avatar_path || "",
+    avatarUrl:meta.avatar_url || meta.picture || ""
+  };
+}
+
+/* DEFAULT AVATAR */
+
+function getAvatarFallback(name) {
+  const letter = String(name || "U")
+    .trim()
+    .charAt(0)
+    .toUpperCase() || "U";
+
+  return "data:image/svg+xml," + encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+      <rect width="100%" height="100%" rx="40" fill="#181b29"/>
+      <text x="50%" y="55%" text-anchor="middle"
+        dominant-baseline="middle"
+        font-size="34" font-weight="bold"
+        fill="#ff3b68">${letter}</text>
+    </svg>
+  `);
+}
+
+/* GET USER PROFILE PHOTO */
+
+async function getCommentAvatar(path,externalUrl) {
+
+  if (path) {
+    const {data,error} = await supabaseClient
+      .storage
+      .from("avatars")
+      .createSignedUrl(path,3600);
+
+    if (!error && data?.signedUrl) {
+      return data.signedUrl;
+    }
+
+    // Public bucket fallback
+
+    const {data:publicData} = supabaseClient
+      .storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    if (publicData?.publicUrl) {
+      return publicData.publicUrl;
+    }
+  }
+
+  return externalUrl || "";
+}
+
+/* LOAD CURRENT USER PROFILE */
+
+async function refreshCommentProfile(user) {
+
+  currentAuthUser = user || null;
+  currentCommentProfile = null;
+
+  if (!user) {
+
+    commentProfileInfo.innerHTML = `
+      <div style="font-size:12px;color:#aaa;">
+        Comment karne ke liye login karein.
+      </div>
+
+      <a class="comment-login-link" href="profile.html">
+        🔐 Login / Create Account →
+      </a>
+    `;
+
+    postCommentButton.disabled = true;
+    return;
+  }
+
+  const profile = getProfileDetails(user);
+
+  const avatar = await getCommentAvatar(
+    profile.avatarPath,
+    profile.avatarUrl
+  );
+
+  // Avoid showing an old profile after an account switch.
+
+  if (currentAuthUser?.id !== user.id) return;
+
+  currentCommentProfile = profile;
+
+  const fallback = getAvatarFallback(profile.name);
+
+  commentProfileInfo.innerHTML = `
+    <div class="comment-profile">
+
+      <img
+        class="comment-profile-avatar"
+        src="${escapeHtml(avatar || fallback)}"
+        onerror="this.onerror=null;this.src='${fallback}'"
+        alt="Profile Photo">
+
+      <div>
+        <div class="comment-profile-name">
+          ${escapeHtml(profile.name)}
+        </div>
+
+        <div class="comment-profile-status">
+          ✓ Logged in
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  postCommentButton.disabled = false;
+}
+
+/* INITIAL AUTH CHECK */
+
+async function initCommentAuth() {
+
+  const {data,error} = await supabaseClient.auth.getUser();
+
+  if (error) {
+    console.error("Auth error:",error);
+  }
+
+  await refreshCommentProfile(data?.user || null);
+
+  if (!authListenerRegistered) {
+
+    authListenerRegistered = true;
+
+    supabaseClient.auth.onAuthStateChange(
+      (event,session) => {
+
+        // Refresh profile after login/logout/account changes.
+
+        refreshCommentProfile(session?.user || null);
+
+      }
+    );
+  }
+}
+
+/* ===================================
+   SHARE SYSTEM
+=================================== */
+
 function getAnimeShareLink() {
   return window.location.href;
 }
 
 function updateShareLinks() {
+
   const shareUrl = getAnimeShareLink();
-  const shareText = "Watch " + (document.title || "Anime") + " on AniStream";
+
+  const shareText =
+    "Watch " + (document.title || "Anime") + " on AniStream";
 
   whatsappShare.href =
     "https://wa.me/?text=" +
@@ -888,41 +1043,53 @@ function updateShareLinks() {
 }
 
 async function shareAnime() {
+
   const shareUrl = getAnimeShareLink();
-  const shareTitle = document.title || "AniStream";
-  const shareText = "Watch this anime on AniStream";
 
   if (navigator.share) {
+
     try {
       await navigator.share({
-        title:shareTitle,
-        text:shareText,
+        title:document.title || "AniStream",
+        text:"Watch this anime on AniStream",
         url:shareUrl
       });
     } catch(e) {}
+
   } else {
+
     copyAnimeLink();
+
   }
 }
 
 async function copyAnimeLink() {
+
   const shareUrl = getAnimeShareLink();
 
   try {
+
     await navigator.clipboard.writeText(shareUrl);
     showShareMessage("✅ Link copied!");
+
   } catch {
+
     const textArea = document.createElement("textarea");
+
     textArea.value = shareUrl;
     document.body.appendChild(textArea);
     textArea.select();
+
     document.execCommand("copy");
     textArea.remove();
+
     showShareMessage("✅ Link copied!");
+
   }
 }
 
 function showShareMessage(message) {
+
   shareMessage.innerText = message;
   shareMessage.style.display = "block";
 
@@ -931,7 +1098,12 @@ function showShareMessage(message) {
   },2000);
 }
 
+/* ===================================
+   ANIME MATCHING
+=================================== */
+
 function normalizeTitle(t) {
+
   return String(t || "")
     .toLowerCase()
     .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+|part\s*\d+|movie|the\s*movie)\b/gi,"")
@@ -940,23 +1112,33 @@ function normalizeTitle(t) {
 }
 
 function findDbMatch(targetTitle,list) {
+
   const normTarget = normalizeTitle(targetTitle);
 
   if (!normTarget || normTarget.length < 3) return null;
 
   return list.find(a => {
+
     const normA = normalizeTitle(a.title);
 
     return normA &&
-      (normA === normTarget ||
-       normA.includes(normTarget) ||
-       normTarget.includes(normA));
+      (
+        normA === normTarget ||
+        normA.includes(normTarget) ||
+        normTarget.includes(normA)
+      );
+
   });
 }
 
-/* LOAD ANIME */
+/* ===================================
+   LOAD ANIME
+=================================== */
+
 async function loadAnime() {
+
   if (!animeId) {
+
     animeContainer.innerHTML =
       '<div class="error">❌ Anime ID nahi mila.</div>';
 
@@ -970,6 +1152,7 @@ async function loadAnime() {
   }
 
   const [currentRes,allRes] = await Promise.all([
+
     supabaseClient
       .from("anime")
       .select("*")
@@ -979,25 +1162,38 @@ async function loadAnime() {
     supabaseClient
       .from("anime")
       .select("anime_id,id,title,thumbnail_url,genre,season,status")
+
   ]);
 
   if (currentRes.error || !currentRes.data) {
+
+    console.error("Anime loading error:",currentRes.error);
+
     animeContainer.innerHTML =
       '<div class="error">❌ Anime nahi mila ya database load failed.</div>';
+
     return;
   }
 
   const currentAnime = currentRes.data;
+
   dbAnimeList = allRes.data || [];
 
   renderAnime(currentAnime);
+
   loadEpisodes(currentAnime.anime_id);
+
   loadComments(currentAnime.anime_id);
+
   fetchAllAnimeDetails(currentAnime);
 }
 
-/* RENDER ANIME */
+/* ===================================
+   RENDER ANIME
+=================================== */
+
 function renderAnime(anime) {
+
   const genres = anime.genre
     ? anime.genre.split(",").map(g => g.trim()).filter(Boolean)
     : [];
@@ -1019,7 +1215,9 @@ function renderAnime(anime) {
   document.title = (anime.title || "Anime") + " — AniStream";
 
   animeContainer.innerHTML = `
+
     <div class="hero">
+
       ${anime.banner_url
         ? `<img class="hero-bg" src="${escapeHtml(anime.banner_url)}" alt="">`
         : ""}
@@ -1027,12 +1225,15 @@ function renderAnime(anime) {
       <div class="hero-overlay"></div>
 
       <div class="hero-content">
+
         ${anime.thumbnail_url
           ? `<img class="poster" src="${escapeHtml(anime.thumbnail_url)}" alt="${escapeHtml(anime.title)}" onerror="this.style.display='none'">`
           : ""}
 
         <div class="info">
+
           <h1>${escapeHtml(anime.title)}</h1>
+
           <div class="tags">${tags}</div>
 
           ${anime.season
@@ -1042,16 +1243,23 @@ function renderAnime(anime) {
           <div class="description">
             ${escapeHtml(anime.description || "Description available nahi hai.")}
           </div>
+
         </div>
+
       </div>
     </div>
+
   `;
 
   updateShareLinks();
 }
 
-/* LOAD EPISODES */
+/* ===================================
+   LOAD EPISODES
+=================================== */
+
 async function loadEpisodes(targetAnimeId) {
+
   episodeContainer.innerHTML =
     '<div class="loading">Loading episodes...</div>';
 
@@ -1062,14 +1270,19 @@ async function loadEpisodes(targetAnimeId) {
     .order("episode_number",{ascending:true});
 
   if (error || !data || data.length === 0) {
+
+    console.error("Episode error:",error);
+
     episodeContainer.innerHTML =
       '<div class="empty">Abhi koi episode available nahi hai.</div>';
+
     return;
   }
 
   episodeContainer.innerHTML = "";
 
   data.forEach(episode => {
+
     const a = document.createElement("a");
 
     a.className = "episode-btn";
@@ -1081,15 +1294,21 @@ async function loadEpisodes(targetAnimeId) {
       <span class="ep-num">
         EPISODE ${escapeHtml(String(episode.episode_number))}
       </span>
+
       <span class="ep-tag">▶ Play Now</span>
     `;
 
     episodeContainer.appendChild(a);
+
   });
 }
 
-/* ANILIST SEARCH */
+/* ===================================
+   ANILIST SEARCH
+=================================== */
+
 function cleanSearchQuery(title) {
+
   if (!title) return "";
 
   return String(title)
@@ -1101,9 +1320,13 @@ function cleanSearchQuery(title) {
 }
 
 async function queryAniListFull(searchTerm) {
+
   const query = `
+
     query ($search: String) {
+
       Media(search: $search, type: ANIME, isAdult: false) {
+
         id
         averageScore
         source
@@ -1113,6 +1336,7 @@ async function queryAniListFull(searchTerm) {
         episodes
         duration
         favourites
+
         startDate { year month day }
         endDate { year month day }
 
@@ -1126,8 +1350,11 @@ async function queryAniListFull(searchTerm) {
         }
 
         relations {
+
           edges {
+
             relationType
+
             node {
               id
               title { english romaji }
@@ -1135,53 +1362,75 @@ async function queryAniListFull(searchTerm) {
               format
               status
             }
+
           }
+
         }
 
         recommendations(perPage: 12, sort: RATING_DESC) {
+
           nodes {
+
             mediaRecommendation {
               id
               title { english romaji }
               coverImage { medium }
               averageScore
             }
+
           }
+
         }
 
         characters(sort: [ROLE, RELEVANCE], perPage: 8) {
+
           edges {
+
             role
+
             node {
               name { full }
               image { medium }
             }
+
             voiceActors(sort: RELEVANCE) {
               name { full }
               image { medium }
               languageV2
             }
+
           }
+
         }
+
       }
+
     }
+
   `;
 
   const controller = new AbortController();
+
   const timer = setTimeout(() => controller.abort(),7000);
 
   try {
+
     const res = await fetch("https://graphql.anilist.co",{
+
       method:"POST",
+
       headers:{
         "Content-Type":"application/json",
         "Accept":"application/json"
       },
+
       body:JSON.stringify({
         query,
         variables:{search:searchTerm}
       }),
+
       signal:controller.signal
+
     });
 
     clearTimeout(timer);
@@ -1189,55 +1438,80 @@ async function queryAniListFull(searchTerm) {
     if (!res.ok) return null;
 
     const json = await res.json();
+
     return json.data?.Media || null;
 
   } catch(e) {
+
     clearTimeout(timer);
+
     return null;
+
   }
 }
 
-/* FETCH ANIME DETAILS */
+/* ===================================
+   FETCH ANIME DETAILS
+=================================== */
+
 async function fetchAllAnimeDetails(currentAnime) {
-  const clean = cleanSearchQuery(currentAnime.title) || currentAnime.title;
+
+  const clean =
+    cleanSearchQuery(currentAnime.title) || currentAnime.title;
 
   let media = await queryAniListFull(clean);
 
   if (!media) {
+
     const words = clean.split(" ");
 
     if (words.length > 4) {
       media = await queryAniListFull(words.slice(0,4).join(" "));
     }
+
   }
 
   /* TRAILER */
+
   if (
     media &&
     media.trailer &&
     media.trailer.site === "youtube" &&
     media.trailer.id
   ) {
-    const trailerSection = document.getElementById("trailerSection");
-    const trailerWrap = document.getElementById("trailerWrap");
+
+    const trailerSection =
+      document.getElementById("trailerSection");
+
+    const trailerWrap =
+      document.getElementById("trailerWrap");
 
     trailerWrap.innerHTML = `
+
       <iframe
         src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(media.trailer.id)}?rel=0"
         allowfullscreen
         loading="lazy">
       </iframe>
+
     `;
 
     trailerSection.style.display = "block";
   }
 
   /* METRICS */
-  if (media) {
-    const metaSection = document.getElementById("metaSection");
-    const pillsGrid = document.getElementById("infoPillsGrid");
 
-    const studio = media.studios?.nodes?.[0]?.name || "N/A";
+  if (media) {
+
+    const metaSection =
+      document.getElementById("metaSection");
+
+    const pillsGrid =
+      document.getElementById("infoPillsGrid");
+
+    const studio =
+      media.studios?.nodes?.[0]?.name || "N/A";
+
     const score = media.averageScore
       ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10`
       : "N/A";
@@ -1265,38 +1539,79 @@ async function fetchAllAnimeDetails(currentAnime) {
     let dateStr = "N/A";
 
     if (media.startDate?.year) {
+
       dateStr =
         `${media.startDate.day || 1}/${media.startDate.month || 1}/${media.startDate.year}`;
+
     }
 
     pillsGrid.innerHTML = `
-      <div class="info-pill"><span>Rating / Score</span><strong>${escapeHtml(score)}</strong></div>
-      <div class="info-pill"><span>Total Episodes</span><strong>${escapeHtml(eps)}</strong></div>
-      <div class="info-pill"><span>Duration</span><strong>${escapeHtml(duration)}</strong></div>
-      <div class="info-pill"><span>Airing Season</span><strong>${escapeHtml(airedSeason)}</strong></div>
-      <div class="info-pill"><span>Start Date</span><strong>${escapeHtml(dateStr)}</strong></div>
-      <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
-      <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
-      <div class="info-pill"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
+
+      <div class="info-pill">
+        <span>Rating / Score</span>
+        <strong>${escapeHtml(score)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Total Episodes</span>
+        <strong>${escapeHtml(eps)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Duration</span>
+        <strong>${escapeHtml(duration)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Airing Season</span>
+        <strong>${escapeHtml(airedSeason)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Start Date</span>
+        <strong>${escapeHtml(dateStr)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Studio</span>
+        <strong>${escapeHtml(studio)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Source</span>
+        <strong>${escapeHtml(source)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Status</span>
+        <strong>${escapeHtml(status)}</strong>
+      </div>
+
     `;
 
     metaSection.style.display = "block";
   }
 
   /* RELATIONS */
+
   const otherDbAnime = dbAnimeList.filter(
     a => String(a.anime_id || a.id) !== String(currentAnime.anime_id)
   );
 
   if (media && media.relations?.edges?.length) {
-    const relationSection = document.getElementById("relationSection");
-    const relationGrid = document.getElementById("relationGrid");
+
+    const relationSection =
+      document.getElementById("relationSection");
+
+    const relationGrid =
+      document.getElementById("relationGrid");
 
     relationGrid.innerHTML = "";
 
     let relCount = 0;
 
     media.relations.edges.forEach(edge => {
+
       const relNode = edge.node;
 
       const relTitle =
@@ -1304,18 +1619,23 @@ async function fetchAllAnimeDetails(currentAnime) {
         relNode.title?.romaji ||
         "Related Anime";
 
-      const matchedInDb = findDbMatch(relTitle,otherDbAnime);
+      const matchedInDb =
+        findDbMatch(relTitle,otherDbAnime);
 
-      const card = document.createElement(matchedInDb ? "a" : "div");
+      const card =
+        document.createElement(matchedInDb ? "a" : "div");
 
       card.className = "rel-card";
 
       if (matchedInDb) {
+
         card.href =
           `anime-details.html?id=${encodeURIComponent(matchedInDb.anime_id || matchedInDb.id)}`;
+
       }
 
       card.innerHTML = `
+
         <img
           class="rel-thumb"
           src="${escapeHtml(matchedInDb?.thumbnail_url || relNode.coverImage?.medium || '')}"
@@ -1323,6 +1643,7 @@ async function fetchAllAnimeDetails(currentAnime) {
           onerror="this.style.opacity='0.2'">
 
         <div class="rel-body">
+
           <div class="rel-type">
             ${escapeHtml(edge.relationType.replace(/_/g," "))}
           </div>
@@ -1334,28 +1655,42 @@ async function fetchAllAnimeDetails(currentAnime) {
           ${matchedInDb
             ? `<div class="rel-meta" style="color:#00e676;">▶ Watch on AniStream</div>`
             : ""}
+
         </div>
+
       `;
 
       relationGrid.appendChild(card);
+
       relCount++;
+
     });
 
     if (relCount > 0) {
       relationSection.style.display = "block";
     }
+
   }
 
   /* CHARACTERS */
-  const castGrid = document.getElementById("characterGrid");
-  const edges = media?.characters?.edges || [];
+
+  const castGrid =
+    document.getElementById("characterGrid");
+
+  const edges =
+    media?.characters?.edges || [];
 
   if (edges.length) {
+
     castGrid.innerHTML = "";
 
     edges.forEach(edge => {
+
       const char = edge.node;
-      const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
+
+      const roleText =
+        edge.role === "MAIN" ? "Main" : "Supporting";
+
       const vas = edge.voiceActors || [];
 
       const va =
@@ -1364,10 +1699,13 @@ async function fetchAllAnimeDetails(currentAnime) {
         null;
 
       const card = document.createElement("div");
+
       card.className = "char-card";
 
       card.innerHTML = `
+
         <div class="char-part">
+
           <img
             src="${escapeHtml(char.image?.medium || '')}"
             class="actor-img"
@@ -1375,15 +1713,23 @@ async function fetchAllAnimeDetails(currentAnime) {
             onerror="this.style.opacity='0.2'">
 
           <div class="actor-text">
+
             <div class="actor-name" title="${escapeHtml(char.name?.full)}">
               ${escapeHtml(char.name?.full)}
             </div>
-            <span class="actor-sub">${escapeHtml(roleText)}</span>
+
+            <span class="actor-sub">
+              ${escapeHtml(roleText)}
+            </span>
+
           </div>
+
         </div>
 
         ${va ? `
+
           <div class="va-part">
+
             <img
               src="${escapeHtml(va.image?.medium || '')}"
               class="actor-img"
@@ -1391,35 +1737,55 @@ async function fetchAllAnimeDetails(currentAnime) {
               onerror="this.style.opacity='0.2'">
 
             <div class="actor-text">
+
               <div class="actor-name" title="${escapeHtml(va.name?.full)}">
                 ${escapeHtml(va.name?.full)}
               </div>
+
               <span class="actor-sub">
                 🎙️ ${escapeHtml(va.languageV2 || "Voice")}
               </span>
+
             </div>
+
           </div>
+
         ` : ""}
+
       `;
 
       castGrid.appendChild(card);
+
     });
 
   } else {
+
     castGrid.innerHTML =
       '<div class="empty">Koi character information available nahi hai.</div>';
+
   }
 
   renderSmartDatabaseRecommendations(
     currentAnime,
     media?.recommendations?.nodes || []
   );
+
 }
 
-/* SMART RECOMMENDATIONS */
-function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
-  const recSection = document.getElementById("recSection");
-  const recGrid = document.getElementById("recGrid");
+/* ===================================
+   SMART RECOMMENDATIONS
+=================================== */
+
+function renderSmartDatabaseRecommendations(
+  currentAnime,
+  aniListRecNodes
+) {
+
+  const recSection =
+    document.getElementById("recSection");
+
+  const recGrid =
+    document.getElementById("recGrid");
 
   recGrid.innerHTML = "";
 
@@ -1428,7 +1794,9 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
   );
 
   if (!candidateList.length) {
+
     recSection.style.display = "none";
+
     return;
   }
 
@@ -1439,10 +1807,13 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
     .filter(Boolean);
 
   const matchedSet = new Set();
+
   const finalRecs = [];
 
   aniListRecNodes.forEach(n => {
+
     const item = n?.mediaRecommendation;
+
     if (!item) return;
 
     const recTitle =
@@ -1450,21 +1821,31 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
       item.title?.romaji ||
       "";
 
-    const dbMatch = findDbMatch(recTitle,candidateList);
+    const dbMatch =
+      findDbMatch(recTitle,candidateList);
 
-    if (dbMatch && !matchedSet.has(dbMatch.anime_id || dbMatch.id)) {
+    if (
+      dbMatch &&
+      !matchedSet.has(dbMatch.anime_id || dbMatch.id)
+    ) {
+
       matchedSet.add(dbMatch.anime_id || dbMatch.id);
 
       finalRecs.push({
         anime:dbMatch,
         badge:"⭐ TOP MATCH"
       });
+
     }
+
   });
 
   const scoredCandidates = candidateList
+
     .filter(a => !matchedSet.has(a.anime_id || a.id))
+
     .map(a => {
+
       const aGenres = (a.genre || "")
         .toLowerCase()
         .split(",")
@@ -1475,38 +1856,53 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
       ).length;
 
       return {anime:a,score:overlap};
+
     })
+
     .sort((a,b) => b.score - a.score);
 
   scoredCandidates.forEach(item => {
+
     if (finalRecs.length < 6) {
+
       matchedSet.add(item.anime.anime_id || item.anime.id);
 
       finalRecs.push({
+
         anime:item.anime,
+
         badge:item.anime.season
           ? item.anime.season.toUpperCase()
           : "SIMILAR"
+
       });
+
     }
+
   });
 
   if (!finalRecs.length) {
+
     recSection.style.display = "none";
+
     return;
   }
 
   finalRecs.forEach(entry => {
+
     const an = entry.anime;
+
     const aid = an.anime_id || an.id;
 
     const card = document.createElement("a");
 
     card.className = "rel-card";
+
     card.href =
       `anime-details.html?id=${encodeURIComponent(aid)}`;
 
     card.innerHTML = `
+
       <img
         class="rel-thumb"
         src="${escapeHtml(an.thumbnail_url || '')}"
@@ -1514,7 +1910,10 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
         onerror="this.style.opacity='0.2'">
 
       <div class="rel-body">
-        <div class="rel-type">${escapeHtml(entry.badge)}</div>
+
+        <div class="rel-type">
+          ${escapeHtml(entry.badge)}
+        </div>
 
         <div class="rel-title" title="${escapeHtml(an.title)}">
           ${escapeHtml(an.title)}
@@ -1523,27 +1922,41 @@ function renderSmartDatabaseRecommendations(currentAnime,aniListRecNodes) {
         <div class="rel-meta">
           ${escapeHtml(an.genre ? an.genre.split(",").slice(0,2).join(", ") : "Anime")}
         </div>
+
       </div>
+
     `;
 
     recGrid.appendChild(card);
+
   });
 
   recSection.style.display = "block";
 }
 
-/* ================= COMMENTS + ADMIN REPLY SYSTEM ================= */
+/* =========================================
+   PROFILE CONNECTED COMMENTS + ADMIN REPLY
+========================================= */
+
+/* LOAD COMMENTS */
+
 async function loadComments(targetAnimeId) {
+
   commentsContainer.innerHTML =
     '<div class="loading">Loading comments...</div>';
 
   const {data,error} = await supabaseClient
+
     .from("anime_comments")
+
     .select("*")
+
     .eq("anime_id",targetAnimeId)
+
     .order("created_at",{ascending:false});
 
   if (error) {
+
     console.error("Comments loading error:",error);
 
     commentsContainer.innerHTML =
@@ -1553,6 +1966,7 @@ async function loadComments(targetAnimeId) {
   }
 
   if (!data || data.length === 0) {
+
     commentsContainer.innerHTML =
       '<div class="empty">Abhi koi comment nahi hai. Pehle comment aap karein!</div>';
 
@@ -1561,16 +1975,32 @@ async function loadComments(targetAnimeId) {
 
   commentsContainer.innerHTML = "";
 
-  data.forEach(c => {
+  for (const c of data) {
+
     const card = document.createElement("div");
+
     card.className = "comment-card";
 
-    const commentDate = formatDate(c.created_at);
+    const commentDate =
+      formatDate(c.created_at);
+
+    const userName =
+      c.user_name || "AniStream User";
+
+    const avatarUrl =
+      await getCommentAvatar(
+        c.user_avatar_path,
+        c.user_avatar_url
+      );
+
+    const fallback =
+      getAvatarFallback(userName);
 
     /*
-      Admin reply tabhi show hoga jab admin_reply
-      column mein actual reply available hoga.
+      Admin reply is preserved.
+      It appears only when admin_reply contains text.
     */
+
     const hasAdminReply =
       typeof c.admin_reply === "string" &&
       c.admin_reply.trim().length > 0;
@@ -1578,105 +2008,261 @@ async function loadComments(targetAnimeId) {
     let adminReplyHTML = "";
 
     if (hasAdminReply) {
+
       const replyDate = formatDate(
         c.admin_replied_at,
         true
       );
 
       adminReplyHTML = `
+
         <div class="admin-reply">
 
           <div class="admin-reply-header">
+
             <div class="admin-name">
+
               <span>🛡️ AniStream Admin</span>
+
               <span class="admin-badge">ADMIN</span>
+
             </div>
 
             ${replyDate
               ? `<span class="admin-reply-date">${escapeHtml(replyDate)}</span>`
               : ""}
+
           </div>
 
-          <div class="admin-reply-text">${escapeHtml(c.admin_reply)}</div>
+          <div class="admin-reply-text">
+            ${escapeHtml(c.admin_reply)}
+          </div>
 
         </div>
+
       `;
+
     }
 
     card.innerHTML = `
+
       <div class="comment-header">
-        <span class="comment-author">
-          👤 ${escapeHtml(c.user_name)}
-        </span>
+
+        <div class="comment-author-row">
+
+          <img
+            class="comment-avatar"
+            src="${escapeHtml(avatarUrl || fallback)}"
+            alt="User Profile"
+            onerror="this.onerror=null;this.src='${fallback}'">
+
+          <div class="comment-author-info">
+
+            <span class="comment-author">
+              ${escapeHtml(userName)}
+            </span>
+
+            <span class="comment-member">
+              AniStream Member
+            </span>
+
+          </div>
+
+        </div>
 
         <span class="comment-date">
           ${escapeHtml(commentDate)}
         </span>
+
       </div>
 
-      <p class="comment-body">${escapeHtml(c.comment_text)}</p>
+      <p class="comment-body">
+        ${escapeHtml(c.comment_text)}
+      </p>
 
       ${adminReplyHTML}
+
     `;
 
     commentsContainer.appendChild(card);
-  });
+
+  }
+
 }
 
-/* POST COMMENT */
+/* ===================================
+   POST COMMENT
+=================================== */
+
 async function postComment() {
-  const nameInput = document.getElementById("commentUserName");
-  const textInput = document.getElementById("commentTextInput");
-  const msg = document.getElementById("commentPostMessage");
 
-  const userName = nameInput.value.trim();
-  const commentText = textInput.value.trim();
+  const textInput =
+    document.getElementById("commentTextInput");
 
-  if (!userName || !commentText) {
+  const msg =
+    document.getElementById("commentPostMessage");
+
+  const commentText =
+    textInput.value.trim();
+
+  /* CHECK LOGIN */
+
+  if (!currentAuthUser) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Name aur comment dono zaroori hain.";
+
+    msg.textContent =
+      "❌ Comment karne ke liye pehle login karein.";
+
+    return;
+  }
+
+  /* CHECK COMMENT */
+
+  if (!commentText) {
+
+    msg.style.color = "#ff003c";
+
+    msg.textContent =
+      "❌ Comment likhna zaroori hai.";
+
+    return;
+  }
+
+  if (commentText.length > 500) {
+
+    msg.style.color = "#ff003c";
+
+    msg.textContent =
+      "❌ Maximum 500 characters allowed hain.";
+
     return;
   }
 
   if (!animeId) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Anime ID nahi mila.";
+
+    msg.textContent =
+      "❌ Anime ID nahi mila.";
+
     return;
   }
 
+  /*
+    Always read latest auth user before posting.
+    This prevents posting with an outdated session.
+  */
+
+  const {data:authData,error:authError} =
+    await supabaseClient.auth.getUser();
+
+  if (authError || !authData?.user) {
+
+    currentAuthUser = null;
+
+    await refreshCommentProfile(null);
+
+    msg.style.color = "#ff003c";
+
+    msg.textContent =
+      "❌ Session expire ho gaya. Dobara login karein.";
+
+    return;
+  }
+
+  const user = authData.user;
+
+  const profile = getProfileDetails(user);
+
   msg.style.color = "#aaa";
+
   msg.textContent = "Posting...";
 
+  postCommentButton.disabled = true;
+
+  /*
+    New comments save:
+    anime_id
+    user_id
+    user_name
+    user_avatar_path
+    user_avatar_url
+    comment_text
+
+    user_id is linked with Supabase Auth.
+  */
+
+  const commentData = {
+
+    anime_id:animeId,
+
+    user_id:user.id,
+
+    user_name:profile.name,
+
+    user_avatar_path:
+      profile.avatarPath || null,
+
+    user_avatar_url:
+      profile.avatarPath
+        ? null
+        : profile.avatarUrl || null,
+
+    comment_text:commentText
+
+  };
+
   const {error} = await supabaseClient
+
     .from("anime_comments")
-    .insert([{
-      anime_id:animeId,
-      user_name:userName,
-      comment_text:commentText
-    }]);
+
+    .insert([commentData]);
+
+  postCommentButton.disabled = false;
 
   if (error) {
+
     console.error("Comment posting error:",error);
 
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Failed: " + error.message;
+
+    msg.textContent =
+      "❌ Comment failed: " + error.message;
+
     return;
   }
 
   msg.style.color = "#00e676";
-  msg.textContent = "✅ Comment posted!";
+
+  msg.textContent =
+    "✅ Comment posted successfully!";
 
   textInput.value = "";
+
+  // Refresh comments after successful post.
 
   await loadComments(animeId);
 
   setTimeout(() => {
     msg.textContent = "";
   },2500);
+
 }
 
-/* INITIAL LOAD */
+/* ===================================
+   INITIAL LOAD
+=================================== */
+
+/*
+  Profile and anime load independently.
+  Comments use the same Supabase project.
+*/
+
+initCommentAuth();
+
 loadAnime();
+
 </script>
 
 </body>
