@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,31 +15,38 @@
   --bg: #08090d;
   --surface: #10121a;
   --surface-card: #131520;
-  --line: rgba(255, 255, 255, 0.08);
-  --line-strong: rgba(255, 255, 255, 0.16);
+  --line: rgba(255,255,255,.08);
   --text: #f8f9fd;
   --muted: #9ba1b6;
   --accent: #ff2a6d;
-  --accent-glow: rgba(255, 42, 109, 0.35);
-  --radius-sm: 6px;
-  --radius-md: 10px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
 }
 
-a { color: inherit; text-decoration: none; }
-button { font: inherit; outline: none; }
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  outline: none;
+}
 
 header {
-  background: rgba(17, 17, 24, 0.95);
+  background: rgba(17,17,24,.95);
   border-bottom: 1px solid var(--line);
   padding: 10px 16px;
   position: sticky;
@@ -60,10 +66,12 @@ header {
 .logo {
   font-size: 17px;
   font-weight: 900;
-  letter-spacing: -0.5px;
+  letter-spacing: -.5px;
 }
 
-.logo b { color: var(--accent); }
+.logo b {
+  color: var(--accent);
+}
 
 .nav a {
   font-size: 12px;
@@ -72,7 +80,9 @@ header {
   margin-left: 12px;
 }
 
-.nav a:hover { color: #fff; }
+.nav a:hover {
+  color: #fff;
+}
 
 .container {
   max-width: 1100px;
@@ -90,10 +100,11 @@ header {
   margin-bottom: 10px;
 }
 
-.video-box, .section-box {
+.video-box,
+.section-box {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   margin-bottom: 12px;
   overflow: hidden;
 }
@@ -108,7 +119,8 @@ header {
   position: relative;
 }
 
-video, iframe {
+video,
+iframe {
   width: 100%;
   height: 100%;
   display: block;
@@ -116,7 +128,9 @@ video, iframe {
   background: #000;
 }
 
-.info-bar { padding: 12px 14px; }
+.info-bar {
+  padding: 12px 14px;
+}
 
 .info-bar h1 {
   font-size: 16px;
@@ -145,7 +159,16 @@ video, iframe {
   font-weight: 700;
 }
 
-.section-box { padding: 12px 14px; }
+.history-status {
+  font-size: 11px;
+  margin-top: 7px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.section-box {
+  padding: 12px 14px;
+}
 
 .section-title {
   color: var(--accent);
@@ -160,7 +183,7 @@ video, iframe {
 .audio-card {
   background: #0e1017;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   padding: 8px 10px;
   margin-bottom: 10px;
 }
@@ -202,7 +225,8 @@ video, iframe {
   margin-top: 5px;
 }
 
-.quality-buttons, .link-buttons {
+.quality-buttons,
+.link-buttons {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
@@ -213,14 +237,15 @@ video, iframe {
   color: #d1d5db;
   border: 1px solid var(--line);
   padding: 6px 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   cursor: pointer;
   font-weight: 700;
   font-size: 11px;
-  transition: all 0.15s ease;
+  transition: all .15s ease;
 }
 
-.quality-btn:hover, .quality-btn.active {
+.quality-btn:hover,
+.quality-btn.active {
   background: var(--accent);
   border-color: var(--accent);
   color: #fff;
@@ -232,11 +257,13 @@ video, iframe {
   margin-top: 8px;
 }
 
-.link-buttons { margin-top: 10px; }
+.link-buttons {
+  margin-top: 10px;
+}
 
 .download-btn {
   padding: 8px 14px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-size: 11.5px;
   font-weight: 800;
   color: #fff;
@@ -247,24 +274,26 @@ video, iframe {
   background: #00a86b;
 }
 
-.download-btn:hover { background: #00c77d; }
+.download-btn:hover {
+  background: #00c77d;
+}
 
 #episodeNav .episode-nav {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+  grid-template-columns: repeat(auto-fill,minmax(46px,1fr));
   gap: 5px;
 }
 
 #episodeNav .episode-nav a {
   background: #141622;
   border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   padding: 7px 2px;
   color: #d1d5db;
   text-align: center;
   font-size: 11px;
   font-weight: 800;
-  transition: all 0.15s ease;
+  transition: all .15s ease;
 }
 
 #episodeNav .episode-nav a.active,
@@ -300,7 +329,7 @@ video, iframe {
   background: var(--accent);
   color: #fff;
   padding: 8px 16px;
-  border-radius: var(--radius-sm);
+  border-radius: 6px;
   font-size: 12px;
   font-weight: 800;
 }
@@ -310,7 +339,7 @@ video, iframe {
 .recommend-section {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-radius: 10px;
   margin-bottom: 12px;
   padding: 14px;
   overflow: hidden;
@@ -346,7 +375,10 @@ video, iframe {
   padding-bottom: 8px;
 }
 
-.recommend-row::-webkit-scrollbar { height: 4px; }
+.recommend-row::-webkit-scrollbar {
+  height: 4px;
+}
+
 .recommend-row::-webkit-scrollbar-thumb {
   background: #343746;
   border-radius: 10px;
@@ -377,7 +409,9 @@ video, iframe {
   background: #08090d;
 }
 
-.recommend-info { padding: 8px; }
+.recommend-info {
+  padding: 8px;
+}
 
 .recommend-title {
   color: #fff;
@@ -421,9 +455,9 @@ video, iframe {
   font-size: 11px;
 }
 
-@media(max-width: 480px) {
+@media(max-width:480px) {
   #episodeNav .episode-nav {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6,1fr);
   }
 
   .link-buttons {
@@ -436,7 +470,9 @@ video, iframe {
     width: 116px;
   }
 
-  .recommend-image { height: 154px; }
+  .recommend-image {
+    height: 154px;
+  }
 }
 </style>
 </head>
@@ -467,6 +503,10 @@ video, iframe {
       <div class="meta-row">
         <div id="episodeMeta" class="meta"></div>
         <div id="viewInfo" class="view-info"></div>
+      </div>
+
+      <div id="watchHistoryStatus" class="history-status">
+        History: Waiting for episode...
       </div>
     </div>
   </div>
@@ -546,6 +586,7 @@ const currentStatus = document.getElementById("currentStatus");
 const linkButtons = document.getElementById("linkButtons");
 const languageTags = document.getElementById("languageTags");
 const recommendations = document.getElementById("recommendations");
+const watchHistoryStatus = document.getElementById("watchHistoryStatus");
 
 let qualityLinks = [];
 let selectedQuality = "720p";
@@ -584,30 +625,58 @@ function safeUrl(value) {
    Rewatching updates the existing record.
 ===================================================== */
 
+function showHistoryStatus(message, color = "#9ba1b6") {
+  if (!watchHistoryStatus) return;
+
+  watchHistoryStatus.textContent = message;
+  watchHistoryStatus.style.color = color;
+}
+
 async function recordWatchHistory(episodeData) {
 
-  if (!animeId || !episodeData) return;
+  if (!animeId || !episodeData) {
+    showHistoryStatus("History: Episode information missing.", "#ff759f");
+    return;
+  }
 
   try {
 
-    // Check whether a user is logged in.
-    const { data: authData, error: authError } =
-      await supabaseClient.auth.getUser();
+    showHistoryStatus("History: Checking login...", "#f5c542");
 
-    if (authError) {
-      console.error("Watch history auth error:", authError);
+    // Current Supabase session check.
+    const { data: sessionData, error: sessionError } =
+      await supabaseClient.auth.getSession();
+
+    if (sessionError) {
+      console.error("WATCH HISTORY SESSION ERROR:", sessionError);
+
+      showHistoryStatus(
+        "History login check failed: " + sessionError.message,
+        "#ff759f"
+      );
+
       return;
     }
 
-    const user = authData?.user;
+    const user = sessionData?.session?.user;
 
     // Guest users ki history save nahi hogi.
     if (!user) {
-      console.log("Guest user: Watch history not saved.");
+      console.warn("Watch history: No logged-in user found.");
+
+      showHistoryStatus(
+        "History: Login required to save watch history.",
+        "#ff9f43"
+      );
+
       return;
     }
 
-    // Anime table se poster aur correct title fetch karo.
+    console.log("WATCH HISTORY USER ID:", user.id);
+
+    showHistoryStatus("History: Saving...", "#f5c542");
+
+    // Anime table se title aur thumbnail fetch karo.
     let animeData = null;
 
     const { data: animeByAnimeId, error: animeIdError } =
@@ -623,7 +692,7 @@ async function recordWatchHistory(episodeData) {
 
     animeData = animeByAnimeId;
 
-    // Agar anime_id se nahi mila toh id se try karo.
+    // Fallback: id column se anime search.
     if (!animeData) {
 
       const { data: animeById, error: animeTableIdError } =
@@ -668,23 +737,46 @@ async function recordWatchHistory(episodeData) {
       watch_url: watchUrl
     };
 
+    console.log("WATCH HISTORY RECORD:", historyRecord);
+
     // Same user + same anime = update existing row.
-    const { error: historyError } = await supabaseClient
-      .from("watch_history")
-      .upsert(historyRecord, {
-        onConflict: "user_id,anime_id"
-      });
+    // New anime = insert new row.
+    const { data: savedData, error: historyError } =
+      await supabaseClient
+        .from("watch_history")
+        .upsert(historyRecord, {
+          onConflict: "user_id,anime_id"
+        })
+        .select("id,user_id,anime_id,anime_title,episode_number")
+        .single();
 
     if (historyError) {
-      console.error("Watch history save failed:", historyError);
+
+      console.error("WATCH HISTORY SAVE FAILED:", historyError);
+
+      showHistoryStatus(
+        "History save failed: " + historyError.message,
+        "#ff759f"
+      );
+
       return;
     }
 
-    console.log("Watch history successfully updated:", animeTitle);
+    console.log("WATCH HISTORY SAVED SUCCESSFULLY:", savedData);
+
+    showHistoryStatus(
+      "✓ Watch history saved successfully",
+      "#00e676"
+    );
 
   } catch (error) {
 
-    console.error("Watch history error:", error);
+    console.error("WATCH HISTORY ERROR:", error);
+
+    showHistoryStatus(
+      "History error: " + (error.message || "Unknown error"),
+      "#ff759f"
+    );
 
   }
 }
@@ -823,11 +915,16 @@ async function loadAnimeLanguage() {
 
   if (!animeId) return;
 
-  const { data } = await supabaseClient
+  const { data, error } = await supabaseClient
     .from("anime")
     .select("language")
     .or(`anime_id.eq.${animeId},id.eq.${animeId}`)
     .maybeSingle();
+
+  if (error) {
+    console.warn("Language loading error:", error.message);
+    return;
+  }
 
   if (data && data.language) {
 
@@ -1059,6 +1156,8 @@ async function loadEpisode() {
     return;
   }
 
+  showHistoryStatus("History: Checking your account...", "#f5c542");
+
   const { data, error } = await supabaseClient
     .from("episodes")
     .select("*")
@@ -1069,12 +1168,14 @@ async function loadEpisode() {
   if (error) {
 
     showError("Episode load failed: " + error.message);
+    showHistoryStatus("History: Episode could not load.", "#ff759f");
     return;
   }
 
   if (!data) {
 
     showError("Ye episode nahi mila.");
+    showHistoryStatus("History: Episode not found.", "#ff759f");
     return;
   }
 
@@ -1089,8 +1190,7 @@ async function loadEpisode() {
 
   fallbackVideoUrl = data.video_url || "";
 
-  // Save the user's watch history for this anime.
-  // Same anime dobara dekhne par existing row update hogi.
+  // Save history after a valid episode is loaded.
   await recordWatchHistory(data);
 
   await loadQualityLinks(data.anime_title);
@@ -1132,6 +1232,10 @@ async function loadQualityLinks(animeTitle) {
     .select("*")
     .eq("anime_name", animeTitle)
     .eq("episode_number", Number(episodeNumber));
+
+  if (error) {
+    console.error("Episode links loading error:", error);
+  }
 
   const order = {
     "1080p": 1,
