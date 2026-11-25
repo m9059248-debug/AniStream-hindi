@@ -130,13 +130,6 @@ small,.muted{color:var(--muted)}
  .btn-group{width:100%}
  .btn-group button{flex:1}
 }
-.bulk-row{background:#0b1427;border:1px solid var(--border);border-radius:12px;padding:12px;margin:10px 0}
-.bulk-head{display:grid;grid-template-columns:90px 1fr;gap:10px}
-.bulk-row input{margin:4px 0 8px;padding:10px}
-.bulk-paste{border:1px dashed var(--border);border-radius:10px;padding:10px 12px;margin:12px 0}
-.bulk-paste summary{cursor:pointer;font-weight:700;color:#9cc2ff}
-.bulk-paste textarea{min-height:70px}
-.dup-warning{background:#3a2a08;border:1px solid var(--amber);color:#ffd88a;border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -163,12 +156,10 @@ small,.muted{color:var(--muted)}
    <button class="nav-btn active" onclick="showSection('dashboard',this)">📊 Dashboard & Analytics</button>
    <button class="nav-btn" onclick="showSection('users',this)">👥 App Users</button>
    <button class="nav-btn" onclick="showSection('anime',this)">🎌 Anime Manager</button>
-   <button class="nav-btn" onclick="showSection('episodeManager',this)">🎞️ Episode Manager</button>
    <button class="nav-btn" onclick="showSection('schedule',this)">📅 Schedule Manager</button>
    <button class="nav-btn" onclick="showSection('verification',this)">🔐 Download Verification</button>
    <button class="nav-btn" onclick="showSection('notifications',this)">📢 Popups & Alerts</button>
    <button class="nav-btn" onclick="showSection('comments',this)">💬 Comments</button>
-   <button class="nav-btn" onclick="showSection('chatAdmin',this)">🗨️ Community Chat</button>
    <button class="nav-btn" onclick="showSection('sqlsetup',this)">🛠 SQL & RLS Helper</button>
   </div>
  </aside>
@@ -445,7 +436,7 @@ small,.muted{color:var(--muted)}
        <label><input type="checkbox" name="episodeLanguage" value="Telugu"> Telugu</label>
        <label><input type="checkbox" name="episodeLanguage" value="Subtitles"> Subtitles</label>
       </div>
-      <small class="muted">ऊपर जो भाषाएँ चुनोगे, नीचे भरे गए Stream/Download links उन सभी भाषाओं के लिए सेव होंगे। भाषाएँ कितनी भी चुनो, Episode एक ही बनेगा (हर भाषा का अलग Episode नहीं)।</small>
+      <small class="muted">ऊपर जो भाषाएँ चुनोगे, नीचे भरे गए Stream/Download links उन सभी भाषाओं के लिए सेव होंगे।</small>
      </div>
     </div>
 
@@ -489,76 +480,10 @@ small,.muted{color:var(--muted)}
     <p id="episodeFormMessage" class="muted"></p>
    </div>
 
-   <div class="panel entry-panel">
-    <h3>📦 Multi Episodes — एक साथ कई Episodes Add करें</h3>
-    <p class="muted">Anime: <b id="bulkAnimeName">—</b>. एक ही वीडियो में सभी भाषाएँ हैं तो बस भाषाएँ टिक करें। हर Episode सिर्फ एक बार बनेगा और उसके Stream/Download links सभी चुनी हुई भाषाओं में लगेंगे।</p>
-
-    <div class="grid3">
-     <div>
-      <label>Season</label>
-      <select id="bulkSeason"></select>
-     </div>
-     <div>
-      <label>Start Episode Number</label>
-      <input id="bulkStartEp" type="number" min="1" value="1">
-     </div>
-     <div>
-      <label>कितने Episodes (max 100)</label>
-      <input id="bulkCount" type="number" min="1" max="100" value="12">
-     </div>
-    </div>
-
-    <div class="grid2">
-     <div>
-      <label>Server Name</label>
-      <input id="bulkServerName" value="Server 1" placeholder="Server 1">
-     </div>
-     <div>
-      <label>Status</label>
-      <select id="bulkPublished"><option value="true">Published</option><option value="false">Draft</option></select>
-     </div>
-    </div>
-
-    <label>Audio Language (एक से ज्यादा चुन सकते हैं)</label>
-    <div class="language-list" id="bulkLanguageChoices">
-     <label><input type="checkbox" name="bulkLanguage" value="Hindi" checked> Hindi</label>
-     <label><input type="checkbox" name="bulkLanguage" value="Japanese"> Japanese</label>
-     <label><input type="checkbox" name="bulkLanguage" value="English"> English</label>
-     <label><input type="checkbox" name="bulkLanguage" value="Tamil"> Tamil</label>
-     <label><input type="checkbox" name="bulkLanguage" value="Telugu"> Telugu</label>
-     <label><input type="checkbox" name="bulkLanguage" value="Subtitles"> Subtitles</label>
-    </div>
-
-    <div class="row" style="margin-top:10px"><button type="button" class="secondary" onclick="generateBulkRows()">⚙️ Episode Rows बनाएँ</button></div>
-
-    <details class="bulk-paste">
-     <summary>⚡ Links एक साथ Paste करें (हर line में एक Episode का link)</summary>
-     <p class="form-note">पहले ऊपर "Episode Rows बनाएँ" दबाएँ। फिर नीचे हर बॉक्स में links paste करें (पहली line = पहला Episode)। किसी Episode का link न हो तो खाली line छोड़ दें।</p>
-     <div class="grid3">
-      <div><label>480p Stream</label><textarea id="pasteS480" placeholder="एक line = एक episode"></textarea></div>
-      <div><label>720p Stream</label><textarea id="pasteS720" placeholder="एक line = एक episode"></textarea></div>
-      <div><label>1080p Stream</label><textarea id="pasteS1080" placeholder="एक line = एक episode"></textarea></div>
-     </div>
-     <div class="grid3">
-      <div><label>480p Download</label><textarea id="pasteD480" placeholder="एक line = एक episode"></textarea></div>
-      <div><label>720p Download</label><textarea id="pasteD720" placeholder="एक line = एक episode"></textarea></div>
-      <div><label>1080p Download</label><textarea id="pasteD1080" placeholder="एक line = एक episode"></textarea></div>
-     </div>
-     <button type="button" class="secondary" onclick="fillBulkFromPasted()">⬇️ Rows में Links भरें</button>
-    </details>
-
-    <div id="bulkRows"></div>
-
-    <div class="row">
-     <button id="saveBulkBtn" type="button" onclick="saveBulkEpisodes()">💾 सभी Episodes Save करें</button>
-    </div>
-    <p id="bulkMessage" class="muted"></p>
-   </div>
-
    <div class="panel">
     <h3>📚 Episode Management</h3>
     <select id="bulkAnimeSelect" class="hidden" onchange="renderEpisodeManagement()"></select>
-    <div class="row" style="justify-content:flex-end;margin-bottom:10px"><button class="secondary" onclick="mergeDuplicateEpisodes()">🧹 Merge Duplicate Language Episodes</button><button class="danger" onclick="deleteAllAnimeEpisodes()">🗑 Delete All Episodes of This Anime</button></div>
+    <div class="row" style="justify-content:flex-end;margin-bottom:10px"><button class="danger" onclick="deleteAllAnimeEpisodes()">🗑 Delete All Episodes of This Anime</button></div>
     <div id="episodeList">Loading...</div>
    </div>
    </div>
@@ -751,89 +676,6 @@ small,.muted{color:var(--muted)}
    </div>
   </section>
 
-  <!-- 3b. EPISODE MANAGER (bulk stream / download links) -->
-  <section id="episodeManager" class="section">
-   <div class="panel entry-panel">
-    <h3>🎞️ Episode Manager</h3>
-    <p class="muted">एक साथ कई Episodes के <b>Stream Links</b> और <b>Download Links</b> लगाएँ या बदलें। दोनों सिस्टम अलग-अलग हैं: Stream Links save करने से Download Links नहीं बदलते, और Download Links save करने से Stream Links नहीं बदलते।</p>
-
-    <div class="grid2">
-     <div>
-      <label>Anime</label>
-      <select id="emAnime" onchange="emAnimeChanged()"></select>
-     </div>
-     <div>
-      <label>Season</label>
-      <select id="emSeason" onchange="emSeasonChanged()"></select>
-     </div>
-    </div>
-
-    <div class="grid3">
-     <div>
-      <label>From Episode</label>
-      <input id="emFrom" type="number" min="1" value="1">
-     </div>
-     <div>
-      <label>To Episode</label>
-      <input id="emTo" type="number" min="1" value="12">
-     </div>
-     <div>
-      <label>Server Name</label>
-      <input id="emServer" value="Server 1" placeholder="Server 1">
-     </div>
-    </div>
-
-    <label>Audio Language (links इन सभी languages में लगेंगे)</label>
-    <div class="language-list" id="emLanguageChoices">
-     <label><input type="checkbox" name="emLanguage" value="Hindi" checked> Hindi</label>
-     <label><input type="checkbox" name="emLanguage" value="Japanese"> Japanese</label>
-     <label><input type="checkbox" name="emLanguage" value="English"> English</label>
-     <label><input type="checkbox" name="emLanguage" value="Tamil"> Tamil</label>
-     <label><input type="checkbox" name="emLanguage" value="Telugu"> Telugu</label>
-     <label><input type="checkbox" name="emLanguage" value="Subtitles"> Subtitles</label>
-    </div>
-
-    <div class="grid2">
-     <div>
-      <label>नए Episodes का Status</label>
-      <select id="emPublished"><option value="true">Published</option><option value="false">Draft</option></select>
-     </div>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-     <button type="button" onclick="emLoad()">📥 Episodes Load करें</button>
-    </div>
-    <p id="emMessage" class="muted"></p>
-   </div>
-
-   <div class="panel hidden" id="emWorkspace">
-    <div class="row em-tabs" style="margin-bottom:10px">
-     <button type="button" id="emTabStream" onclick="emSwitch('stream')">▶️ Stream Links</button>
-     <button type="button" id="emTabDownload" class="secondary" onclick="emSwitch('download')">⬇️ Download Links</button>
-    </div>
-    <div id="emPanelStream"></div>
-    <div id="emPanelDownload" class="hidden"></div>
-   </div>
-  </section>
-
-  <!-- 7b. COMMUNITY CHAT MODERATION -->
-  <section id="chatAdmin" class="section">
-   <div class="panel">
-    <h3>🗨️ Community Chat Moderation</h3>
-    <p class="muted">App के Chat tab में भेजे गए latest messages। किसी message को delete करें या user को chat से block करें।</p>
-    <div class="row" style="margin-bottom:10px">
-     <button class="secondary" onclick="loadChatAdmin()">↻ Refresh</button>
-     <button class="danger" onclick="clearAllChatMessages()">🗑 Clear All Messages</button>
-    </div>
-    <p id="chatAdminMessage" class="muted"></p>
-    <div id="chatMessageList">Open this tab to load messages...</div>
-   </div>
-   <div class="panel">
-    <h3>🚫 Blocked Users (Chat Ban)</h3>
-    <div id="chatBanList">—</div>
-   </div>
-  </section>
-
   <!-- 8. SQL & RLS HELPER -->
   <section id="sqlsetup" class="section">
    <div class="panel">
@@ -967,110 +809,6 @@ CREATE TABLE IF NOT EXISTS public.download_tokens (
   created_at timestamptz DEFAULT now()
 );
 
--- 7. Multi-language episode fix: ek episode = ek row (season + episode number se unique)
--- Pehle admin panel me "Merge Duplicate Language Episodes" chalayein. Agar duplicates bache hon to ye step apne aap skip ho jayega.
-DO $$
-BEGIN
-  ALTER TABLE public.episodes DROP CONSTRAINT IF EXISTS episodes_anime_ep_lang_key;
-  ALTER TABLE public.episodes ADD CONSTRAINT episodes_season_ep_key UNIQUE (season_id, episode_number);
-EXCEPTION WHEN OTHERS THEN
-  RAISE NOTICE 'Episode key update skipped: %', SQLERRM;
-END $$;
-
--- ===== Community Chat (App ke Chat tab ke liye) =====
--- Supabase Dashboard > SQL Editor me paste karke Run karein.
-
-CREATE TABLE IF NOT EXISTS public.chat_messages (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL DEFAULT auth.uid() REFERENCES auth.users(id) ON DELETE CASCADE,
-  user_name text NOT NULL DEFAULT 'Anime Fan',
-  username text,
-  message text NOT NULL CHECK (char_length(message) BETWEEN 1 AND 500),
-  created_at timestamptz NOT NULL DEFAULT now()
-);
-CREATE INDEX IF NOT EXISTS chat_messages_created_idx ON public.chat_messages (created_at DESC);
-
-CREATE TABLE IF NOT EXISTS public.chat_bans (
-  user_id uuid PRIMARY KEY,
-  user_name text,
-  reason text,
-  created_at timestamptz DEFAULT now()
-);
-
-ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.chat_bans ENABLE ROW LEVEL SECURITY;
-
-GRANT SELECT, INSERT, DELETE ON public.chat_messages TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON public.chat_bans TO authenticated;
-
--- Sirf login kiye hue users hi chat padh sakte hain
-DROP POLICY IF EXISTS "chat read for logged in users" ON public.chat_messages;
-CREATE POLICY "chat read for logged in users" ON public.chat_messages
-  FOR SELECT TO authenticated USING (true);
-
--- Sirf login kiya hua user, apne hi naam se, aur block na hua ho to hi message bhej sakta hai
-DROP POLICY IF EXISTS "chat send for logged in users" ON public.chat_messages;
-CREATE POLICY "chat send for logged in users" ON public.chat_messages
-  FOR INSERT TO authenticated
-  WITH CHECK (
-    user_id = auth.uid()
-    AND NOT EXISTS (SELECT 1 FROM public.chat_bans b WHERE b.user_id = auth.uid())
-  );
-
--- Messages sirf admin delete kar sakta hai
-DROP POLICY IF EXISTS "chat admin delete" ON public.chat_messages;
-CREATE POLICY "chat admin delete" ON public.chat_messages
-  FOR DELETE TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.admin_users a WHERE a.user_id = auth.uid()));
-
--- Ban list: user apni khud ki ban entry dekh sakta hai, admin sab manage kar sakta hai
-DROP POLICY IF EXISTS "chat bans read own or admin" ON public.chat_bans;
-CREATE POLICY "chat bans read own or admin" ON public.chat_bans
-  FOR SELECT TO authenticated
-  USING (user_id = auth.uid() OR EXISTS (SELECT 1 FROM public.admin_users a WHERE a.user_id = auth.uid()));
-
-DROP POLICY IF EXISTS "chat bans admin manage" ON public.chat_bans;
-CREATE POLICY "chat bans admin manage" ON public.chat_bans
-  FOR ALL TO authenticated
-  USING (EXISTS (SELECT 1 FROM public.admin_users a WHERE a.user_id = auth.uid()))
-  WITH CHECK (EXISTS (SELECT 1 FROM public.admin_users a WHERE a.user_id = auth.uid()));
-
--- Spam rokne ke liye 2 second ka gap, aur naam server se hi set hota hai (koi dusre ke naam se message nahi bhej sakta)
-CREATE OR REPLACE FUNCTION public.chat_prepare_message()
-RETURNS trigger
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = public, auth
-AS $$
-DECLARE
-  u record;
-BEGIN
-  IF EXISTS (
-    SELECT 1 FROM public.chat_messages m
-    WHERE m.user_id = NEW.user_id AND m.created_at > now() - interval '2 seconds'
-  ) THEN
-    RAISE EXCEPTION 'Please wait 2 seconds between messages.';
-  END IF;
-
-  SELECT
-    COALESCE(NULLIF(raw_user_meta_data->>'full_name', ''), NULLIF(raw_user_meta_data->>'name', ''), split_part(email, '@', 1)) AS uname,
-    NULLIF(raw_user_meta_data->>'username', '') AS handle
-  INTO u
-  FROM auth.users WHERE id = NEW.user_id;
-
-  NEW.user_name := COALESCE(u.uname, 'Anime Fan');
-  NEW.username := u.handle;
-  NEW.message := trim(NEW.message);
-  RETURN NEW;
-END;
-$$;
-
-DROP TRIGGER IF EXISTS chat_prepare_message_trg ON public.chat_messages;
-CREATE TRIGGER chat_prepare_message_trg
-  BEFORE INSERT ON public.chat_messages
-  FOR EACH ROW EXECUTE FUNCTION public.chat_prepare_message();
-
-
 NOTIFY pgrst, 'reload schema';</div>
    </div>
   </section>
@@ -1102,7 +840,6 @@ let userProfilesTableReady=true;
 let editingAnimeId=null;
 let editingSeasonId=null;
 let editingEpisodeId=null;
-let editingServerName=null;
 let editingScheduleId=null;
 let editingNotificationId=null;
 window.animeSearchResults=[];
@@ -1179,29 +916,20 @@ function showSection(id,button){
   dashboard:"Dashboard & Analytics",
   users:"Logged-In App Users Directory",
   anime:"Anime Manager",
-  episodeManager:"Episode Manager",
   schedule:"Anime Schedule Manager",
   verification:"Download Verification (24h Unlock)",
   notifications:"Popups & Announcements",
   comments:"Comments Management",
-  chatAdmin:"Community Chat Moderation",
   sqlsetup:"SQL & RLS Helper"
  };
  document.getElementById("pageTitle").textContent=titles[id]||"Admin Panel";
- if(id==="chatAdmin")loadChatAdmin();
- if(id==="episodeManager")emFillAnime();
 }
 
 /* SAFE DATA LOADER */
 async function safeGetRows(table,order="created_at"){
  try{
-  let {data,error}=await db.from(table).select("*").order(order,{ascending:false});
-  if(error){
-   // some tables may not have the order column; retry without ordering instead of silently showing nothing
-   const retry=await db.from(table).select("*");
-   if(retry.error)throw retry.error;
-   data=retry.data;
-  }
+  const {data,error}=await db.from(table).select("*").order(order,{ascending:false});
+  if(error)throw error;
   return data||[];
  }catch(e){
   console.warn(`Table [${table}] load skipped:`,e.message);
@@ -1714,8 +1442,6 @@ function openEpisodeForAnime(animeId){
  renderSeasons();
  renderEpisodeManagement();
  workspace.scrollIntoView({behavior:"smooth",block:"start"});
- const bulkName=document.getElementById("bulkAnimeName");
- if(bulkName)bulkName.textContent=anime.title;
  toast("Selected: "+anime.title+" — manage episodes below");
 }
 function closeEpisodeWorkspace(){
@@ -1787,13 +1513,6 @@ function updateSeasonOptions(){
   ?rows.map(s=>`<option value="${safe(s.id)}">${safe(s.title||"Season "+s.season_number)}</option>`).join("")
   :`<option value="">-- First Add a Season Above --</option>`;
  if(rows.some(s=>String(s.id)===String(old)))select.value=old;
- const bulkSeason=document.getElementById("bulkSeason");
- if(bulkSeason){
-  const oldBulk=bulkSeason.value;
-  bulkSeason.innerHTML=select.innerHTML;
-  if(rows.some(s=>String(s.id)===String(oldBulk)))bulkSeason.value=oldBulk;
-  else if(rows.length)bulkSeason.value=String(rows[0].id);
- }
 }
 function getQualityInputs(){
  return [
@@ -1802,131 +1521,45 @@ function getQualityInputs(){
   {quality:"1080p",streamId:"url1080",dlId:"dl1080"}
  ];
 }
-function readQualityLinks(){
- return getQualityInputs().map(item=>({
-  quality:item.quality,
-  streamUrl:document.getElementById(item.streamId).value.trim(),
-  downloadUrl:document.getElementById(item.dlId).value.trim()
- }));
-}
-
-async function upsertServerRow(episodeId,serverName,quality,language,streamUrl,downloadUrl){
- const {data:existing,error:findError}=await db.from("video_servers")
-  .select("id")
-  .eq("episode_id",episodeId)
-  .eq("server_name",serverName)
-  .eq("quality",quality)
-  .eq("language",language)
-  .limit(1);
- if(findError)throw findError;
-
- if(!streamUrl&&!downloadUrl){
-  if(existing&&existing.length){
-   const {error}=await db.from("video_servers").delete().eq("id",existing[0].id);
-   if(error)throw error;
-  }
-  return;
- }
-
- const full={episode_id:episodeId,server_name:serverName,video_url:streamUrl||downloadUrl,download_url:downloadUrl||null,quality,language};
- const basic={episode_id:episodeId,server_name:serverName,video_url:streamUrl||downloadUrl,quality,language};
- const write=payload=>existing&&existing.length
-  ?db.from("video_servers").update(payload).eq("id",existing[0].id)
-  :db.from("video_servers").insert(payload);
-
- let {error}=await write(full);
- // older databases may not have the download_url column yet
- if(error&&String(error.message).includes("download_url")){
-  ({error}=await write(basic));
- }
- if(error)throw error;
-}
-
-// Ek episode ke liye: chuni hui sabhi languages me wahi stream/download links save karta hai
-async function writeEpisodeLinks(episodeId,languages,serverName,links,oldServerName=null){
+async function saveQualityLinks(episodeId, selectedLanguages=null){
+ const server_name=document.getElementById("serverName").value.trim()||"Server 1";
+ const languages=selectedLanguages||[...document.querySelectorAll('input[name="episodeLanguage"]:checked')].map(x=>x.value);
  if(!languages.length)throw new Error("कम से कम एक Audio Language चुनें");
- if(oldServerName&&oldServerName!==serverName){
-  const {error}=await db.from("video_servers").update({server_name:serverName}).eq("episode_id",episodeId).eq("server_name",oldServerName);
-  if(error)throw error;
- }
+
  for(const language of languages){
-  for(const item of links){
-   await upsertServerRow(episodeId,serverName,item.quality,language,item.streamUrl,item.downloadUrl);
+  for(const item of getQualityInputs()){
+   const streamUrl=document.getElementById(item.streamId).value.trim();
+   const downloadUrl=document.getElementById(item.dlId).value.trim();
+
+   const {data:existing,error:findError}=await db.from("video_servers")
+    .select("id")
+    .eq("episode_id",episodeId)
+    .eq("quality",item.quality)
+    .eq("language",language)
+    .limit(1);
+   if(findError)throw findError;
+
+   if(!streamUrl&&!downloadUrl){
+    if(existing&&existing.length)await db.from("video_servers").delete().eq("id",existing[0].id);
+    continue;
+   }
+
+   const payloadWithDl={episode_id:episodeId,server_name,video_url:streamUrl||downloadUrl,download_url:downloadUrl||null,quality:item.quality,language};
+   if(existing&&existing.length){
+    let {error}=await db.from("video_servers").update(payloadWithDl).eq("id",existing[0].id);
+    if(error&&String(error.message).includes("download_url")){
+     const {error:fallbackErr}=await db.from("video_servers").update({server_name,video_url:streamUrl||downloadUrl,quality:item.quality,language}).eq("id",existing[0].id);
+     if(fallbackErr)throw fallbackErr;
+    }else if(error)throw error;
+   }else{
+    let {error}=await db.from("video_servers").insert(payloadWithDl);
+    if(error&&String(error.message).includes("download_url")){
+     const {error:fallbackErr}=await db.from("video_servers").insert({episode_id:episodeId,server_name,video_url:streamUrl||downloadUrl,quality:item.quality,language});
+     if(fallbackErr)throw fallbackErr;
+    }else if(error)throw error;
+   }
   }
  }
- // jo language ab select nahi hai uske purane links hata do (same server ke)
- const {data:rows,error:listError}=await db.from("video_servers").select("id,language").eq("episode_id",episodeId).eq("server_name",serverName);
- if(listError)throw listError;
- const keep=languages.map(l=>l.toLowerCase());
- const stale=(rows||[]).filter(r=>!keep.includes(String(r.language||"").toLowerCase())).map(r=>r.id);
- if(stale.length){
-  const {error}=await db.from("video_servers").delete().in("id",stale);
-  if(error)throw error;
- }
-}
-
-function friendlyEpisodeError(error){
- if(String(error&&error.code)==="23505"||String((error&&error.message)||"").includes("episodes_anime_ep_lang_key")){
-  return new Error("इस Episode Number का record पहले से है (database का पुराना unique rule). SQL Setup tab से 'Copy Full SQL Migration' Supabase में run करें, और पहले '🧹 Merge Duplicate Language Episodes' चलाएँ।");
- }
- return error;
-}
-
-async function upsertEpisodeRow(row,existingId){
- if(existingId){
-  const {error}=await db.from("episodes").update(row).eq("id",existingId);
-  if(error)throw friendlyEpisodeError(error);
-  return existingId;
- }
- const {data,error}=await db.from("episodes").insert(row).select("id").single();
- if(error)throw friendlyEpisodeError(error);
- return data.id;
-}
-
-function findDuplicateEpisodeGroups(rows){
- const map=new Map();
- rows.forEach(e=>{
-  const key=[e.anime_id,e.season_id,e.episode_number].join("|");
-  if(!map.has(key))map.set(key,[]);
-  map.get(key).push(e);
- });
- return [...map.values()].filter(g=>g.length>1);
-}
-
-// Same anime + season + episode number ke alag-alag language rows ko ek episode me jod deta hai
-async function mergeEpisodeGroup(rows){
- const keep=rows.find(r=>/hindi/i.test(r.language||""))||rows[0];
- const others=rows.filter(r=>String(r.id)!==String(keep.id));
- const allIds=rows.map(r=>r.id);
- const {data:servers,error:sErr}=await db.from("video_servers").select("*").in("episode_id",allIds);
- if(sErr)throw sErr;
- const ordered=[...(servers||[])].sort((a,b)=>(String(a.episode_id)===String(keep.id)?0:1)-(String(b.episode_id)===String(keep.id)?0:1));
- const seen=new Set(),dupIds=[],moveIds=[];
- for(const sv of ordered){
-  const key=[sv.server_name,sv.quality,String(sv.language||"").toLowerCase()].join("|");
-  if(seen.has(key)){dupIds.push(sv.id);continue;}
-  seen.add(key);
-  if(String(sv.episode_id)!==String(keep.id))moveIds.push(sv.id);
- }
- if(dupIds.length){
-  const {error}=await db.from("video_servers").delete().in("id",dupIds);
-  if(error)throw error;
- }
- if(moveIds.length){
-  const {error}=await db.from("video_servers").update({episode_id:keep.id}).in("id",moveIds);
-  if(error)throw error;
- }
- const langs=[];
- const addLang=l=>{const t=String(l||"").trim();if(t&&!langs.some(x=>x.toLowerCase()===t.toLowerCase()))langs.push(t);};
- rows.forEach(r=>String(r.language||"").split(",").forEach(addLang));
- (servers||[]).forEach(sv=>addLang(sv.language));
- if(others.length){
-  const {error}=await db.from("episodes").delete().in("id",others.map(o=>o.id));
-  if(error)throw error;
- }
- const {error:uErr}=await db.from("episodes").update({language:langs.join(", ")}).eq("id",keep.id);
- if(uErr)throw friendlyEpisodeError(uErr);
- return keep.id;
 }
 
 async function saveEpisode(){
@@ -1939,38 +1572,62 @@ async function saveEpisode(){
   toast("Fill anime, season, episode number and title");return;
  }
  if(!languages.length){toast("कम से कम एक Audio Language चुनें");return;}
- const serverName=document.getElementById("serverName").value.trim()||"Server 1";
- // ek episode = ek row. Saari languages is ek hi row me likhi jaati hain.
  const baseRow={
   anime_id,season_id,episode_number,title,
   description:document.getElementById("episodeDescription").value.trim(),
-  is_published:document.getElementById("episodePublished").value==="true",
-  language:languages.join(", ")
+  is_published:document.getElementById("episodePublished").value==="true"
  };
  const btn=document.getElementById("saveEpisodeBtn");
  btn.disabled=true;
- setMessage("episodeFormMessage","Saving episode...");
+ setMessage("episodeFormMessage","Saving selected languages separately...");
  try{
-  const {data:matches,error:lookupError}=await db.from("episodes")
-   .select("id,language,anime_id,season_id,episode_number")
-   .eq("anime_id",anime_id)
-   .eq("season_id",season_id)
-   .eq("episode_number",episode_number);
-  if(lookupError)throw lookupError;
-  const group=matches||[];
-  let targetId=null;
-  if(editingEpisodeId){
-   const clash=group.filter(m=>String(m.id)!==String(editingEpisodeId));
-   if(clash.length)throw new Error(`इस Season में Episode ${episode_number} पहले से मौजूद है। Number बदलें या वही Episode Edit करें।`);
-   targetId=editingEpisodeId;
-  }else if(group.length){
-   targetId=group.length>1?await mergeEpisodeGroup(group):group[0].id;
+  let savedCount=0;
+  for(const language of languages){
+   // episodes table has a unique anime/episode/language key. Reuse that language row
+   // when it already exists instead of inserting a duplicate episode.
+   let existingEpisode=null;
+   if(editingEpisodeId){
+    const editingRow=episodeData.find(e=>String(e.id)===String(editingEpisodeId));
+    if(editingRow && String(editingRow.language||"").toLowerCase()===language.toLowerCase()){
+     existingEpisode=editingRow;
+    }
+   }
+   if(!existingEpisode){
+    const {data:matches,error:lookupError}=await db.from("episodes")
+     .select("id,language")
+     .eq("anime_id",anime_id)
+     .eq("episode_number",episode_number)
+     .eq("language",language)
+     .limit(1);
+    if(lookupError)throw lookupError;
+    existingEpisode=matches&&matches.length?matches[0]:null;
+   }
+   const row={...baseRow,language};
+   let episodeId;
+   if(existingEpisode){
+    const {error}=await db.from("episodes").update(row).eq("id",existingEpisode.id);
+    if(error)throw error;
+    episodeId=existingEpisode.id;
+   }else{
+    const {data,error}=await db.from("episodes").insert(row).select("id").single();
+    if(error){
+     // Recover safely from a simultaneous/previous insert of the same language row.
+     if(String(error.code)==="23505" || String(error.message||"").includes("episodes_anime_ep_lang_key")){
+      const {data:again,error:againError}=await db.from("episodes").select("id").eq("anime_id",anime_id).eq("episode_number",episode_number).eq("language",language).limit(1);
+      if(againError)throw againError;
+      if(!again||!again.length)throw error;
+      episodeId=again[0].id;
+      const {error:updateError}=await db.from("episodes").update(row).eq("id",episodeId);
+      if(updateError)throw updateError;
+     }else throw error;
+    }else episodeId=data.id;
+   }
+   await saveQualityLinks(episodeId,[language]);
+   savedCount++;
   }
-  const episodeId=await upsertEpisodeRow(baseRow,targetId);
-  await writeEpisodeLinks(episodeId,languages,serverName,readQualityLinks(),editingServerName);
   resetEpisodeForm();
   await loadAll();
-  toast(`Episode ${episode_number} saved (${languages.join(", ")})`);
+  toast(`Episode saved/updated for ${savedCount} language(s): ${languages.join(", ")}`);
  }catch(e){
   console.error(e);
   setMessage("episodeFormMessage","Save error: "+e.message);
@@ -1980,7 +1637,6 @@ async function saveEpisode(){
 async function editEpisode(id){
  const e=episodeData.find(x=>String(x.id)===String(id));if(!e)return;
  editingEpisodeId=id;
- editingServerName=null;
  document.getElementById("episodeAnime").value=e.anime_id;
  updateSeasonOptions();
  document.getElementById("episodeSeason").value=e.season_id;
@@ -1992,18 +1648,11 @@ async function editEpisode(id){
  ["url480","url720","url1080","dl480","dl720","dl1080"].forEach(k=>document.getElementById(k).value="");
 
  const links=serverData.filter(s=>String(s.episode_id)===String(id));
- const fromLinks=[...new Set(links.map(s=>s.language).filter(Boolean))];
- const fromRow=String(e.language||"").split(",").map(x=>x.trim()).filter(Boolean);
- let langs=(fromLinks.length?fromLinks:fromRow).map(x=>x.toLowerCase());
- if(!langs.length)langs=["hindi"];
- document.querySelectorAll('input[name="episodeLanguage"]').forEach(x=>x.checked=langs.includes(x.value.toLowerCase()));
-
  if(links.length){
   const first=links[0];
-  editingServerName=first.server_name||"Server 1";
-  document.getElementById("serverName").value=editingServerName;
-  const firstLang=String(first.language||"").toLowerCase();
-  links.filter(s=>(s.server_name||"Server 1")===editingServerName&&String(s.language||"").toLowerCase()===firstLang).forEach(s=>{
+  document.getElementById("serverName").value=first.server_name||"Server 1";
+  document.querySelectorAll('input[name="episodeLanguage"]').forEach(x=>x.checked=x.value===(e.language||first.language||"Hindi"));
+  links.forEach(s=>{
    const field=getQualityInputs().find(q=>q.quality===s.quality);
    if(field){
     document.getElementById(field.streamId).value=s.video_url||"";
@@ -2018,7 +1667,6 @@ async function editEpisode(id){
 }
 function resetEpisodeForm(){
  editingEpisodeId=null;
- editingServerName=null;
  document.getElementById("episodeNumber").value=1;
  document.getElementById("episodeTitle").value="";
  document.getElementById("episodeDescription").value="";
@@ -2032,17 +1680,13 @@ function resetEpisodeForm(){
 }
 function renderEpisodeManagement(){
  const selected=document.getElementById("bulkAnimeSelect")?.value || document.getElementById("episodeAnime")?.value;
- const seasonNo=e=>Number(seasonData.find(s=>String(s.id)===String(e.season_id))?.season_number)||0;
- const rows=episodeData.filter(e=>!selected||String(e.anime_id)===String(selected))
-  .sort((a,b)=>seasonNo(a)-seasonNo(b)||(Number(a.episode_number)||0)-(Number(b.episode_number)||0));
+ const rows=episodeData.filter(e=>!selected||String(e.anime_id)===String(selected));
  const el=document.getElementById("episodeList");
- const dupCount=findDuplicateEpisodeGroups(rows).length;
- const warn=dupCount?`<div class="dup-warning">⚠️ ${dupCount} episode(s) अलग-अलग language के rows में बँटे हुए हैं (जैसे Ep 1 Hindi, Ep 1 Tamil)। ऊपर "🧹 Merge Duplicate Language Episodes" दबाकर इन्हें एक Episode बना दें।</div>`:"";
- el.innerHTML=warn+(rows.length?rows.map(e=>{
+ el.innerHTML=rows.length?rows.map(e=>{
   const anime=animeData.find(a=>String(a.id)===String(e.anime_id));
   const season=seasonData.find(s=>String(s.id)===String(e.season_id));
   const links=serverData.filter(s=>String(s.episode_id)===String(e.id));
-  const languages=[...new Set(links.map(s=>s.language).filter(Boolean))].join(", ")||e.language||"None";
+  const languages=[...new Set(links.map(s=>s.language).filter(Boolean))].join(", ")||"None";
   const streamQualities=[...new Set(links.filter(s=>s.video_url).map(s=>s.quality))].join(", ")||"None";
   const dlQualities=[...new Set(links.filter(s=>s.download_url).map(s=>s.quality))].join(", ")||"Same as stream / None";
   return `
@@ -2059,140 +1703,8 @@ function renderEpisodeManagement(){
     <button class="danger" onclick="deleteSingleEpisode('${safe(e.id)}')">Delete</button>
    </div>
   </div>`;
- }).join(""):"<p class='muted'>No episodes found for this anime.</p>");
+ }).join(""):"<p class='muted'>No episodes found for this anime.</p>";
 }
-
-async function mergeDuplicateEpisodes(){
- const animeId=document.getElementById("bulkAnimeSelect").value;
- const rows=episodeData.filter(e=>!animeId||String(e.anime_id)===String(animeId));
- const groups=findDuplicateEpisodeGroups(rows);
- if(!groups.length){toast("कोई duplicate language episode नहीं मिला");return;}
- if(!confirm(`${groups.length} episode(s) के अलग-अलग language rows मिले। इन्हें एक-एक Episode में merge करें? (Video links safe रहेंगे)`))return;
- let done=0;const failed=[];
- for(const g of groups){
-  try{await mergeEpisodeGroup(g);done++;}
-  catch(e){failed.push(`Ep ${g[0].episode_number}: ${e.message}`);}
- }
- await loadAll();
- toast(failed.length?`${done} merged, ${failed.length} failed — ${failed[0]}`:`${done} episode(s) merged successfully`);
-}
-
-/* BULK (MULTI) EPISODES */
-function bulkLanguages(){
- return [...document.querySelectorAll('input[name="bulkLanguage"]:checked')].map(x=>x.value);
-}
-function bulkRowHTML(n){
- return `<div class="bulk-row" data-ep="${n}">
-  <div class="bulk-head">
-   <div><label>Episode #</label><input class="b-num" type="number" min="1" value="${n}"></div>
-   <div><label>Title</label><input class="b-title" value="Episode ${n}" placeholder="Episode ${n}"></div>
-  </div>
-  <div class="grid3">
-   <input class="b-s480" type="url" placeholder="480p Stream URL">
-   <input class="b-s720" type="url" placeholder="720p Stream URL">
-   <input class="b-s1080" type="url" placeholder="1080p Stream URL">
-  </div>
-  <div class="grid3">
-   <input class="b-d480" type="url" placeholder="480p Download URL">
-   <input class="b-d720" type="url" placeholder="720p Download URL">
-   <input class="b-d1080" type="url" placeholder="1080p Download URL">
-  </div>
- </div>`;
-}
-function generateBulkRows(){
- const start=Math.max(1,Number(document.getElementById("bulkStartEp").value)||1);
- const count=Math.min(100,Math.max(1,Number(document.getElementById("bulkCount").value)||1));
- const wrap=document.getElementById("bulkRows");
- if(wrap.querySelector("input[type=url]")&&[...wrap.querySelectorAll("input[type=url]")].some(i=>i.value.trim())){
-  if(!confirm("पहले से भरे हुए rows मिट जाएँगे। Rows दोबारा बनाएँ?"))return;
- }
- wrap.innerHTML=Array.from({length:count},(_,i)=>bulkRowHTML(start+i)).join("");
- setMessage("bulkMessage",`${count} episode rows तैयार हैं (Episode ${start} से ${start+count-1})।`);
-}
-function fillBulkFromPasted(){
- const rows=[...document.querySelectorAll("#bulkRows .bulk-row")];
- if(!rows.length){toast("पहले 'Episode Rows बनाएँ' दबाएँ");return;}
- const map=[["pasteS480","b-s480"],["pasteS720","b-s720"],["pasteS1080","b-s1080"],["pasteD480","b-d480"],["pasteD720","b-d720"],["pasteD1080","b-d1080"]];
- let filled=0;
- map.forEach(([taId,cls])=>{
-  const text=document.getElementById(taId).value;
-  if(!text.trim())return;
-  const lines=text.split(/\r?\n/).map(x=>x.trim());
-  rows.forEach((row,i)=>{
-   if(lines[i]!==undefined){row.querySelector("."+cls).value=lines[i];if(lines[i])filled++;}
-  });
- });
- toast(`${filled} links rows में भर दिए गए`);
-}
-async function saveBulkEpisodes(){
- const anime_id=document.getElementById("episodeAnime").value;
- const season_id=document.getElementById("bulkSeason").value;
- const languages=bulkLanguages();
- const serverName=document.getElementById("bulkServerName").value.trim()||"Server 1";
- const is_published=document.getElementById("bulkPublished").value==="true";
- const rowEls=[...document.querySelectorAll("#bulkRows .bulk-row")];
- if(!anime_id){toast("पहले Anime Library से anime चुनें");return;}
- if(!season_id){toast("पहले Season बनाएँ और चुनें");return;}
- if(!languages.length){toast("कम से कम एक Audio Language चुनें");return;}
- if(!rowEls.length){toast("पहले 'Episode Rows बनाएँ' दबाएँ");return;}
-
- const val=(row,cls)=>row.querySelector("."+cls).value.trim();
- const items=rowEls.map(row=>{
-  const num=Number(val(row,"b-num"));
-  return {
-   num,
-   title:val(row,"b-title")||`Episode ${num}`,
-   links:[
-    {quality:"480p",streamUrl:val(row,"b-s480"),downloadUrl:val(row,"b-d480")},
-    {quality:"720p",streamUrl:val(row,"b-s720"),downloadUrl:val(row,"b-d720")},
-    {quality:"1080p",streamUrl:val(row,"b-s1080"),downloadUrl:val(row,"b-d1080")}
-   ]
-  };
- });
- if(items.some(it=>!it.num||it.num<1)){toast("हर row में सही Episode number डालें");return;}
- const nums=items.map(it=>it.num);
- if(new Set(nums).size!==nums.length){toast("Episode numbers में repeat है, कृपया ठीक करें");return;}
- const toSave=items.filter(it=>it.links.some(l=>l.streamUrl||l.downloadUrl));
- const skipped=items.length-toSave.length;
- if(!toSave.length){toast("किसी भी Episode में कोई link नहीं भरा है");return;}
- if(!confirm(`${toSave.length} episodes save होंगे (${languages.join(", ")})${skipped?`\n${skipped} खाली rows skip होंगी`:""}\nआगे बढ़ें?`))return;
-
- const btn=document.getElementById("saveBulkBtn");
- btn.disabled=true;
- const failed=[];let done=0;
- try{
-  for(const it of toSave){
-   setMessage("bulkMessage",`Saving Episode ${it.num} (${done+failed.length+1}/${toSave.length})...`);
-   try{
-    const {data:matches,error:lookupError}=await db.from("episodes")
-     .select("id,language,anime_id,season_id,episode_number")
-     .eq("anime_id",anime_id).eq("season_id",season_id).eq("episode_number",it.num);
-    if(lookupError)throw lookupError;
-    const group=matches||[];
-    let targetId=null;
-    if(group.length)targetId=group.length>1?await mergeEpisodeGroup(group):group[0].id;
-    const episodeId=await upsertEpisodeRow({anime_id,season_id,episode_number:it.num,title:it.title,is_published,language:languages.join(", ")},targetId);
-    await writeEpisodeLinks(episodeId,languages,serverName,it.links);
-    done++;
-   }catch(e){
-    console.error(e);
-    failed.push(`Ep ${it.num}: ${e.message}`);
-   }
-  }
-  await loadAll();
-  if(failed.length){
-   setMessage("bulkMessage",`✅ ${done} saved, ❌ ${failed.length} failed → ${failed.join(" | ")}`);
-   toast(`${done} saved, ${failed.length} failed`);
-  }else{
-   setMessage("bulkMessage",`✅ ${done} episodes save हो गए (${languages.join(", ")})`);
-   toast(`${done} episodes saved`);
-   document.getElementById("bulkRows").innerHTML="";
-   document.getElementById("bulkStartEp").value=Math.max(...nums)+1;
-   ["pasteS480","pasteS720","pasteS1080","pasteD480","pasteD720","pasteD1080"].forEach(id=>document.getElementById(id).value="");
-  }
- }finally{btn.disabled=false;}
-}
-
 async function deleteSingleEpisode(id){
  if(!confirm("Delete this episode and its video links?"))return;
  try{
@@ -2480,416 +1992,6 @@ function renderComments(){
   </div>`;
  }).join(""):"<p class='muted'>No comments found.</p>";
 }
-/* COMMUNITY CHAT MODERATION */
-let chatMessagesData=[],chatBansData=[];
-async function loadChatAdmin(){
- const listEl=document.getElementById("chatMessageList");
- try{
-  const [m,b]=await Promise.all([
-   db.from("chat_messages").select("*").order("created_at",{ascending:false}).limit(200),
-   db.from("chat_bans").select("*").order("created_at",{ascending:false})
-  ]);
-  if(m.error)throw m.error;
-  if(b.error)throw b.error;
-  chatMessagesData=m.data||[];
-  chatBansData=b.data||[];
-  renderChatAdmin();
-  setMessage("chatAdminMessage",`Latest ${chatMessagesData.length} messages (नए ऊपर)`);
- }catch(e){
-  listEl.innerHTML=`<p class="muted">Chat data load नहीं हुआ: ${safe(e.message)}<br>SQL & RLS Helper tab से "Copy Full SQL Migration" Supabase SQL Editor में run करें।</p>`;
- }
-}
-function renderChatAdmin(){
- const banned=new Set(chatBansData.map(b=>String(b.user_id)));
- const listEl=document.getElementById("chatMessageList");
- listEl.innerHTML=chatMessagesData.length?chatMessagesData.map(m=>{
-  const isBanned=banned.has(String(m.user_id));
-  return `
-  <div class="item">
-   <div class="item-info">
-    <b>${safe(m.user_name||"Anime Fan")}${m.username?` <small>@${safe(m.username)}</small>`:""}</b>
-    <small>${safe(formatDateTimeIST(m.created_at))}</small>
-    <span style="white-space:pre-wrap;word-break:break-word">${safe(m.message)}</span>
-    ${isBanned?'<span class="badge amber">Blocked</span>':""}
-   </div>
-   <div class="btn-group">
-    <button class="secondary" onclick="deleteChatMessage('${safe(m.id)}')">Delete</button>
-    ${isBanned
-     ?`<button class="secondary" onclick="unbanChatUser('${safe(m.user_id)}')">Unblock</button>`
-     :`<button class="danger" onclick="banChatUser('${safe(m.user_id)}')">Block User</button>`}
-   </div>
-  </div>`;
- }).join(""):"<p class='muted'>अभी कोई chat message नहीं है।</p>";
-
- const banEl=document.getElementById("chatBanList");
- banEl.innerHTML=chatBansData.length?chatBansData.map(b=>`
-  <div class="item">
-   <div class="item-info">
-    <b>${safe(b.user_name||"User")}</b>
-    <small>${safe(b.reason||"No reason")} · ${safe(formatDateTimeIST(b.created_at))}</small>
-   </div>
-   <div class="btn-group"><button class="secondary" onclick="unbanChatUser('${safe(b.user_id)}')">Unblock</button></div>
-  </div>`).join(""):"<p class='muted'>कोई user blocked नहीं है।</p>";
-}
-async function deleteChatMessage(id){
- if(!confirm("यह message delete करें?"))return;
- try{
-  const {error}=await db.from("chat_messages").delete().eq("id",id);
-  if(error)throw error;
-  await loadChatAdmin();toast("Message deleted");
- }catch(e){toast("Delete error: "+e.message);}
-}
-async function clearAllChatMessages(){
- if(!confirm("सभी chat messages हमेशा के लिए delete हो जाएँगे। आगे बढ़ें?"))return;
- try{
-  const {error}=await db.from("chat_messages").delete().gte("created_at","1970-01-01");
-  if(error)throw error;
-  await loadChatAdmin();toast("All chat messages cleared");
- }catch(e){toast("Clear error: "+e.message);}
-}
-async function banChatUser(userId){
- const msg=chatMessagesData.find(m=>String(m.user_id)===String(userId));
- const name=msg?.user_name||"User";
- const reason=prompt(`"${name}" को chat से block करें।\nReason (optional):`,"");
- if(reason===null)return;
- try{
-  const {error}=await db.from("chat_bans").upsert({user_id:userId,user_name:name,reason:reason.trim()||null});
-  if(error)throw error;
-  await loadChatAdmin();toast(name+" blocked from chat");
- }catch(e){toast("Block error: "+e.message);}
-}
-async function unbanChatUser(userId){
- try{
-  const {error}=await db.from("chat_bans").delete().eq("user_id",userId);
-  if(error)throw error;
-  await loadChatAdmin();toast("User unblocked");
- }catch(e){toast("Unblock error: "+e.message);}
-}
-
-/* EPISODE MANAGER: bulk Stream / Download links (alag-alag system) */
-const EM_QUALITIES=["480p","720p","1080p"];
-let emState={animeId:"",seasonId:"",episodes:[],server:"Server 1"};
-let emSaving=false;
-
-function emFillAnime(){
- const sel=document.getElementById("emAnime");
- if(!sel)return;
- const old=sel.value;
- sel.innerHTML=`<option value="">Select anime</option>`+animeData.map(a=>`<option value="${safe(a.id)}">${safe(a.title)}</option>`).join("");
- if(animeData.some(a=>String(a.id)===String(old)))sel.value=old;
- emFillSeasons();
-}
-function emFillSeasons(){
- const sel=document.getElementById("emSeason");
- if(!sel)return;
- const animeId=document.getElementById("emAnime").value;
- const old=sel.value;
- const rows=seasonData.filter(x=>String(x.anime_id)===String(animeId))
-  .sort((a,b)=>(Number(a.season_number)||0)-(Number(b.season_number)||0));
- sel.innerHTML=rows.length
-  ?rows.map(x=>`<option value="${safe(x.id)}">${safe(x.title||("Season "+x.season_number))}</option>`).join("")
-  :`<option value="">No seasons (पहले Season बनाएँ)</option>`;
- if(rows.some(x=>String(x.id)===String(old)))sel.value=old;
-}
-function emAnimeChanged(){emFillSeasons();emRangeAuto();emHideWorkspace();}
-function emSeasonChanged(){emRangeAuto();emHideWorkspace();}
-function emHideWorkspace(){
- const ws=document.getElementById("emWorkspace");
- if(ws)ws.classList.add("hidden");
- setMessage("emMessage","");
-}
-function emSeasonEpisodes(){
- const a=document.getElementById("emAnime").value,s=document.getElementById("emSeason").value;
- return episodeData.filter(e=>String(e.anime_id)===String(a)&&String(e.season_id)===String(s));
-}
-function emRangeAuto(){
- const nums=emSeasonEpisodes().map(e=>Number(e.episode_number)).filter(n=>n>0);
- document.getElementById("emFrom").value=nums.length?Math.min(...nums):1;
- document.getElementById("emTo").value=nums.length?Math.max(...nums):12;
-}
-function emSelectedLanguages(){
- return [...document.querySelectorAll('input[name="emLanguage"]:checked')].map(x=>x.value);
-}
-
-async function emLoad(silent=false){
- const animeId=document.getElementById("emAnime").value;
- const seasonId=document.getElementById("emSeason").value;
- if(!animeId||!seasonId){toast("पहले Anime और Season चुनें");return;}
- const from=Math.max(1,Number(document.getElementById("emFrom").value)||1);
- const to=Math.max(from,Number(document.getElementById("emTo").value)||from);
- if(to-from>199){toast("एक बार में अधिकतम 200 episodes");return;}
- let existing=emSeasonEpisodes();
- const dups=findDuplicateEpisodeGroups(existing);
- if(dups.length&&!silent){
-  if(confirm(`${dups.length} episode(s) अलग-अलग language rows में बँटे हुए हैं। पहले इन्हें merge करें? (Links safe रहेंगे)`)){
-   try{
-    for(const g of dups)await mergeEpisodeGroup(g);
-    await loadAll();
-    existing=emSeasonEpisodes();
-   }catch(e){toast("Merge error: "+e.message);return;}
-  }
- }
- const byNum=new Map();
- existing.forEach(e=>{const n=Number(e.episode_number);if(!byNum.has(n))byNum.set(n,e);});
- const server=document.getElementById("emServer").value.trim()||"Server 1";
- const episodes=[];
- const langs=new Set();
- for(let n=from;n<=to;n++){
-  const e=byNum.get(n);
-  const links={};
-  if(e){
-   serverData.filter(sv=>String(sv.episode_id)===String(e.id)).forEach(sv=>{
-    if(sv.language)langs.add(sv.language);
-    if((sv.server_name||"Server 1")!==server)return;
-    if(!links[sv.quality])links[sv.quality]={stream:sv.video_url||"",download:sv.download_url||""};
-   });
-  }
-  episodes.push({num:n,id:e?e.id:null,title:e?e.title:`Episode ${n}`,isNew:!e,links});
- }
- emState={animeId,seasonId,episodes,server};
- if(langs.size){
-  document.querySelectorAll('input[name="emLanguage"]').forEach(x=>{
-   x.checked=[...langs].some(l=>l.toLowerCase()===x.value.toLowerCase());
-  });
- }
- emRender();
- document.getElementById("emWorkspace").classList.remove("hidden");
- const newCount=episodes.filter(e=>e.isNew).length;
- setMessage("emMessage",`${episodes.length} episodes loaded (${episodes.length-newCount} existing, ${newCount} new). Server: ${server}`);
-}
-
-function emRender(){
- document.getElementById("emPanelStream").innerHTML=emPanelHTML("stream");
- document.getElementById("emPanelDownload").innerHTML=emPanelHTML("download");
-}
-function emPanelHTML(kind){
- const isStream=kind==="stream";
- const label=isStream?"Stream":"Download";
- const qOpts=EM_QUALITIES.map(q=>`<option value="${q}">${q}</option>`).join("");
- const qAll=`<option value="all">All qualities</option>`+qOpts;
- const rows=emState.episodes.map(ep=>{
-  const inputs=EM_QUALITIES.map(q=>{
-   const v=(ep.links[q]&&(isStream?ep.links[q].stream:ep.links[q].download))||"";
-   return `<input class="em-in" data-ep="${ep.num}" data-q="${q}" data-orig="${safe(v)}" type="url" value="${safe(v)}" placeholder="${q} ${label} URL">`;
-  }).join("");
-  return `
-  <div class="bulk-row">
-   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px">
-    <b>Episode ${ep.num}${!ep.isNew&&ep.title?` — ${safe(ep.title)}`:""}</b>
-    ${ep.isNew?'<span class="badge amber">NEW</span>':""}
-   </div>
-   <div class="grid3">${inputs}</div>
-  </div>`;
- }).join("");
- const pasteBoxes=EM_QUALITIES.map(q=>`<div><label>${q} ${label}</label><textarea id="emPaste-${kind}-${q}" placeholder="एक line = एक episode"></textarea></div>`).join("");
- return `
-  <p class="muted">${isStream?"▶️ सिर्फ <b>Stream Links</b> (video_url) बदलेंगे।":"⬇️ सिर्फ <b>Download Links</b> (download_url) बदलेंगे।"} Server: <b>${safe(emState.server)}</b>. जिस box का link बदलेंगे सिर्फ वही save होगा; खाली करके save करने से वह link हट जाएगा।</p>
-
-  <details class="bulk-paste">
-   <summary>⚡ Pattern से सभी Episodes भरें</summary>
-   <p class="form-note">{n} = episode number (1, 2, 3...), {nn} = दो अंकों वाला number (01, 02...). Example: https://cdn.site.com/naruto/ep{nn}-720.mp4</p>
-   <div class="grid3">
-    <div><label>Quality</label><select id="emPatQ-${kind}">${qOpts}</select></div>
-    <div style="grid-column:span 2"><label>Link pattern</label><input id="emPat-${kind}" placeholder="https://.../ep{n}.mp4"></div>
-   </div>
-   <button type="button" class="secondary" onclick="emApplyPattern('${kind}')">Pattern लगाएँ</button>
-  </details>
-
-  <details class="bulk-paste">
-   <summary>📋 Links एक साथ Paste करें (हर line में एक Episode)</summary>
-   <p class="form-note">पहली line = पहला episode। किसी episode का link न हो तो खाली line छोड़ें।</p>
-   <div class="grid3">${pasteBoxes}</div>
-   <button type="button" class="secondary" onclick="emFillPasted('${kind}')">⬇️ Rows में भरें</button>
-  </details>
-
-  <details class="bulk-paste">
-   <summary>🔁 सभी Links में Find &amp; Replace</summary>
-   <p class="form-note">जैसे domain बदलना हो: Find = old-cdn.com, Replace = new-cdn.com</p>
-   <div class="grid3">
-    <div><label>Find</label><input id="emFind-${kind}" placeholder="old-cdn.com"></div>
-    <div><label>Replace with</label><input id="emRepl-${kind}" placeholder="new-cdn.com"></div>
-    <div><label>Quality</label><select id="emFRQ-${kind}">${qAll}</select></div>
-   </div>
-   <button type="button" class="secondary" onclick="emFindReplace('${kind}')">बदलें</button>
-  </details>
-
-  <div class="row" style="margin:10px 0">
-   <select id="emClearQ-${kind}" style="max-width:190px">${qAll}</select>
-   <button type="button" class="danger" onclick="emClear('${kind}')">🧹 Fields खाली करें</button>
-  </div>
-
-  ${rows||"<p class='muted'>कोई episode नहीं।</p>"}
-
-  <div class="row">
-   <button type="button" onclick="emSave('${kind}')">💾 सभी ${label} Links Save करें</button>
-  </div>`;
-}
-
-function emSwitch(kind){
- const isStream=kind==="stream";
- document.getElementById("emPanelStream").classList.toggle("hidden",!isStream);
- document.getElementById("emPanelDownload").classList.toggle("hidden",isStream);
- document.getElementById("emTabStream").classList.toggle("secondary",!isStream);
- document.getElementById("emTabDownload").classList.toggle("secondary",isStream);
-}
-function emInputs(kind,quality){
- const box=document.getElementById(kind==="stream"?"emPanelStream":"emPanelDownload");
- return [...box.querySelectorAll(".em-in")].filter(i=>!quality||quality==="all"||i.dataset.q===quality);
-}
-function emApplyPattern(kind){
- const q=document.getElementById("emPatQ-"+kind).value;
- const pat=document.getElementById("emPat-"+kind).value.trim();
- if(!pat){toast("पहले link pattern लिखें");return;}
- if(!pat.includes("{n}")&&!pat.includes("{nn}")){
-  if(!confirm("Pattern में {n} या {nn} नहीं है, हर episode को एक ही link मिलेगा। आगे बढ़ें?"))return;
- }
- let c=0;
- emInputs(kind,q).forEach(i=>{
-  const n=Number(i.dataset.ep);
-  i.value=pat.split("{nn}").join(String(n).padStart(2,"0")).split("{n}").join(String(n));
-  c++;
- });
- toast(`${c} fields भर दिए (${q})`);
-}
-function emFillPasted(kind){
- let c=0;
- EM_QUALITIES.forEach(q=>{
-  const text=document.getElementById(`emPaste-${kind}-${q}`).value;
-  if(!text.trim())return;
-  const lines=text.split(/\r?\n/).map(x=>x.trim());
-  emInputs(kind,q).forEach((inp,idx)=>{
-   if(lines[idx]!==undefined){inp.value=lines[idx];if(lines[idx])c++;}
-  });
- });
- toast(`${c} links rows में भर दिए`);
-}
-function emFindReplace(kind){
- const find=document.getElementById("emFind-"+kind).value;
- const rep=document.getElementById("emRepl-"+kind).value;
- const q=document.getElementById("emFRQ-"+kind).value;
- if(!find){toast("Find वाला text लिखें");return;}
- let c=0;
- emInputs(kind,q).forEach(i=>{
-  if(i.value.includes(find)){i.value=i.value.split(find).join(rep);c++;}
- });
- toast(`${c} links बदले`);
-}
-function emClear(kind){
- const q=document.getElementById("emClearQ-"+kind).value;
- if(!confirm("चुनी हुई quality के सभी fields खाली करें? (Save करने पर ये links हट जाएँगे)"))return;
- emInputs(kind,q).forEach(i=>{i.value="";});
-}
-
-// ek (episode, server, quality, language) row me सिर्फ एक field (video_url ya download_url) बदलता है
-async function emWriteField(episodeId,serverName,quality,language,field,value){
- const {data:rows,error:findErr}=await db.from("video_servers")
-  .select("id,video_url,download_url")
-  .eq("episode_id",episodeId).eq("server_name",serverName).eq("quality",quality).eq("language",language)
-  .limit(1);
- if(findErr)throw findErr;
- const row=rows&&rows[0];
- const colErr=e=>String(e&&e.message).includes("download_url")
-  ?new Error("download_url column नहीं मिला। SQL & RLS Helper से migration चलाएँ।"):e;
-
- if(!row){
-  if(!value)return;
-  // naya row: video_url zaruri hota hai. Stream-only me download_url khali rehta hai (app stream link se download karta hai)
-  const payload={episode_id:episodeId,server_name:serverName,quality,language,video_url:value};
-  if(field==="download_url")payload.download_url=value;
-  const {error}=await db.from("video_servers").insert(payload);
-  if(error)throw colErr(error);
-  return;
- }
- if(field==="video_url"){
-  if(value){
-   const {error}=await db.from("video_servers").update({video_url:value}).eq("id",row.id);
-   if(error)throw colErr(error);
-  }else if(row.download_url){
-   // stream link hata diya par download link hai: row rakho, video_url download link se bhar do
-   const {error}=await db.from("video_servers").update({video_url:row.download_url}).eq("id",row.id);
-   if(error)throw colErr(error);
-  }else{
-   const {error}=await db.from("video_servers").delete().eq("id",row.id);
-   if(error)throw error;
-  }
- }else{
-  const {error}=await db.from("video_servers").update({download_url:value||null}).eq("id",row.id);
-  if(error)throw colErr(error);
- }
-}
-async function emSyncEpisodeLanguages(id,languages){
- const e=episodeData.find(x=>String(x.id)===String(id));
- if(!e)return;
- const current=String(e.language||"").split(",").map(x=>x.trim()).filter(Boolean);
- const merged=[...current];
- languages.forEach(l=>{if(!merged.some(c=>c.toLowerCase()===l.toLowerCase()))merged.push(l);});
- if(merged.length===current.length)return;
- const {error}=await db.from("episodes").update({language:merged.join(", ")}).eq("id",id);
- if(error)throw friendlyEpisodeError(error);
-}
-
-async function emSave(kind){
- if(emSaving)return;
- const field=kind==="stream"?"video_url":"download_url";
- const label=kind==="stream"?"Stream":"Download";
- const languages=emSelectedLanguages();
- if(!languages.length){toast("कम से कम एक Audio Language चुनें");return;}
- const {animeId,seasonId,server}=emState;
- if(!animeId||!seasonId){toast("पहले Episodes Load करें");return;}
-
- const changes=new Map();
- emInputs(kind).forEach(i=>{
-  const val=i.value.trim();
-  if(val===(i.dataset.orig||""))return;
-  const n=Number(i.dataset.ep);
-  if(!changes.has(n))changes.set(n,[]);
-  changes.get(n).push({q:i.dataset.q,val});
- });
- if(!changes.size){toast("कोई बदलाव नहीं मिला");return;}
- const total=[...changes.values()].reduce((a,b)=>a+b.length,0);
- if(!confirm(`${changes.size} episodes के ${total} ${label} links save होंगे (${languages.join(", ")}).\nआगे बढ़ें?`))return;
-
- emSaving=true;
- const failed=[];let done=0;
- try{
-  for(const [num,list] of changes){
-   const ep=emState.episodes.find(x=>x.num===num);
-   setMessage("emMessage",`Saving Episode ${num} (${done+failed.length+1}/${changes.size})...`);
-   try{
-    if(!ep.id){
-     ep.id=await upsertEpisodeRow({
-      anime_id:animeId,season_id:seasonId,episode_number:num,
-      title:ep.title||`Episode ${num}`,
-      is_published:document.getElementById("emPublished").value==="true",
-      language:languages.join(", ")
-     },null);
-     ep.isNew=false;
-    }else{
-     await emSyncEpisodeLanguages(ep.id,languages);
-    }
-    for(const ch of list){
-     for(const lang of languages){
-      await emWriteField(ep.id,server,ch.q,lang,field,ch.val);
-     }
-    }
-    done++;
-   }catch(e){
-    console.error(e);
-    failed.push(`Ep ${num}: ${e.message}`);
-   }
-  }
-  await loadAll();
-  await emLoad(true);
-  if(failed.length){
-   setMessage("emMessage",`✅ ${done} saved, ❌ ${failed.length} failed → ${failed.join(" | ")}`);
-   toast(`${done} saved, ${failed.length} failed`);
-  }else{
-   setMessage("emMessage",`✅ ${done} episodes के ${label} links save हो गए`);
-   toast(`${label} links saved for ${done} episodes`);
-  }
- }finally{emSaving=false;}
-}
-
 async function replyComment(id){
  const reply=document.getElementById("reply-"+id).value.trim();
  try{
@@ -2918,7 +2020,6 @@ function fillSelects(){
  updateNotifEpisodeOptions();
  toggleNotifTargetFields();
  renderEpisodeManagement();
- emFillAnime();
 }
 function copySqlSchema(){
  const text=document.getElementById("sqlCodeBlock").textContent;
