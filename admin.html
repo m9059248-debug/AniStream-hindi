@@ -126,17 +126,7 @@ header h1{font-size:15px}
 .anime-item{align-items:flex-start}  
 .library-actions{flex-direction:column;align-items:stretch}  
 }  
-</style>  </head>  <body>  <div id="loginScreen" class="container">  
-  <div class="box" style="max-width:400px;margin:70px auto;border-color:rgba(255,0,60,.25);box-shadow:0 0 25px rgba(255,0,60,.12)">  
-    <h2>🔐 Admin Login</h2>  
-    <label class="small">Admin Email</label>  
-    <input type="email" id="loginEmail" placeholder="admin@domain.com" autocomplete="username">  
-    <label class="small">Password</label>  
-    <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">  
-    <button class="primary" style="width:100%;margin-top:12px;padding:12px" onclick="loginAdmin()">Login to Dashboard</button>  
-    <div id="loginMessage"></div>  
-  </div>  
-</div>  <div id="adminPanel" class="hidden">  
+</style>  </head>  <body>  <div id="adminPanel">  
 <header>  
   <div style="display:flex;align-items:center;gap:12px">  
     <a href="index.html" class="home-btn">🏠 Home</a>  
@@ -267,10 +257,6 @@ header h1{font-size:15px}
 <div id="episodeForm" class="box" style="display:none">  
   <h2>➕ Add Episode / Movie Link</h2>  
   <p class="small">Series ke liye episode number daalein. Movie ke liye 1 daal sakte hain.</p>  
-  <div class="toggle-row">  
-    <input type="checkbox" id="autoShortenLinks" checked>  
-    <label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label>  
-  </div>  
   <input id="episodeNumber" type="number" min="1" placeholder="Episode Number (Movie ke liye 1)">  
   <input id="episodeTitle" placeholder="Title e.g. Full Movie / Episode 1">  
   <div class="quality-box">  
@@ -288,7 +274,19 @@ header h1{font-size:15px}
     <input id="stream1080" placeholder="1080p Stream Link">  
     <input id="download1080" placeholder="1080p Download Link">  
   </div>  
-  <button class="primary" style="margin-top:15px;width:100%;padding:12px" onclick="addEpisode()">➕ Add Link</button>  
+  <button class="primary" style="margin-top:15px;width:100%;padding:12px" onclick="addEpisode()">➕ Add Link</button>
+  <div class="quality-box" style="margin-top:18px">
+    <div class="quality-title">⚡ Bulk Add Multiple Episodes</div>
+    <p class="small" style="line-height:1.6;margin-bottom:8px">
+      Har line mein ek episode. Fields ko <b>|</b> se alag karein:<br>
+      <b>Episode No | Title | 480p Stream | 480p Download | 720p Stream | 720p Download | 1080p Stream | 1080p Download</b><br>
+      Jis quality ka link nahi hai, us field ko khaali chhod dein. Existing episode number milega to update/replace hoga.
+    </p>
+    <textarea id="bulkEpisodesInput" rows="7" placeholder="1 | Episode 1 | https://stream480... | https://download480... | https://stream720... | https://download720... | https://stream1080... | https://download1080...&#10;2 | Episode 2 | https://... | | https://... | https://... | |"></textarea>
+    <button class="green" type="button" style="width:100%;padding:12px;margin-top:8px" onclick="addBulkEpisodes()">⚡ Save All Episodes Together</button>
+    <p class="language-help">Example URLs ko apne actual links se replace karein. Har row ka episode number alag rakhein.</p>
+  </div>
+  
   <div id="episodeMessage"></div>  
 </div>  
 
@@ -444,38 +442,12 @@ function switchSlot(slotName){
   if(slotName==="popup")loadPopupSettings();  
 }  
   
-async function loginAdmin(){  
-  const email=document.getElementById("loginEmail").value.trim();  
-  const password=document.getElementById("loginPassword").value;  
-  const message=document.getElementById("loginMessage");  
-  
-  if(!email||!password){  
-    setMessage(message,"error","❌ Email aur password enter karo.");  
-    return;  
-  }  
-  
-  const {error}=await supabaseClient.auth.signInWithPassword({email,password});  
-  
-  if(error){  
-    setMessage(message,"error","❌ Login failed: "+error.message);  
-    return;  
-  }  
-  
-  showAdminPanel();  
-}  
-  
-function showAdminPanel(){  
-  document.getElementById("loginScreen").style.display="none";  
-  document.getElementById("adminPanel").classList.remove("hidden");  
-  loadAnimeLibrary();  
-  loadAnalytics();  
-}  
-  
-async function logoutAdmin(){  
-  await supabaseClient.auth.signOut();  
-  location.reload();  
-}  
-  
+function showAdminPanel(){
+  document.getElementById("adminPanel").classList.remove("hidden");
+  loadAnimeLibrary();
+  loadAnalytics();
+}
+
 function setMessage(el,type,text){  
   el.className="message "+type;  
   el.textContent=text;  
@@ -1189,120 +1161,131 @@ function isWebUrl(value){
   }  
 }  
   
-async function shortenWithAroLinks(destination){  
-  const {data:{session}}=await supabaseClient.auth.getSession();  
-  
-  if(!session?.access_token)throw new Error("Admin session nahi mili. Dobara login karo.");  
-  
-  const response=await fetch(AROLINK_FUNCTION_URL,{  
-    method:"POST",  
-    headers:{  
-      "Authorization":"Bearer "+session.access_token,  
-      "apikey":SUPABASE_PUBLISHABLE_KEY,  
-      "Content-Type":"application/json"  
-    },  
-    body:JSON.stringify({url:destination})  
-  });  
-  
-  const data=await response.json();  
-  
-  if(!response.ok)throw new Error(data.error||"Short link failed.");  
-  
-  return data.shortenedUrl;  
-}  
-  
-async function addEpisode(){  
-  if(!selectedAnime){  
-    alert("Pehle anime select karo.");  
-    return;  
-  }  
-  
-  const episodeNumber=document.getElementById("episodeNumber").value;  
-  const episodeTitle=document.getElementById("episodeTitle").value.trim();  
-  const message=document.getElementById("episodeMessage");  
-  const qualityLinks=getQualityInputs();  
-  
-  if(!episodeNumber||Number(episodeNumber)<1){  
-    setMessage(message,"error","❌ Valid episode number enter karo.");  
-    return;  
-  }  
-  
-  if(!qualityLinks.length){  
-    setMessage(message,"error","❌ Kam se kam ek quality ka link add karo.");  
-    return;  
-  }  
-  
-  for(const link of qualityLinks){  
-    if(!isWebUrl(link.stream_url)||!isWebUrl(link.download_url)){  
-      setMessage(message,"error","❌ Links http:// ya https:// se shuru hone chahiye.");  
-      return;  
-    }  
-  }  
-  
-  const autoShorten=document.getElementById("autoShortenLinks").checked;  
-  
-  setMessage(message,"info",autoShorten?"AroLinks se links short ho rahe hain...":"Link save ho raha hai...");  
-  
-  const episodeNum=Number(episodeNumber);  
-  const episodeTitleFinal=episodeTitle||(isMovieRecord(selectedAnime)?"Full Movie":"Episode "+episodeNumber);  
-  
-  const {data:userData}=await supabaseClient.auth.getUser();  
-  const user=userData?.user;  
-  
-  if(!user){  
-    setMessage(message,"error","❌ Admin session expired. Dobara login karo.");  
-    return;  
-  }  
-  
-  if(autoShorten){  
-    try{  
-      for(const link of qualityLinks){  
-        if(link.download_url)link.download_url=await shortenWithAroLinks(link.download_url);  
-      }  
-    }catch(error){  
-      setMessage(message,"error","❌ AroLinks failed: "+error.message);  
-      return;  
-    }  
-  }  
-  
-  const {data:existingEpisode}=await supabaseClient.from("episodes").select("id").eq("anime_id",selectedAnime.id).eq("episode_number",episodeNum).maybeSingle();  
-  
-  if(!existingEpisode){  
-    const {error}=await supabaseClient.from("episodes").insert([{  
-      anime_id:selectedAnime.id,  
-      anime_title:selectedAnime.title,  
-      episode_number:episodeNum,  
-      episode_title:episodeTitleFinal,  
-      video_url:qualityLinks[0]?.stream_url||""  
-    }]);  
-  
-    if(error){  
-      setMessage(message,"error","❌ Episode save failed: "+error.message);  
-      return;  
-    }  
-  }  
-  
-  const rows=qualityLinks.map(link=>({  
-    anime_name:selectedAnime.title,  
-    episode_number:episodeNum,  
-    quality:link.quality,  
-    stream_url:link.stream_url||"",  
-    download_url:link.download_url||"",  
-    created_by:user.id  
-  }));  
-  
-  const {error:linksError}=await supabaseClient.from("episode_links").insert(rows);  
-  
-  if(linksError){  
-    setMessage(message,"error","❌ Episode link save failed: "+linksError.message);  
-    return;  
-  }  
-  
-  setMessage(message,"success","✅ Links successfully save ho gaye!");  
-  clearEpisodeForm();  
-  displayEpisodes();  
-}  
-  
+function normalizeEpisodeLinks(rawLinks){
+  return rawLinks.map(link=>({
+    quality:link.quality,
+    stream_url:String(link.stream_url||"").trim(),
+    download_url:String(link.download_url||"").trim()
+  })).filter(link=>link.stream_url||link.download_url);
+}
+
+async function saveEpisodeRecord(episodeNumber, episodeTitle, qualityLinks){
+  const episodeNum=Number(episodeNumber);
+  const episodeTitleFinal=episodeTitle||(isMovieRecord(selectedAnime)?"Full Movie":"Episode "+episodeNumber);
+  const {data:existingEpisode,error:findError}=await supabaseClient.from("episodes")
+    .select("id").eq("anime_id",selectedAnime.id).eq("episode_number",episodeNum).maybeSingle();
+  if(findError)throw new Error("Episode check failed: "+findError.message);
+
+  const payload={
+    anime_id:selectedAnime.id,
+    anime_title:selectedAnime.title,
+    episode_number:episodeNum,
+    episode_title:episodeTitleFinal,
+    video_url:qualityLinks.find(link=>link.stream_url)?.stream_url||""
+  };
+  if(existingEpisode?.id){
+    const {error}=await supabaseClient.from("episodes").update(payload).eq("id",existingEpisode.id);
+    if(error)throw new Error("Episode update failed: "+error.message);
+  }else{
+    const {error}=await supabaseClient.from("episodes").insert([payload]);
+    if(error)throw new Error("Episode save failed: "+error.message);
+  }
+
+  const {error:deleteError}=await supabaseClient.from("episode_links").delete()
+    .eq("anime_name",selectedAnime.title).eq("episode_number",episodeNum);
+  if(deleteError)throw new Error("Old links replace nahi hue: "+deleteError.message);
+
+  const rows=qualityLinks.map(link=>({
+    anime_name:selectedAnime.title,
+    episode_number:episodeNum,
+    quality:link.quality,
+    stream_url:link.stream_url||"",
+    download_url:link.download_url||""
+  }));
+  if(rows.length){
+    const {error}=await supabaseClient.from("episode_links").insert(rows);
+    if(error)throw new Error("Episode links save failed: "+error.message);
+  }
+}
+
+async function addEpisode(){
+  if(!selectedAnime){alert("Pehle anime select karo.");return;}
+  const episodeNumber=document.getElementById("episodeNumber").value;
+  const episodeTitle=document.getElementById("episodeTitle").value.trim();
+  const message=document.getElementById("episodeMessage");
+  const qualityLinks=normalizeEpisodeLinks(getQualityInputs());
+
+  if(!episodeNumber||!Number.isInteger(Number(episodeNumber))||Number(episodeNumber)<1){
+    setMessage(message,"error","❌ Valid episode number enter karo.");return;
+  }
+  if(!qualityLinks.length){
+    setMessage(message,"error","❌ Kam se kam ek stream ya download link add karo.");return;
+  }
+  if(qualityLinks.some(link=>!isWebUrl(link.stream_url)||!isWebUrl(link.download_url))){
+    setMessage(message,"error","❌ Links http:// ya https:// se shuru hone chahiye.");return;
+  }
+  setMessage(message,"info","⏳ Episode aur links save ho rahe hain...");
+  try{
+    await saveEpisodeRecord(episodeNumber,episodeTitle,qualityLinks);
+    setMessage(message,"success","✅ Episode aur quality links save/update ho gaye!");
+    clearEpisodeForm();
+    await displayEpisodes();
+  }catch(error){
+    console.error("Episode save error:",error);
+    setMessage(message,"error","❌ "+error.message);
+  }
+}
+
+function parseBulkEpisodeRows(raw){
+  const lines=String(raw||"").split(/\r?\n/).map(line=>line.trim()).filter(Boolean);
+  const parsed=[],errors=[],seen=new Set();
+  lines.forEach((line,index)=>{
+    const cells=line.split("|").map(value=>value.trim());
+    if(cells.length!==8){errors.push("Line "+(index+1)+": 8 fields chahiye.");return;}
+    const [number,title,s480,d480,s720,d720,s1080,d1080]=cells;
+    if(!number||!Number.isInteger(Number(number))||Number(number)<1){errors.push("Line "+(index+1)+": episode number galat hai.");return;}
+    if(seen.has(Number(number))){errors.push("Line "+(index+1)+": duplicate episode number "+number+".");return;}
+    seen.add(Number(number));
+    const links=normalizeEpisodeLinks([
+      {quality:"480p",stream_url:s480,download_url:d480},
+      {quality:"720p",stream_url:s720,download_url:d720},
+      {quality:"1080p",stream_url:s1080,download_url:d1080}
+    ]);
+    if(!links.length){errors.push("Line "+(index+1)+": kam se kam ek URL do.");return;}
+    if(links.some(link=>!isWebUrl(link.stream_url)||!isWebUrl(link.download_url))){
+      errors.push("Line "+(index+1)+": URL http:// ya https:// hona chahiye.");return;
+    }
+    parsed.push({number:Number(number),title,links});
+  });
+  return {parsed,errors};
+}
+
+async function addBulkEpisodes(){
+  if(!selectedAnime){alert("Pehle anime select karo.");return;}
+  const message=document.getElementById("episodeMessage");
+  const {parsed,errors}=parseBulkEpisodeRows(document.getElementById("bulkEpisodesInput").value);
+  if(errors.length){setMessage(message,"error","❌ Bulk data mein problem:\n"+errors.slice(0,8).join("\n"));return;}
+  if(!parsed.length){setMessage(message,"error","❌ Pehle episode rows paste karo.");return;}
+
+  const button=document.querySelector('button[onclick="addBulkEpisodes()"]');
+  if(button)button.disabled=true;
+  let saved=0;
+  try{
+    for(const episode of parsed){
+      await saveEpisodeRecord(episode.number,episode.title,episode.links);
+      saved++;
+    }
+    document.getElementById("bulkEpisodesInput").value="";
+    setMessage(message,"success","✅ "+saved+" episodes aur unke stream/download links save ho gaye!");
+  }catch(error){
+    console.error("Bulk save error:",error);
+    setMessage(message,"error","⚠️ "+saved+" episodes save hue. Agle episode par error: "+error.message);
+  }finally{
+    if(button)button.disabled=false;
+    await displayEpisodes();
+  }
+}
+
 async function displayEpisodes(){  
   if(!selectedAnime)return;  
   
@@ -1668,7 +1651,19 @@ heading.innerHTML=isActive
 const card=document.getElementById("popupPreviewCard");
 card.style.opacity=isActive?"1":"0.45";
 
-card.innerHTML=   <div class="popup-preview-close">✕</div>   ${image?<img class="popup-preview-img" src="${escapeHtml(image)}" alt="Popup Banner" onerror="this.style.display='none'">:""}   <div class="popup-preview-body">   ${badge?<div class="popup-preview-badge">${escapeHtml(badge)}</div>:""}   <div class="popup-preview-title">${escapeHtml(title)}</div>   <div class="popup-preview-msg">${escapeHtml(msg)}</div>   <div class="popup-preview-actions">   ${btnText?<a href="${escapeHtml(btnLink||"#")}" target="_blank" rel="noopener" class="primary" style="flex:1;text-decoration:none;padding:10px 14px">${escapeHtml(btnText)}</a>:""}   <button type="button" class="secondary" style="${btnText?"":"flex:1"}">Close</button>   </div>   </div>   ;
+card.innerHTML=`
+  <div class="popup-preview-close">✕</div>
+  ${image?`<img class="popup-preview-img" src="${escapeHtml(image)}" alt="Popup Banner" onerror="this.style.display='none'">`:""}
+  <div class="popup-preview-body">
+    ${badge?`<div class="popup-preview-badge">${escapeHtml(badge)}</div>`:""}
+    <div class="popup-preview-title">${escapeHtml(title)}</div>
+    <div class="popup-preview-msg">${escapeHtml(msg)}</div>
+    <div class="popup-preview-actions">
+      ${btnText?`<a href="${escapeHtml(btnLink||"#")}" target="_blank" rel="noopener" class="primary" style="flex:1;text-decoration:none;padding:10px 14px">${escapeHtml(btnText)}</a>`:""}
+      <button type="button" class="secondary" style="${btnText?"":"flex:1"}">Close</button>
+    </div>
+  </div>
+`;
 }
 
 async function loadPopupSettings(){
@@ -1753,15 +1748,7 @@ updatePopupPreview();
 /* INITIALIZATION */
 document.getElementById("animeLibrarySearch").addEventListener("input",applyLibraryFilter);
 
-supabaseClient.auth.getSession().then(({data})=>{
-if(data?.session)showAdminPanel();
-});
-
-supabaseClient.auth.onAuthStateChange((event,session)=>{
-if(session&&document.getElementById("adminPanel").classList.contains("hidden")){
 showAdminPanel();
-}
-});
 </script>
 
 </body>  
