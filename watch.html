@@ -476,6 +476,8 @@ iframe {
     height: 154px;
   }
 }
+/* NO LONG-PRESS DOWNLOAD ON VIDEO */
+video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 </style>
 </head>
 
@@ -1408,6 +1410,10 @@ function loadVideo(url) {
     video.controls = true;
     video.playsInline = true;
     video.preload = "metadata";
+    video.setAttribute("controlsList", "nodownload");
+    video.disablePictureInPicture = true;
+    video.setAttribute("oncontextmenu", "return false");
+    video.addEventListener("contextmenu", e => e.preventDefault());
     video.src = safe;
 
     video.onerror = () => {
