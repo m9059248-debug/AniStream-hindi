@@ -131,6 +131,33 @@ header{
   padding:16px 14px;
 }
 
+.hero-thumb{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  max-height:340px;
+  background:#0d0f1a;
+  overflow:hidden;
+}
+
+.hero-thumb img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.hero-thumb::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,var(--surface) 0%,rgba(10,12,20,.55) 30%,transparent 65%);
+}
+
+.hero.has-thumb .hero-content{
+  margin-top:-56px;
+}
+
 .poster{
   width:105px;
   height:155px;
@@ -1219,13 +1246,11 @@ function renderAnime(anime) {
 
   animeContainer.innerHTML = `
 
-    <div class="hero">
+    <div class="hero${anime.banner_url ? " has-thumb" : ""}">
 
       ${anime.banner_url
-        ? `<img class="hero-bg" src="${escapeHtml(anime.banner_url)}" alt="">`
-        : ""}
-
-      <div class="hero-overlay"></div>
+        ? `<div class="hero-thumb"><img src="${escapeHtml(anime.banner_url)}" alt="${escapeHtml(anime.title)}" onerror="this.closest('.hero').classList.remove('has-thumb');this.parentElement.remove()"></div>`
+        : '<div class="hero-overlay"></div>'}
 
       <div class="hero-content">
 
