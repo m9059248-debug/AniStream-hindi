@@ -921,6 +921,14 @@ async function addAnime(){
 
   setMessage(message,"info","Anime add ho raha hai...");
 
+  /* Same naam ka anime dobara add hone se episode links ek dusre ko delete kar dete hain */
+  const safeTitle=title.replace(/[\\%_]/g,m=>"\\"+m);
+  const {data:sameTitle}=await supabaseClient.from("anime").select("anime_id,title,language").ilike("title",safeTitle).limit(1);
+  if(sameTitle&&sameTitle.length){
+    setMessage(message,"error","⚠️ \""+sameTitle[0].title+"\" pehle se added hai (ID: "+sameTitle[0].anime_id+", Language: "+(sameTitle[0].language||"-")+"). Dobara add mat karo. Anime List me us anime par Edit dabao aur wahan nayi language tick karo.");
+    return;
+  }
+
   const {error}=await supabaseClient.from("anime").insert([{
     anime_id:animeId,
     title,
