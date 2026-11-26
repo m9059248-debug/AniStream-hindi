@@ -271,10 +271,6 @@ header h1{font-size:15px}
 <div id="episodeForm" class="box" style="display:none">
   <h2>➕ Add Episode / Movie Link</h2>
   <p class="small">Series ke liye episode number daalein. Movie ke liye 1 daal sakte hain.</p>
-  <div class="toggle-row">
-    <input type="checkbox" id="autoShortenLinks" checked>
-    <label for="autoShortenLinks">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label>
-  </div>
   <input id="episodeNumber" type="number" min="1" placeholder="Episode Number (Movie ke liye 1)">
   <input id="episodeTitle" placeholder="Title e.g. Full Movie / Episode 1">
   <div class="quality-box">
@@ -316,10 +312,6 @@ header h1{font-size:15px}
     <option value="1080p" selected>1080p</option>
   </select>
   <button type="button" class="secondary" style="width:100%;padding:12px;margin-top:4px" onclick="generateBulkRows()">⚙️ Episode Rows banao</button>
-  <div class="toggle-row">
-    <input type="checkbox" id="bulkAutoShorten" checked>
-    <label for="bulkAutoShorten">Sirf Download URLs ko AroLinks se short karo. Stream URLs original rahenge.</label>
-  </div>
   <p class="small">Pehle se maujood Episode Number save karne par us quality ka link update/replace hoga.</p>
 
   <div id="bulkRows" style="margin-top:12px"></div>
@@ -478,7 +470,6 @@ header h1{font-size:15px}
 </div>  <script>
 const SUPABASE_URL="https://gmacsiymybvfcxydvkla.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY="sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
-const AROLINK_FUNCTION_URL=SUPABASE_URL+"/functions/v1/arolink-shortener";
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const AVAILABLE_LANGUAGES=["Hindi","English","Japanese","Tamil","Telugu"];
 
@@ -1246,29 +1237,6 @@ function isWebUrl(value){
   }
 }
 
-async function shortenWithAroLinks(destination){
-  const {data:{session}}=await supabaseClient.auth.getSession();
-  const token=session?.access_token||SUPABASE_PUBLISHABLE_KEY;
-
-  const response=await fetch(AROLINK_FUNCTION_URL,{
-    method:"POST",
-    headers:{
-      "Authorization":"Bearer "+token,
-      "apikey":SUPABASE_PUBLISHABLE_KEY,
-      "Content-Type":"application/json"
-    },
-    body:JSON.stringify({url:destination})
-  });
-
-  let data={};
-  try{data=await response.json();}catch(e){}
-
-  if(!response.ok)throw new Error(data.error||data.message||("Short link failed ("+response.status+")."));
-  if(!data.shortenedUrl)throw new Error("Short link nahi mila.");
-
-  return data.shortenedUrl;
-}
-
 function defaultEpisodeTitle(number){
   return isMovieRecord(selectedAnime)?"Full Movie":"Episode "+number;
 }
@@ -1316,24 +1284,11 @@ async function addEpisode(){
     }
   }
 
-  const autoShorten=document.getElementById("autoShortenLinks").checked;
-
-  setMessage(message,"info",autoShorten?"AroLinks se links short ho rahe hain...":"Link save ho raha hai...");
+  setMessage(message,"info","Link save ho raha hai...");
 
   const episodeNum=Number(episodeNumber);
   const episodeTitleFinal=episodeTitle||defaultEpisodeTitle(episodeNumber);
   const userId=await getCurrentUserId();
-
-  try{
-    if(autoShorten){
-      for(const link of qualityLinks){
-        if(link.download_url)link.download_url=await shortenWithAroLinks(link.download_url);
-      }
-    }
-  }catch(error){
-    setMessage(message,"error","❌ AroLinks failed: "+error.message+" (Short link na chahiye to 'Download URLs ko AroLinks se short karo' untick karke dobara save karo.)");
-    return;
-  }
 
   try{
     const {data:existing,error:existingError}=await supabaseClient.from("episodes").select("id").eq("anime_id",selectedAnime.id).eq("episode_number",episodeNum).limit(1);
@@ -1530,25 +1485,6 @@ function clearBulkForm(){
   updateBulkSummary();
 }
 
-async function shortenMany(links,onProgress){
-  let index=0,done=0,failed=false;
-
-  const worker=async()=>{
-    while(!failed&&index<links.length){
-      const link=links[index++];
-      try{
-        link.download_url=await shortenWithAroLinks(link.download_url);
-        onProgress(++done,links.length);
-      }catch(err){
-        failed=true;
-        throw err;
-      }
-    }
-  };
-
-  await Promise.all(Array.from({length:Math.min(3,links.length)},worker));
-}
-
 /* ---------- Episode Rows (har episode: ek stream + ek download link) ---------- */
 function createBulkRow(number){
   const row=document.createElement("div");
@@ -1643,7 +1579,6 @@ async function addBulkFromRows(){
   await saveBulkEpisodes(result.episodes,{
     message,
     button:document.getElementById("bulkAddBtn"),
-    shorten:document.getElementById("bulkAutoShorten").checked,
     onDone:clearBulkRows
   });
 }
@@ -1667,14 +1602,13 @@ async function addBulkFromPaste(){
   await saveBulkEpisodes(episodes,{
     message,
     button:document.getElementById("bulkPasteBtn"),
-    shorten:document.getElementById("bulkAutoShorten").checked,
     onDone:clearBulkForm
   });
 }
 
 /* ---------- Dono modes ka common save ---------- */
 async function saveBulkEpisodes(episodes,opts){
-  const {message,button,shorten,onDone}=opts;
+  const {message,button,onDone}=opts;
 
   if(!episodes.length){
     setMessage(message,"error","❌ Kam se kam ek episode ka link bharo.");
@@ -1699,23 +1633,6 @@ async function saveBulkEpisodes(episodes,opts){
 
   try{
     const userId=await getCurrentUserId();
-
-    if(shorten){
-      const toShorten=[];
-      episodes.forEach(ep=>ep.links.forEach(l=>{if(l.download_url)toShorten.push(l);}));
-
-      if(toShorten.length){
-        setMessage(message,"info","⏳ AroLinks se links short ho rahe hain (0/"+toShorten.length+")...");
-        try{
-          await shortenMany(toShorten,(done,total)=>{
-            setMessage(message,"info","⏳ AroLinks se links short ho rahe hain ("+done+"/"+total+")...");
-          });
-        }catch(err){
-          setMessage(message,"error","❌ AroLinks failed: "+err.message+". Kuch save nahi hua. Short link na chahiye to 'Download URLs ko AroLinks se short karo' untick karke dobara try karo.");
-          return;
-        }
-      }
-    }
 
     setMessage(message,"info","⏳ Database mein save ho raha hai...");
 
