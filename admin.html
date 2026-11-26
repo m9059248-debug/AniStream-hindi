@@ -128,6 +128,8 @@ button{border:0;padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;
 .bulk-title{flex:1;min-width:0}
 details.bulk-paste{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}
 details.bulk-paste summary{cursor:pointer;color:var(--muted);font-size:12.5px;font-weight:800}
+.wide-preview{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:var(--radius-md);border:1px solid var(--line);margin:4px 0 10px;background:#07080f}
+.wide-preview[hidden]{display:none}
 @media(max-width:600px){
 .container{padding:12px}
 .box{padding:14px}
@@ -175,10 +177,11 @@ header h1{font-size:15px}
   <input id="animeId" placeholder="e.g. solo-leveling">
   <label class="small">Anime Name</label>
   <input id="animeTitle" placeholder="Anime Name">
-  <label class="small">Thumbnail URL</label>
-  <input id="thumbnail" placeholder="Thumbnail URL">
-  <label class="small">Banner URL</label>
-  <input id="banner" placeholder="Banner URL">
+  <label class="small">Poster Thumbnail URL (chhoti portrait photo)</label>
+  <input id="thumbnail" placeholder="Poster Thumbnail URL">
+  <label class="small">Wide Thumbnail URL (badi landscape 16:9 photo, anime page ke top par dikhegi)</label>
+  <input id="banner" placeholder="Wide Thumbnail URL" oninput="updateWidePreviews()">
+  <img id="bannerPreview" class="wide-preview" alt="Wide thumbnail preview" hidden>
   <label class="small">Anime Description</label>
   <textarea id="description" placeholder="Anime Description"></textarea>
   <label class="small">Genre (Multiple Genres Comma-Separated)</label>
@@ -253,10 +256,11 @@ header h1{font-size:15px}
 
     <label class="small">Genre</label>
     <input id="editGenre" placeholder="Genre">
-    <label class="small">Thumbnail URL</label>
-    <input id="editThumbnail" placeholder="Thumbnail URL">
-    <label class="small">Banner URL</label>
-    <input id="editBanner" placeholder="Banner URL">
+    <label class="small">Poster Thumbnail URL (chhoti portrait photo)</label>
+    <input id="editThumbnail" placeholder="Poster Thumbnail URL">
+    <label class="small">Wide Thumbnail URL (badi landscape 16:9 photo, anime page ke top par dikhegi)</label>
+    <input id="editBanner" placeholder="Wide Thumbnail URL" oninput="updateWidePreviews()">
+    <img id="editBannerPreview" class="wide-preview" alt="Wide thumbnail preview" hidden>
     <label class="small">Description</label>
     <textarea id="editDescription" placeholder="Anime Description"></textarea>
 
@@ -495,6 +499,23 @@ function switchSlot(slotName){
   if(slotName==="analytics")loadAnalytics();
   if(slotName==="comments")loadAdminComments();
   if(slotName==="popup")loadPopupSettings();
+}
+
+/* Wide thumbnail ka live preview */
+function updateWidePreviews(){
+  [["banner","bannerPreview"],["editBanner","editBannerPreview"]].forEach(pair=>{
+    const input=document.getElementById(pair[0]);
+    const img=document.getElementById(pair[1]);
+    if(!input||!img)return;
+    const url=input.value.trim();
+    if(/^https?:\/\//i.test(url)){
+      img.src=url;
+      img.hidden=false;
+    }else{
+      img.removeAttribute("src");
+      img.hidden=true;
+    }
+  });
 }
 
 /* Login hata diya gaya hai: panel seedha khulta hai. */
@@ -854,6 +875,7 @@ function fillAnimeForm(anime){
   document.getElementById("animeTitle").value=title;
   document.getElementById("thumbnail").value=thumbnail;
   document.getElementById("banner").value=anime.bannerImage||thumbnail;
+  updateWidePreviews();
   document.getElementById("description").value=cleanDescription(anime.description||"");
 
   const genreString=anime.genres?.length?anime.genres.join(", "):(isMov?"Anime Movie, Action, Fantasy":"Action, Adventure, Fantasy");
@@ -922,6 +944,7 @@ async function addAnime(){
   ["animeId","animeTitle","thumbnail","banner","description","genre","season"].forEach(id=>{
     document.getElementById(id).value="";
   });
+  updateWidePreviews();
 
   document.getElementById("animeType").value="Series";
   document.getElementById("status").value="Ongoing";
@@ -1110,6 +1133,7 @@ function populateEditInputs(){
   document.getElementById("editGenre").value=selectedAnime.genres.join(", ");
   document.getElementById("editThumbnail").value=selectedAnime.thumbnail||"";
   document.getElementById("editBanner").value=selectedAnime.banner||"";
+  updateWidePreviews();
   document.getElementById("editDescription").value=selectedAnime.description||"";
 }
 
