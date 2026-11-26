@@ -133,8 +133,10 @@ details.bulk-paste summary{cursor:pointer;color:var(--muted);font-size:12.5px;fo
 .q-tabs{display:flex;gap:8px;margin:6px 0 12px}
 .q-tab{flex:1;padding:11px 6px;border-radius:var(--radius-md);border:1px solid var(--line);background:#0d0f1a;color:var(--muted);font-weight:800;font-size:13px;cursor:pointer;box-shadow:none}
 .q-tab.active{background:linear-gradient(135deg,#ff0844,#ff2a5f);color:#fff;border-color:transparent}
-#bulkRows .q-pair{display:none}
-#bulkRows[data-active="480p"] .q-pair[data-q="480p"],#bulkRows[data-active="720p"] .q-pair[data-q="720p"],#bulkRows[data-active="1080p"] .q-pair[data-q="1080p"]{display:block}
+#bulkRows .q-pair{display:none;margin-top:6px}
+#bulkRows[data-show~="480p"] .q-pair[data-q="480p"],#bulkRows[data-show~="720p"] .q-pair[data-q="720p"],#bulkRows[data-show~="1080p"] .q-pair[data-q="1080p"]{display:block}
+.q-label{color:var(--primary,#ff2a5f);font-weight:800;font-size:12px;margin:6px 0 2px}
+.q-tab:not(.active){opacity:.6}
 @media(max-width:600px){
 .container{padding:12px}
 .box{padding:14px}
@@ -303,7 +305,7 @@ header h1{font-size:15px}
 
 <div id="bulkEpisodeForm" class="box" style="display:none">
   <h2>📦 Multi Episodes — एक साथ कई Episodes Add करें</h2>
-  <p class="small">Start Episode Number aur Kitne Episodes daalo, "Episode Rows banao" dabao. Har episode ki ek row banegi jisme ek Stream Link aur ek Download Link bharna hai.</p>
+  <p class="small">Start Episode Number aur Kitne Episodes daalo, "Episode Rows banao" dabao. Har episode ki ek row banegi jisme chuni hui sabhi qualities ke Stream aur Download links ek saath bharne hain.</p>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
     <div>
       <label class="small">Start Episode Number</label>
@@ -314,16 +316,16 @@ header h1{font-size:15px}
       <input id="bulkCount" type="number" min="1" max="100" value="12">
     </div>
   </div>
-  <label class="small">Quality button (480p / 720p / 1080p): button dabake quality badlo, har quality ke links alag save hote hain</label>
+  <label class="small">Kaun si qualities chahiye? (jitni chahiye sab on rakho, band karne ke liye dobara dabao)</label>
   <div class="q-tabs" id="bulkQualityTabs">
-    <button type="button" class="q-tab active" data-q="480p" onclick="setBulkQuality('480p')">480p</button>
-    <button type="button" class="q-tab" data-q="720p" onclick="setBulkQuality('720p')">720p</button>
-    <button type="button" class="q-tab" data-q="1080p" onclick="setBulkQuality('1080p')">1080p</button>
+    <button type="button" class="q-tab active" data-q="480p" onclick="toggleBulkQuality('480p')">480p</button>
+    <button type="button" class="q-tab active" data-q="720p" onclick="toggleBulkQuality('720p')">720p</button>
+    <button type="button" class="q-tab active" data-q="1080p" onclick="toggleBulkQuality('1080p')">1080p</button>
   </div>
   <button type="button" class="secondary" style="width:100%;padding:12px;margin-top:4px" onclick="generateBulkRows()">⚙️ Episode Rows banao</button>
   <p class="small">Jis quality ka link nahi hai use khali chhod do. Pehle se maujood Episode Number save karne par us quality ka link update/replace hoga.</p>
 
-  <div id="bulkRows" data-active="480p" style="margin-top:12px"></div>
+  <div id="bulkRows" data-show="480p 720p 1080p" style="margin-top:12px"></div>
 
   <div id="bulkRowsActions" style="display:none;gap:10px;margin-top:6px;flex-wrap:wrap">
     <button type="button" class="primary" id="bulkAddBtn" style="flex:2;padding:12px" onclick="addBulkFromRows()">💾 Save All Episodes</button>
@@ -333,15 +335,38 @@ header h1{font-size:15px}
 
   <details class="bulk-paste">
     <summary>⚡ Fast paste mode (saare links ki list ek saath paste karo)</summary>
-    <p class="small" style="margin-top:10px">Stream links ek textbox mein aur download links doosre mein paste karo, ek line mein ek link. Pehli line = upar wala Start Episode Number, doosri line = agla episode. Kisi episode ka link nahi hai to line khali chhod do. Ye links upar jo quality button selected hai usi quality ke liye save honge.</p>
+    <p class="small" style="margin-top:10px">Har quality ke stream links ek textbox mein aur download links doosre mein paste karo, ek line mein ek link. Pehli line = upar wala Start Episode Number, doosri line = agla episode. Kisi episode ka link nahi hai to line khali chhod do.</p>
+    <div class="q-label" style="margin-top:12px">📱 480p</div>
     <div class="bulk-grid">
       <div>
-        <label class="small">▶ Stream Links (ek line = ek episode)</label>
-        <textarea id="bulkStream" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2&#10;https://.../ep3" oninput="updateBulkSummary()"></textarea>
+        <label class="small">▶ Stream Links</label>
+        <textarea id="bulkStream_480p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
       </div>
       <div>
-        <label class="small">⬇ Download Links (ek line = ek episode)</label>
-        <textarea id="bulkDownload" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2&#10;https://.../ep3" oninput="updateBulkSummary()"></textarea>
+        <label class="small">⬇ Download Links</label>
+        <textarea id="bulkDownload_480p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
+      </div>
+    </div>
+    <div class="q-label" style="margin-top:12px">📺 720p</div>
+    <div class="bulk-grid">
+      <div>
+        <label class="small">▶ Stream Links</label>
+        <textarea id="bulkStream_720p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
+      </div>
+      <div>
+        <label class="small">⬇ Download Links</label>
+        <textarea id="bulkDownload_720p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
+      </div>
+    </div>
+    <div class="q-label" style="margin-top:12px">🔥 1080p</div>
+    <div class="bulk-grid">
+      <div>
+        <label class="small">▶ Stream Links</label>
+        <textarea id="bulkStream_1080p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
+      </div>
+      <div>
+        <label class="small">⬇ Download Links</label>
+        <textarea id="bulkDownload_1080p" wrap="off" placeholder="https://.../ep1&#10;https://.../ep2" oninput="updateBulkSummary()"></textarea>
       </div>
     </div>
     <div id="bulkSummary"></div>
@@ -1361,9 +1386,11 @@ async function addEpisode(){
 }
 
 function bulkHasInput(){
-  const paste=document.getElementById("bulkStream").value.trim()||document.getElementById("bulkDownload").value.trim();
+  const paste=["480p","720p","1080p"].some(q=>
+    document.getElementById("bulkStream_"+q).value.trim()||document.getElementById("bulkDownload_"+q).value.trim()
+  );
   const rows=[...document.querySelectorAll("#bulkRows .bulk-stream, #bulkRows .bulk-download")].some(i=>i.value.trim());
-  return !!(paste||rows);
+  return paste||rows;
 }
 
 async function displayEpisodes(){
@@ -1442,22 +1469,30 @@ function parseBulkLines(id){
 
 function buildBulkPlan(){
   const start=Number(document.getElementById("bulkStartEpisode").value);
-  const quality=bulkActiveQuality;
-  const stream=parseBulkLines("bulkStream");
-  const download=parseBulkLines("bulkDownload");
-  const count=Math.max(stream.length,download.length);
+  const cols={};
+  let count=0;
+
+  BULK_QUALITIES.forEach(q=>{
+    cols[q]={
+      stream:parseBulkLines("bulkStream_"+q),
+      download:parseBulkLines("bulkDownload_"+q)
+    };
+    count=Math.max(count,cols[q].stream.length,cols[q].download.length);
+  });
+
   const episodes=[];
 
   for(let i=0;i<count;i++){
-    const stream_url=stream[i]||"";
-    const download_url=download[i]||"";
-    episodes.push({
-      number:start+i,
-      links:(stream_url||download_url)?[{quality,stream_url,download_url}]:[]
+    const links=[];
+    BULK_QUALITIES.forEach(q=>{
+      const stream_url=cols[q].stream[i]||"";
+      const download_url=cols[q].download[i]||"";
+      if(stream_url||download_url)links.push({quality:q,stream_url,download_url});
     });
+    episodes.push({number:start+i,links});
   }
 
-  return{start,count,quality,stream,download,episodes};
+  return{start,count,cols,episodes};
 }
 
 function updateBulkSummary(){
@@ -1470,14 +1505,23 @@ function updateBulkSummary(){
     return;
   }
 
-  const s=plan.stream.filter(Boolean).length;
-  const d=plan.download.filter(Boolean).length;
+  const counts=[];
+  const parts=[];
+
+  BULK_QUALITIES.forEach(q=>{
+    const s=plan.cols[q].stream.filter(Boolean).length;
+    const d=plan.cols[q].download.filter(Boolean).length;
+    if(s||d){
+      parts.push(q+" ▶"+s+" ⬇"+d);
+      counts.push(s,d);
+    }
+  });
+
   const valid=plan.start>=1;
+  let text="📦 "+plan.count+" episode mile ("+(valid?"Ep "+plan.start+" → Ep "+(plan.start+plan.count-1):"starting number daalo")+") • "+parts.join(" • ");
 
-  let text="📦 "+plan.count+" episode mile ("+(valid?"Ep "+plan.start+" → Ep "+(plan.start+plan.count-1):"starting number daalo")+") • "+plan.quality+" • ▶ "+s+" stream • ⬇ "+d+" download";
-
-  if(s!==d){
-    text+=" ⚠️ Stream aur download links ki ginti alag hai. Line number se match hota hai, jahan link nahi hoga wo khali rahega.";
+  if(new Set(counts).size>1){
+    text+=" ⚠️ Kuch lists ki ginti alag hai. Line number se match hota hai, jahan link nahi hoga wo quality skip hogi.";
   }
 
   setMessage(el,"info",text);
@@ -1492,22 +1536,30 @@ function previewBulkEpisodes(){
     return;
   }
 
-  let html='<table><thead><tr><th>Episode</th><th>Stream</th><th>Download</th></tr></thead><tbody>';
+  let html='<table><thead><tr><th>Episode</th><th>480p</th><th>720p</th><th>1080p</th></tr></thead><tbody>';
 
   plan.episodes.forEach(ep=>{
-    const l=ep.links[0];
     const label=plan.start>=1?ep.number:"?";
-    html+='<tr><td><b>'+escapeHtml(label)+'</b></td>'+
-      '<td><span class="'+(l&&l.stream_url?"ok":"miss")+'">'+(l&&l.stream_url?"✅":"—")+'</span></td>'+
-      '<td><span class="'+(l&&l.download_url?"ok":"miss")+'">'+(l&&l.download_url?"✅":"—")+'</span></td></tr>';
+    html+='<tr><td><b>'+escapeHtml(label)+'</b></td>';
+
+    BULK_QUALITIES.forEach(q=>{
+      const l=ep.links.find(x=>x.quality===q);
+      html+='<td>'+(l
+        ?'<span class="'+(l.stream_url?"ok":"miss")+'">▶</span> <span class="'+(l.download_url?"ok":"miss")+'">⬇</span>'
+        :'<span class="miss">—</span>')+'</td>';
+    });
+
+    html+='</tr>';
   });
 
   box.innerHTML=html+'</tbody></table>';
 }
 
 function clearBulkForm(){
-  document.getElementById("bulkStream").value="";
-  document.getElementById("bulkDownload").value="";
+  BULK_QUALITIES.forEach(q=>{
+    document.getElementById("bulkStream_"+q).value="";
+    document.getElementById("bulkDownload_"+q).value="";
+  });
   document.getElementById("bulkPreview").innerHTML="";
   const msg=document.getElementById("bulkPasteMessage");
   msg.className="";
@@ -1517,13 +1569,23 @@ function clearBulkForm(){
 
 /* ---------- Episode Rows (har episode: 480p / 720p / 1080p ke stream + download links) ---------- */
 const BULK_QUALITIES=["480p","720p","1080p"];
-let bulkActiveQuality="480p";
+const bulkQualitiesOn=new Set(BULK_QUALITIES);
 
-function setBulkQuality(q){
-  bulkActiveQuality=q;
-  document.querySelectorAll("#bulkQualityTabs .q-tab").forEach(btn=>btn.classList.toggle("active",btn.dataset.q===q));
-  document.getElementById("bulkRows").dataset.active=q;
-  updateBulkSummary();
+function bulkShowValue(){
+  return BULK_QUALITIES.filter(q=>bulkQualitiesOn.has(q)).join(" ");
+}
+
+/* Quality on/off (kam se kam ek quality on rehni chahiye) */
+function toggleBulkQuality(q){
+  if(bulkQualitiesOn.has(q)){
+    if(bulkQualitiesOn.size===1)return;
+    bulkQualitiesOn.delete(q);
+  }else{
+    bulkQualitiesOn.add(q);
+  }
+
+  document.querySelectorAll("#bulkQualityTabs .q-tab").forEach(btn=>btn.classList.toggle("active",bulkQualitiesOn.has(btn.dataset.q)));
+  document.getElementById("bulkRows").dataset.show=bulkShowValue();
 }
 
 /* Tab par dikhao ki kis quality ke kitne episodes mein link bhara hai */
@@ -1546,7 +1608,7 @@ function createBulkRow(number){
   row.className="episode-item bulk-row";
 
   const pairs=BULK_QUALITIES.map(q=>
-    '<div class="q-pair" data-q="'+q+'">'+
+    '<div class="q-pair" data-q="'+q+'"><div class="q-label">'+q+'</div>'+
     '<input class="bulk-stream" data-q="'+q+'" placeholder="'+q+' Stream Link">'+
     '<input class="bulk-download" data-q="'+q+'" placeholder="'+q+' Download Link">'+
     '</div>'
@@ -1580,13 +1642,13 @@ function generateBulkRows(){
   const wrap=document.getElementById("bulkRows");
   wrap.innerHTML="";
 
-  wrap.dataset.active=bulkActiveQuality;
+  wrap.dataset.show=bulkShowValue();
 
   for(let i=0;i<count;i++)wrap.appendChild(createBulkRow(start+i));
   updateQualityTabs();
 
   document.getElementById("bulkRowsActions").style.display="flex";
-  setMessage(message,"info","✅ "+count+" rows ban gayi (Ep "+start+" → Ep "+(start+count-1)+"). Quality button se 480p / 720p / 1080p badal badal ke links bharo, phir Save All Episodes dabao.");
+  setMessage(message,"info","✅ "+count+" rows ban gayi (Ep "+start+" → Ep "+(start+count-1)+"). Har episode mein chuni hui sabhi qualities ke links bharo, phir Save All Episodes dabao.");
 }
 
 function clearBulkRows(){
@@ -1606,7 +1668,7 @@ function collectBulkRows(){
     const number=Number(row.querySelector(".bulk-num").value);
     const title=row.querySelector(".bulk-title").value.trim();
 
-    const links=BULK_QUALITIES.map(q=>({
+    const links=BULK_QUALITIES.filter(q=>bulkQualitiesOn.has(q)).map(q=>({
       quality:q,
       stream_url:row.querySelector('.bulk-stream[data-q="'+q+'"]').value.trim(),
       download_url:row.querySelector('.bulk-download[data-q="'+q+'"]').value.trim()
