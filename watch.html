@@ -1,8 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Adsterra Popunder -->
+<!-- Adsterra Popunder: Load once per page -->
 <script data-cfasync="false" src="https://abscloud.org/1/174963677a6a865aff7ab48e0d386872"></script>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#08090d">
@@ -264,7 +266,7 @@ iframe {
 }
 
 .download-btn {
-  padding: 8px 14px;
+  padding: 9px 14px;
   border-radius: 6px;
   font-size: 11.5px;
   font-weight: 800;
@@ -274,10 +276,20 @@ iframe {
   justify-content: center;
   gap: 5px;
   background: #00a86b;
+  cursor: pointer;
+  border: none;
 }
 
 .download-btn:hover {
   background: #00c77d;
+}
+
+.advertisement-btn {
+  background: #ff2a6d;
+}
+
+.advertisement-btn:hover {
+  background: #ff477f;
 }
 
 #episodeNav .episode-nav {
@@ -476,8 +488,13 @@ iframe {
     height: 154px;
   }
 }
+
 /* NO LONG-PRESS DOWNLOAD ON VIDEO */
-video{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+video {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
 </style>
 </head>
 
@@ -571,6 +588,11 @@ const supabaseClient = window.supabase.createClient(
   SUPABASE_PUBLISHABLE_KEY
 );
 
+/* ============ SMARTLINK SETTINGS ============ */
+
+const SMARTLINK_URL =
+  "https://araplhn.org/4/d74217179b4c3e00a2e8350a3e2b53c8";
+
 /* ============ LINK CONVERTER ============ */
 
 const BOT_API = "https://tight-band-11f0.animemia533.workers.dev";
@@ -625,8 +647,6 @@ function safeUrl(value) {
 
 /* =====================================================
    WATCH HISTORY SYSTEM
-   One anime = one history record per logged-in user.
-   Rewatching updates the existing record.
 ===================================================== */
 
 function showHistoryStatus(message, color = "#9ba1b6") {
@@ -647,7 +667,6 @@ async function recordWatchHistory(episodeData) {
 
     showHistoryStatus("History: Checking login...", "#f5c542");
 
-    // Current Supabase session check.
     const { data: sessionData, error: sessionError } =
       await supabaseClient.auth.getSession();
 
@@ -664,7 +683,6 @@ async function recordWatchHistory(episodeData) {
 
     const user = sessionData?.session?.user;
 
-    // Guest users ki history save nahi hogi.
     if (!user) {
       console.warn("Watch history: No logged-in user found.");
 
@@ -680,7 +698,6 @@ async function recordWatchHistory(episodeData) {
 
     showHistoryStatus("History: Saving...", "#f5c542");
 
-    // Anime table se title aur thumbnail fetch karo.
     let animeData = null;
 
     const { data: animeByAnimeId, error: animeIdError } =
@@ -696,7 +713,6 @@ async function recordWatchHistory(episodeData) {
 
     animeData = animeByAnimeId;
 
-    // Fallback: id column se anime search.
     if (!animeData) {
 
       const { data: animeById, error: animeTableIdError } =
@@ -743,8 +759,6 @@ async function recordWatchHistory(episodeData) {
 
     console.log("WATCH HISTORY RECORD:", historyRecord);
 
-    // Same user + same anime = update existing row.
-    // New anime = insert new row.
     const { data: savedData, error: historyError } =
       await supabaseClient
         .from("watch_history")
@@ -1194,7 +1208,6 @@ async function loadEpisode() {
 
   fallbackVideoUrl = data.video_url || "";
 
-  // Save history after a valid episode is loaded.
   await recordWatchHistory(data);
 
   await loadQualityLinks(data.anime_title);
@@ -1292,7 +1305,7 @@ async function loadQualityLinks(animeTitle) {
   }
 }
 
-/* ---------- QUALITY SELECTOR ---------- */
+/* ---------- QUALITY SELECTOR + SMARTLINK ---------- */
 
 async function selectQuality(quality) {
 
@@ -1345,6 +1358,16 @@ async function selectQuality(quality) {
 
   if (downloadUrl) {
 
+    // Smartlink advertisement button
+    const adButton = document.createElement("a");
+
+    adButton.className = "download-btn advertisement-btn";
+    adButton.href = SMARTLINK_URL;
+    adButton.target = "_blank";
+    adButton.rel = "noopener noreferrer sponsored";
+    adButton.textContent = "Visit Sponsor (Advertisement)";
+
+    // Actual episode download button
     const downloadButton = document.createElement("a");
 
     downloadButton.className = "download-btn";
@@ -1353,9 +1376,11 @@ async function selectQuality(quality) {
     downloadButton.rel = "noopener noreferrer";
     downloadButton.textContent = "⬇ Download (" + quality + ")";
 
+    linkButtons.appendChild(adButton);
     linkButtons.appendChild(downloadButton);
 
   }
+
 }
 
 function updateStatusDisplay() {
@@ -1532,7 +1557,11 @@ loadEpisode();
 loadEpisodeList();
 loadRecommendations();
 
-</script><script data-cfasync="false" src="https://bauval.org/14/23dd832d3b47dd985dd73c4e9c1aab37"></script>
+</script>
+
+<!-- Adsterra Native Ad Unit -->
+<script async fetchpriority="high" data-cfasync="false" src="https://bauval.org/21/bcec0b7f5f15213b14b2ee8f760ead2f"></script>
+<div id="container-bcec0b7f5f15213b14b2ee8f760ead2f"></div>
 
 </body>
 </html>
