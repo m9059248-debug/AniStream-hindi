@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anime Schedule</title>
+<style>
+:root{--bg:#17131f;--card:#241d31;--line:#3a3050;--text:#f2eefa;--mute:#a79cc0;--ok:#5fd0c4;--red:#ff3b4e}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;padding:16px;max-width:900px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+h1{font-size:22px}
+#clock{font-size:20px;font-variant-numeric:tabular-nums;color:var(--ok);font-weight:600}
+#clock small{display:block;font-size:12px;color:var(--mute);font-weight:400;text-align:right}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
+#tabs button{flex:none;background:var(--card);color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer}
+#tabs button.active{background:var(--text);color:var(--bg);font-weight:600}
+#tabs button.today::after{content:" •";color:var(--ok)}
+.item{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
+.item.done{border-color:var(--red)}
+.thumb{width:96px;height:130px;border-radius:6px;object-fit:cover;flex:none;background:var(--line)}
+.info{flex:1;min-width:0}
+.info h2{font-size:17px;margin-bottom:2px}
+.meta{font-size:13px;color:var(--mute);margin-bottom:8px}
+.timer{display:inline-block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ok);padding:4px 10px;border:1px solid var(--ok);border-radius:6px}
+.item.done .timer{color:#fff;background:var(--red);border-color:var(--red)}
+.more{margin-top:8px;background:none;border:none;color:var(--mute);font-size:13px;cursor:pointer;padding:0;text-decoration:underline}
+.details{display:none;margin-top:6px;font-size:13px;line-height:1.5;color:var(--mute)}
+.details.open{display:block}
+.empty{color:var(--mute);padding:30px 0;text-align:center}
+</style>
+</head>
+<body>
+<header>
+  <h1>Anime Release Schedule</h1>
+  <div id="clock"></div>
+</header>
+<div id="tabs"></div>
+<div id="list"></div>
+
+<script>
+/* ============================================================
+   YAHAN APNE ANIME ADD KARO (sirf yehi part edit karna hai)
+   day:  0=Sunday 1=Monday 2=Tuesday 3=Wednesday 4=Thursday 5=Friday 6=Saturday
+   time: 24 ghante format me, India time (IST). Jaise 8:30 PM = "20:30"
+   thumb: image ka link (khali chhodo to simple box dikhega)
+   ============================================================ */
+const ANIME = [
+  { name:"Anime Name 1", ep:5,  day:1, time:"18:00", thumb:"", genre:"Action, Fantasy", lang:"Hindi, Tamil, Telugu",
+    about:"Yahan anime ki story ya details likho." },
+  { name:"Anime Name 2", ep:12, day:1, time:"21:30", thumb:"", genre:"Romance, Comedy", lang:"Hindi",
+    about:"Yahan anime ki story ya details likho." },
+  { name:"Anime Name 3", ep:3,  day:3, time:"20:00", thumb:"", genre:"Adventure", lang:"Hindi, English",
+    about:"Yahan anime ki story ya details likho." },
+  { name:"Anime Name 4", ep:8,  day:6, time:"19:00", thumb:"", genre:"Sci-Fi", lang:"Hindi",
+    about:"Yahan anime ki story ya details likho." }
+];
+/* ============== Yahan se neeche kuch change mat karo ============== */
+
+const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const IST = 5.5*3600*1000;
+const pad = n => String(n).padStart(2,"0");
+const istNow = () => new Date(Date.now()+IST);          // IST ko UTC fields se padhte hain
+
+function targetOf(a){
+  const n = istNow(), [h,m] = a.time.split(":").map(Number);
+  let t = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate() + (a.day - n.getUTCDay()), h, m);
+  if (n.getTime() - t > 24*3600*1000) t += 7*24*3600*1000;   // 24 ghante baad agle hafte ka timer
+  return t;
+}
+function fmt12(t){ const [h,m]=t.split(":").map(Number); return (h%12||12)+":"+pad(m)+" "+(h<12?"AM":"PM"); }
+
+let selected = istNow().getUTCDay();
+
+function buildTabs(){
+  const today = istNow().getUTCDay();
+  document.getElementById("tabs").innerHTML = DAYS.map((d,i)=>
+    `<button data-d="${i}" class="${i===selected?"active":""} ${i===today?"today":""}">${d.slice(0,3)}</button>`).join("");
+}
+function buildList(){
+  const items = ANIME.filter(a=>a.day===selected).sort((a,b)=>a.time.localeCompare(b.time));
+  document.getElementById("list").innerHTML = items.length ? items.map((a,i)=>`
+    <div class="item" data-i="${ANIME.indexOf(a)}">
+      <img class="thumb" src="${a.thumb}" alt="${a.name}" onerror="this.removeAttribute('src')">
+      <div class="info">
+        <h2>${a.name}</h2>
+        <div class="meta">Episode ${a.ep} &nbsp;|&nbsp; ${DAYS[a.day]}, ${fmt12(a.time)} IST</div>
+        <span class="timer">--:--:--</span><br>
+        <button class="more">Details dekho</button>
+        <div class="details"><b>Genre:</b> ${a.genre}<br><b>Language:</b> ${a.lang}<br>${a.about}</div>
+      </div>
+    </div>`).join("") : `<div class="empty">Is din koi anime nahi aa raha.</div>`;
+}
+function tick(){
+  const n = istNow();
+  document.getElementById("clock").innerHTML =
+    `${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())}:${pad(n.getUTCSeconds())}<small>${DAYS[n.getUTCDay()]} • India Time</small>`;
+  document.querySelectorAll(".item").forEach(el=>{
+    const a = ANIME[el.dataset.i], diff = targetOf(a) - n.getTime(), t = el.querySelector(".timer");
+    if (diff <= 0){ el.classList.add("done"); t.textContent = "Episode aa gaya!"; }
+    else{
+      el.classList.remove("done");
+      const s = Math.floor(diff/1000), d = Math.floor(s/86400);
+      t.textContent = (d?d+"d ":"") + pad(Math.floor(s%86400/3600))+":"+pad(Math.floor(s%3600/60))+":"+pad(s%60);
+    }
+  });
+}
+document.getElementById("tabs").onclick = e=>{
+  if(e.target.dataset.d===undefined) return;
+  selected = +e.target.dataset.d; buildTabs(); buildList(); tick();
+};
+document.getElementById("list").onclick = e=>{
+  if(e.target.classList.contains("more")) e.target.nextElementSibling.classList.toggle("open");
+};
+buildTabs(); buildList(); tick(); setInterval(tick,1000);
+</script>
+</body>
+</html>
