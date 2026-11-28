@@ -150,6 +150,13 @@ header h1{font-size:15px}
 .anime-item{align-items:flex-start}
 .library-actions{flex-direction:column;align-items:stretch}
 }
+
+.sch-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sch-preview{display:block;width:90px;height:130px;object-fit:cover;border-radius:6px;border:1px solid var(--line);margin:6px 0}
+.sch-thumb{width:46px;height:64px;object-fit:cover;border-radius:5px;background:#07080f;flex-shrink:0}
+.sch-result{display:flex;align-items:center;gap:10px;padding:8px;background:var(--surface-card);border:1px solid var(--line);border-radius:6px;margin-bottom:6px;cursor:pointer;font-size:13px;font-weight:700}
+.sch-result:hover{border-color:var(--accent)}
+.sch-result img{width:38px;height:54px;object-fit:cover;border-radius:4px;background:#07080f}
 </style>  </head>  <body>  <div id="adminPanel">
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -409,19 +416,56 @@ header h1{font-size:15px}
   <!-- INDEPENDENT SCHEDULE MANAGER -->
   <div id="slotSchedule" style="display:none">
     <div class="box">
-      <h2>📅 Schedule Manager</h2>
-      <p class="small" style="margin-bottom:12px">Yahan se kisi bhi anime ka upcoming episode schedule set karein. Anime Library mein pehle anime add hona chahiye.</p>
-      <label class="small">Select Anime</label>
-      <select id="globalScheduleAnime"><option value="">Anime list load ho rahi hai...</option></select>
-      <label class="small">Episode Number</label>
-      <input id="globalScheduleEpisode" type="number" min="1" placeholder="e.g. 12">
-      <label class="small">Episode Title (Optional)</label>
-      <input id="globalScheduleTitle" placeholder="e.g. New Episode">
-      <label class="small">Release Date &amp; Time</label>
-      <input id="globalScheduleReleaseAt" type="datetime-local">
-      <button type="button" class="primary" style="margin-top:8px;width:100%;padding:12px" onclick="addGlobalSchedule()">➕ Save Schedule</button>
+      <h2 id="schFormTitle">📅 Add Schedule</h2>
+
+      <label class="small">🔎 Existing Anime Search (naam likho, select karo - details auto-fill ho jayengi)</label>
+      <input id="schSearch" placeholder="Anime ka naam search karo..." autocomplete="off" oninput="schSearchAnime()">
+      <div id="schSearchResults"></div>
+
+      <label class="small">Anime Poster URL</label>
+      <input id="schPoster" placeholder="https://... poster image link" oninput="schPreviewPoster()">
+      <label class="small">ya Poster Upload karo (Supabase storage bucket: posters)</label>
+      <input id="schPosterFile" type="file" accept="image/*" onchange="schUploadPoster(this)">
+      <img id="schPosterPreview" class="sch-preview" hidden alt="Poster preview">
+
+      <label class="small">Anime Name</label>
+      <input id="schName" placeholder="Anime ka naam">
+
+      <div class="sch-row">
+        <div><label class="small">Season Number</label><input id="schSeason" type="number" min="1" placeholder="1"></div>
+        <div><label class="small">Episode Number</label><input id="schEpNum" type="number" min="1" placeholder="12"></div>
+      </div>
+
+      <label class="small">Episode Title</label>
+      <input id="schEpTitle" placeholder="e.g. The Awakening">
+
+      <label class="small">Description</label>
+      <textarea id="schDesc" placeholder="Anime / episode ki short description"></textarea>
+
+      <label class="small">Language (ek ya zyada)</label>
+      <div class="language-options" id="schLanguageOptions">
+        <label class="language-option"><input type="checkbox" value="Hindi" checked> Hindi</label>
+        <label class="language-option"><input type="checkbox" value="English"> English</label>
+        <label class="language-option"><input type="checkbox" value="Japanese"> Japanese</label>
+        <label class="language-option"><input type="checkbox" value="Tamil"> Tamil</label>
+        <label class="language-option"><input type="checkbox" value="Telugu"> Telugu</label>
+      </div>
+
+      <label class="small">Genre (comma se alag karo)</label>
+      <input id="schGenre" placeholder="e.g. Action, Fantasy">
+
+      <div class="sch-row">
+        <div><label class="small">Release Date <span id="schDayLabel" style="color:#ff759f"></span></label><input id="schDate" type="date" oninput="schShowDay()"></div>
+        <div><label class="small">Release Time (IST - India Time)</label><input id="schTime" type="time"></div>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+        <button type="button" class="primary" id="schSaveBtn" style="flex:1;padding:12px" onclick="saveSchedule()">➕ Save Schedule</button>
+        <button type="button" class="secondary" id="schCancelBtn" style="display:none" onclick="schResetForm()">✖ Cancel Edit</button>
+      </div>
       <div id="globalScheduleMessage"></div>
     </div>
+
     <div class="box">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
         <h2 style="margin-bottom:0">🗓️ All Scheduled Episodes</h2>
@@ -1898,55 +1942,149 @@ async function deleteAllEpisodes(){
   }
 }
 
-/* INDEPENDENT TOP-LEVEL SCHEDULE MANAGER */
-async function loadGlobalScheduleAnime(){
-  const select=document.getElementById("globalScheduleAnime");
-  if(!select)return;
-  select.innerHTML='<option value="">Anime load ho rahe hain...</option>';
-  const {data,error}=await supabaseClient.from("anime").select("id,title").order("title",{ascending:true});
-  if(error){
-    select.innerHTML='<option value="">Anime load nahi hue</option>';
-    setMessage(document.getElementById("globalScheduleMessage"),"error","❌ "+error.message);
-    return;
-  }
-  select.innerHTML='<option value="">-- Anime select karein --</option>';
-  (data||[]).forEach(anime=>{
-    const option=document.createElement("option");
-    option.value=String(anime.id);
-    option.textContent=anime.title||"Untitled Anime";
-    option.dataset.title=anime.title||"Untitled Anime";
-    select.appendChild(option);
-  });
+/* INDEPENDENT TOP-LEVEL SCHEDULE MANAGER (poster, search, edit, delete, IST) */
+let schEditId=null,schAnimeId=null,schSearchTimer=null;
+const SCH_DAYS=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const SCH_IST=5.5*3600*1000;
+
+function loadGlobalScheduleAnime(){/* ab search se anime select hota hai */}
+
+function schIstParts(iso){
+  const d=new Date(new Date(iso).getTime()+SCH_IST);
+  const p=n=>String(n).padStart(2,"0");
+  return {date:d.getUTCFullYear()+"-"+p(d.getUTCMonth()+1)+"-"+p(d.getUTCDate()),time:p(d.getUTCHours())+":"+p(d.getUTCMinutes()),day:SCH_DAYS[d.getUTCDay()]};
 }
 
-async function addGlobalSchedule(){
-  const select=document.getElementById("globalScheduleAnime");
-  const animeId=select.value;
-  const animeTitle=select.selectedOptions[0]?.dataset.title||"";
-  const episodeNumber=document.getElementById("globalScheduleEpisode").value;
-  const episodeTitle=document.getElementById("globalScheduleTitle").value.trim();
-  const releaseAt=document.getElementById("globalScheduleReleaseAt").value;
+function schShowDay(){
+  const v=document.getElementById("schDate").value;
+  document.getElementById("schDayLabel").textContent=v?"("+SCH_DAYS[new Date(v+"T00:00:00Z").getUTCDay()]+")":"";
+}
+
+function schPreviewPoster(){
+  const url=document.getElementById("schPoster").value.trim();
+  const img=document.getElementById("schPosterPreview");
+  if(url){img.src=url;img.hidden=false;}else{img.removeAttribute("src");img.hidden=true;}
+}
+
+async function schUploadPoster(input){
+  const file=input.files&&input.files[0];
   const message=document.getElementById("globalScheduleMessage");
-  if(!animeId||!episodeNumber||!releaseAt){
-    setMessage(message,"error","Anime, episode number aur release date/time zaroor bharein.");
+  if(!file)return;
+  setMessage(message,"info","Poster upload ho raha hai...");
+  const ext=(file.name.split(".").pop()||"jpg").toLowerCase();
+  const path="schedule/"+Date.now()+"-"+Math.random().toString(36).slice(2,8)+"."+ext;
+  const {error}=await supabaseClient.storage.from("posters").upload(path,file,{upsert:false,contentType:file.type});
+  if(error){setMessage(message,"error","❌ Upload fail: "+error.message+" (posters bucket bana hai?)");return;}
+  const {data}=supabaseClient.storage.from("posters").getPublicUrl(path);
+  document.getElementById("schPoster").value=data.publicUrl;
+  schPreviewPoster();
+  setMessage(message,"success","✅ Poster upload ho gaya.");
+}
+
+function schSearchAnime(){
+  clearTimeout(schSearchTimer);
+  schSearchTimer=setTimeout(async()=>{
+    const q=document.getElementById("schSearch").value.trim();
+    const box=document.getElementById("schSearchResults");
+    if(q.length<2){box.innerHTML="";return;}
+    const {data,error}=await supabaseClient.from("anime").select("*").ilike("title","%"+q+"%").limit(8);
+    if(error){box.innerHTML='<div class="message error">❌ '+escapeHtml(error.message)+'</div>';return;}
+    if(!data||!data.length){box.innerHTML='<div class="empty">Koi anime nahi mila. Neeche manually bhar sakte ho.</div>';return;}
+    box.innerHTML="";
+    data.forEach(a=>{
+      const row=document.createElement("div");
+      row.className="sch-result";
+      const img=document.createElement("img");
+      img.src=a.thumbnail_url||"";img.alt="";
+      img.onerror=()=>{img.style.visibility="hidden";};
+      const name=document.createElement("span");
+      name.textContent=a.title||"Untitled";
+      row.append(img,name);
+      row.addEventListener("click",()=>schPickAnime(a));
+      box.appendChild(row);
+    });
+  },300);
+}
+
+function schPickAnime(a){
+  schAnimeId=a.id;
+  document.getElementById("schName").value=a.title||"";
+  document.getElementById("schPoster").value=a.thumbnail_url||"";
+  document.getElementById("schDesc").value=a.description||"";
+  document.getElementById("schGenre").value=a.genre||"";
+  const m=String(a.season||"").match(/(\d+)/);
+  document.getElementById("schSeason").value=m?m[1]:1;
+  setSelectedLanguages("schLanguageOptions",a.language||"Hindi");
+  schPreviewPoster();
+  document.getElementById("schSearchResults").innerHTML="";
+  document.getElementById("schSearch").value="";
+  setMessage(document.getElementById("globalScheduleMessage"),"info","✅ '"+(a.title||"")+"' ki details fill ho gayi. Edit kar sakte ho.");
+}
+
+function schResetForm(){
+  schEditId=null;schAnimeId=null;
+  ["schSearch","schPoster","schPosterFile","schName","schSeason","schEpNum","schEpTitle","schDesc","schGenre","schDate","schTime"].forEach(id=>{document.getElementById(id).value="";});
+  document.getElementById("schSearchResults").innerHTML="";
+  setSelectedLanguages("schLanguageOptions","Hindi");
+  schPreviewPoster();schShowDay();
+  document.getElementById("schFormTitle").textContent="📅 Add Schedule";
+  document.getElementById("schSaveBtn").textContent="➕ Save Schedule";
+  document.getElementById("schCancelBtn").style.display="none";
+}
+
+async function saveSchedule(){
+  const message=document.getElementById("globalScheduleMessage");
+  const name=document.getElementById("schName").value.trim();
+  const epNum=document.getElementById("schEpNum").value;
+  const date=document.getElementById("schDate").value;
+  const time=document.getElementById("schTime").value;
+  if(!name||!epNum||!date||!time){
+    setMessage(message,"error","Anime name, episode number, release date aur time zaroor bharein.");
     return;
   }
-  const {error}=await supabaseClient.from("schedule").insert([{
-    anime_id:Number(animeId),
-    anime_title:animeTitle,
-    episode_number:Number(episodeNumber),
-    episode_title:episodeTitle||"Episode "+episodeNumber,
-    release_at:new Date(releaseAt).toISOString()
-  }]);
-  if(error){
-    setMessage(message,"error","❌ "+error.message);
-    return;
-  }
-  setMessage(message,"success","✅ Schedule save ho gaya!");
-  document.getElementById("globalScheduleEpisode").value="";
-  document.getElementById("globalScheduleTitle").value="";
-  document.getElementById("globalScheduleReleaseAt").value="";
+  const seasonVal=document.getElementById("schSeason").value;
+  const row={
+    anime_id:schAnimeId,
+    anime_title:name,
+    poster_url:document.getElementById("schPoster").value.trim()||null,
+    season_number:seasonVal?Number(seasonVal):null,
+    episode_number:Number(epNum),
+    episode_title:document.getElementById("schEpTitle").value.trim()||"Episode "+epNum,
+    description:document.getElementById("schDesc").value.trim()||null,
+    language:serializeLanguages(getSelectedLanguages("schLanguageOptions")),
+    genre:document.getElementById("schGenre").value.trim()||null,
+    release_at:new Date(date+"T"+time+":00+05:30").toISOString()
+  };
+  if(schEditId!==null&&row.anime_id===null)delete row.anime_id;
+  const q=schEditId!==null
+    ?supabaseClient.from("schedule").update(row).eq("id",schEditId)
+    :supabaseClient.from("schedule").insert([row]);
+  const {error}=await q;
+  if(error){setMessage(message,"error","❌ "+error.message);return;}
+  setMessage(message,"success",schEditId!==null?"✅ Schedule update ho gaya!":"✅ Schedule save ho gaya!");
+  schResetForm();
+  setMessage(message,"success","✅ Schedule save ho gaya! User page par automatically dikhega.");
   await loadGlobalSchedules();
+}
+
+function schEdit(item){
+  schEditId=item.id;schAnimeId=item.anime_id??null;
+  const p=schIstParts(item.release_at);
+  document.getElementById("schName").value=item.anime_title||"";
+  document.getElementById("schPoster").value=item.poster_url||"";
+  document.getElementById("schSeason").value=item.season_number??"";
+  document.getElementById("schEpNum").value=item.episode_number??"";
+  document.getElementById("schEpTitle").value=item.episode_title||"";
+  document.getElementById("schDesc").value=item.description||"";
+  document.getElementById("schGenre").value=item.genre||"";
+  setSelectedLanguages("schLanguageOptions",item.language||"");
+  document.getElementById("schDate").value=p.date;
+  document.getElementById("schTime").value=p.time;
+  schPreviewPoster();schShowDay();
+  document.getElementById("schFormTitle").textContent="✏️ Edit Schedule";
+  document.getElementById("schSaveBtn").textContent="💾 Update Schedule";
+  document.getElementById("schCancelBtn").style.display="inline-flex";
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 async function loadGlobalSchedules(){
@@ -1964,21 +2102,32 @@ async function loadGlobalSchedules(){
   }
   container.innerHTML="";
   data.forEach(item=>{
+    const p=schIstParts(item.release_at);
     const row=document.createElement("div");
     row.className="schedule-item";
+    row.style.gap="10px";
+    const img=document.createElement("img");
+    img.className="sch-thumb";img.alt="";
+    img.src=item.poster_url||"";
+    img.onerror=()=>{img.style.visibility="hidden";};
     const info=document.createElement("div");
+    info.style.cssText="flex:1;min-width:0";
     const heading=document.createElement("b");
-    heading.textContent=(item.anime_title||"Anime")+" — Episode "+item.episode_number;
+    heading.textContent=(item.anime_title||"Anime")+(item.season_number?" S"+item.season_number:"")+" — Episode "+item.episode_number;
     const detail=document.createElement("p");
     detail.style.cssText="color:#a4a9bd;margin-top:4px;font-size:12px";
-    detail.textContent=(item.episode_title||"")+" • "+new Date(item.release_at).toLocaleString();
+    detail.textContent=(item.episode_title||"")+" • "+p.day+", "+p.date+" "+p.time+" IST";
     info.append(heading,detail);
+    const actions=document.createElement("div");
+    actions.style.cssText="display:flex;gap:6px;flex-wrap:wrap";
+    const edit=document.createElement("button");
+    edit.type="button";edit.className="secondary";edit.textContent="✏️ Edit";
+    edit.addEventListener("click",()=>schEdit(item));
     const del=document.createElement("button");
-    del.type="button";
-    del.className="delete-btn";
-    del.textContent="🗑️ Delete";
+    del.type="button";del.className="delete-btn";del.textContent="🗑️ Delete";
     del.addEventListener("click",()=>deleteGlobalSchedule(item.id));
-    row.append(info,del);
+    actions.append(edit,del);
+    row.append(img,info,actions);
     container.appendChild(row);
   });
 }
@@ -1987,6 +2136,7 @@ async function deleteGlobalSchedule(id){
   if(!confirm("Is schedule ko delete karna hai?"))return;
   const {error}=await supabaseClient.from("schedule").delete().eq("id",id);
   if(error){alert("❌ "+error.message);return;}
+  if(schEditId===id)schResetForm();
   loadGlobalSchedules();
 }
 
