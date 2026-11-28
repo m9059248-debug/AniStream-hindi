@@ -158,6 +158,7 @@ header h1{font-size:15px}
   </div>
 </header>  <div class="container">    <div class="main-nav-tabs">
     <button type="button" class="main-tab-btn active" id="tabBtnAnime" onclick="switchSlot('anime')">➕ Anime</button>
+    <button type="button" class="main-tab-btn" id="tabBtnSchedule" onclick="switchSlot('schedule')">📅 Schedule</button>
     <button type="button" class="main-tab-btn" id="tabBtnAnalytics" onclick="switchSlot('analytics')">📊 Analytics</button>
     <button type="button" class="main-tab-btn" id="tabBtnComments" onclick="switchSlot('comments')">💬 Comments</button>
     <button type="button" class="main-tab-btn" id="tabBtnPopup" onclick="switchSlot('popup')">📢 Popup</button>
@@ -403,7 +404,34 @@ header h1{font-size:15px}
   <div id="scheduleContainer"></div>
 </div>
 
-  </div>    <!-- ANALYTICS -->    <div id="slotAnalytics" style="display:none">
+  </div>
+
+  <!-- INDEPENDENT SCHEDULE MANAGER -->
+  <div id="slotSchedule" style="display:none">
+    <div class="box">
+      <h2>📅 Schedule Manager</h2>
+      <p class="small" style="margin-bottom:12px">Yahan se kisi bhi anime ka upcoming episode schedule set karein. Anime Library mein pehle anime add hona chahiye.</p>
+      <label class="small">Select Anime</label>
+      <select id="globalScheduleAnime"><option value="">Anime list load ho rahi hai...</option></select>
+      <label class="small">Episode Number</label>
+      <input id="globalScheduleEpisode" type="number" min="1" placeholder="e.g. 12">
+      <label class="small">Episode Title (Optional)</label>
+      <input id="globalScheduleTitle" placeholder="e.g. New Episode">
+      <label class="small">Release Date &amp; Time</label>
+      <input id="globalScheduleReleaseAt" type="datetime-local">
+      <button type="button" class="primary" style="margin-top:8px;width:100%;padding:12px" onclick="addGlobalSchedule()">➕ Save Schedule</button>
+      <div id="globalScheduleMessage"></div>
+    </div>
+    <div class="box">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <h2 style="margin-bottom:0">🗓️ All Scheduled Episodes</h2>
+        <button type="button" class="secondary" onclick="loadGlobalSchedules()">🔄 Refresh</button>
+      </div>
+      <div id="globalScheduleList"><div class="empty">Schedules load ho rahe hain...</div></div>
+    </div>
+  </div>
+
+  <div id="slotAnalytics" style="display:none">
     <div class="box">
       <h2>📊 Website & Anime Analytics</h2>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px">
@@ -512,6 +540,7 @@ let selectedAnime=null,animeLibraryData=[],libraryFilter="all";
 function switchSlot(slotName){
   const slots={
     anime:document.getElementById("slotAnime"),
+    schedule:document.getElementById("slotSchedule"),
     analytics:document.getElementById("slotAnalytics"),
     comments:document.getElementById("slotComments"),
     popup:document.getElementById("slotPopup")
@@ -522,10 +551,12 @@ function switchSlot(slotName){
   });
 
   document.getElementById("tabBtnAnime").classList.toggle("active",slotName==="anime");
+  document.getElementById("tabBtnSchedule").classList.toggle("active",slotName==="schedule");
   document.getElementById("tabBtnAnalytics").classList.toggle("active",slotName==="analytics");
   document.getElementById("tabBtnComments").classList.toggle("active",slotName==="comments");
   document.getElementById("tabBtnPopup").classList.toggle("active",slotName==="popup");
 
+  if(slotName==="schedule"){loadGlobalScheduleAnime();loadGlobalSchedules();}
   if(slotName==="analytics")loadAnalytics();
   if(slotName==="comments")loadAdminComments();
   if(slotName==="popup")loadPopupSettings();
@@ -1865,6 +1896,98 @@ async function deleteAllEpisodes(){
     console.error("Bulk Delete Error:",err);
     alert("❌ Error: "+err.message);
   }
+}
+
+/* INDEPENDENT TOP-LEVEL SCHEDULE MANAGER */
+async function loadGlobalScheduleAnime(){
+  const select=document.getElementById("globalScheduleAnime");
+  if(!select)return;
+  select.innerHTML='<option value="">Anime load ho rahe hain...</option>';
+  const {data,error}=await supabaseClient.from("anime").select("id,title").order("title",{ascending:true});
+  if(error){
+    select.innerHTML='<option value="">Anime load nahi hue</option>';
+    setMessage(document.getElementById("globalScheduleMessage"),"error","❌ "+error.message);
+    return;
+  }
+  select.innerHTML='<option value="">-- Anime select karein --</option>';
+  (data||[]).forEach(anime=>{
+    const option=document.createElement("option");
+    option.value=String(anime.id);
+    option.textContent=anime.title||"Untitled Anime";
+    option.dataset.title=anime.title||"Untitled Anime";
+    select.appendChild(option);
+  });
+}
+
+async function addGlobalSchedule(){
+  const select=document.getElementById("globalScheduleAnime");
+  const animeId=select.value;
+  const animeTitle=select.selectedOptions[0]?.dataset.title||"";
+  const episodeNumber=document.getElementById("globalScheduleEpisode").value;
+  const episodeTitle=document.getElementById("globalScheduleTitle").value.trim();
+  const releaseAt=document.getElementById("globalScheduleReleaseAt").value;
+  const message=document.getElementById("globalScheduleMessage");
+  if(!animeId||!episodeNumber||!releaseAt){
+    setMessage(message,"error","Anime, episode number aur release date/time zaroor bharein.");
+    return;
+  }
+  const {error}=await supabaseClient.from("schedule").insert([{
+    anime_id:Number(animeId),
+    anime_title:animeTitle,
+    episode_number:Number(episodeNumber),
+    episode_title:episodeTitle||"Episode "+episodeNumber,
+    release_at:new Date(releaseAt).toISOString()
+  }]);
+  if(error){
+    setMessage(message,"error","❌ "+error.message);
+    return;
+  }
+  setMessage(message,"success","✅ Schedule save ho gaya!");
+  document.getElementById("globalScheduleEpisode").value="";
+  document.getElementById("globalScheduleTitle").value="";
+  document.getElementById("globalScheduleReleaseAt").value="";
+  await loadGlobalSchedules();
+}
+
+async function loadGlobalSchedules(){
+  const container=document.getElementById("globalScheduleList");
+  if(!container)return;
+  container.innerHTML='<div class="empty">Schedules load ho rahe hain...</div>';
+  const {data,error}=await supabaseClient.from("schedule").select("*").order("release_at",{ascending:true});
+  if(error){
+    container.innerHTML='<div class="message error">❌ '+escapeHtml(error.message)+'</div>';
+    return;
+  }
+  if(!data?.length){
+    container.innerHTML='<div class="empty">Abhi koi schedule set nahi hai.</div>';
+    return;
+  }
+  container.innerHTML="";
+  data.forEach(item=>{
+    const row=document.createElement("div");
+    row.className="schedule-item";
+    const info=document.createElement("div");
+    const heading=document.createElement("b");
+    heading.textContent=(item.anime_title||"Anime")+" — Episode "+item.episode_number;
+    const detail=document.createElement("p");
+    detail.style.cssText="color:#a4a9bd;margin-top:4px;font-size:12px";
+    detail.textContent=(item.episode_title||"")+" • "+new Date(item.release_at).toLocaleString();
+    info.append(heading,detail);
+    const del=document.createElement("button");
+    del.type="button";
+    del.className="delete-btn";
+    del.textContent="🗑️ Delete";
+    del.addEventListener("click",()=>deleteGlobalSchedule(item.id));
+    row.append(info,del);
+    container.appendChild(row);
+  });
+}
+
+async function deleteGlobalSchedule(id){
+  if(!confirm("Is schedule ko delete karna hai?"))return;
+  const {error}=await supabaseClient.from("schedule").delete().eq("id",id);
+  if(error){alert("❌ "+error.message);return;}
+  loadGlobalSchedules();
 }
 
 /* SCHEDULE */
