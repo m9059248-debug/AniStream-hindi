@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <!-- Adsterra Popunder -->
 <script data-cfasync="false" src="https://abscloud.org/1/174963677a6a865aff7ab48e0d386872"></script>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#040508">
@@ -23,126 +23,680 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
-:root{--bg:#040508;--surface:#0a0c14;--surface-2:#101322;--card:#0d0f1a;--line:rgba(255,255,255,.08);--accent:#ff003c;--accent2:#ff2a5f;--muted:#8e94a9;--gradient:linear-gradient(135deg,#ff003c,#ff2a5f)}
+:root {
+  --bg:#040508;
+  --surface:#0a0c14;
+  --surface-2:#101322;
+  --card:#0d0f1a;
+  --line:rgba(255,255,255,.08);
+  --accent:#ff003c;
+  --accent2:#ff2a5f;
+  --muted:#8e94a9;
+  --gradient:linear-gradient(135deg,#ff003c,#ff2a5f);
+}
+
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:#fff;min-height:100vh;-webkit-font-smoothing:antialiased}
+
+body{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  background:var(--bg);
+  color:#fff;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+}
+
 a{color:inherit;text-decoration:none}
 button,input,textarea{font:inherit;outline:none}
-header{background:rgba(4,5,8,.94);border-bottom:1px solid rgba(255,0,60,.18);padding:10px 16px;position:sticky;top:0;z-index:100;backdrop-filter:blur(16px)}
-.nav{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:7px;font-size:17px;font-weight:900}
-.logo-badge{background:var(--gradient);padding:3px 6px;border-radius:5px;font-size:10px}
+
+header{
+  background:rgba(4,5,8,.94);
+  border-bottom:1px solid rgba(255,0,60,.18);
+  padding:10px 16px;
+  position:sticky;
+  top:0;
+  z-index:100;
+  backdrop-filter:blur(16px);
+}
+
+.nav{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:17px;
+  font-weight:900;
+}
+
+.logo-badge{
+  background:var(--gradient);
+  padding:3px 6px;
+  border-radius:5px;
+  font-size:10px;
+}
+
 .logo b{color:var(--accent)}
-.nav a:not(.logo){font-size:12px;font-weight:700;color:var(--muted)}
-.container{max-width:1100px;margin:auto;padding:14px 10px 70px}
-.back{display:inline-block;color:var(--accent);font-size:11.5px;font-weight:800;margin-bottom:10px}
+
+.nav a:not(.logo){
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+  padding:14px 10px 60px;
+}
+
+.back{
+  display:inline-block;
+  color:var(--accent);
+  font-size:11.5px;
+  font-weight:800;
+  margin-bottom:10px;
+}
 
 /* HERO */
-.hero{border-radius:10px;overflow:hidden;position:relative;background:var(--surface);border:1px solid rgba(255,0,60,.18);margin-bottom:14px}
-.hero-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.22}
-.hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,#040508 10%,rgba(4,5,8,.78) 60%,transparent)}
-.hero-content{position:relative;z-index:2;display:flex;align-items:flex-end;gap:14px;padding:16px 14px}
-.hero-thumb{position:relative;width:100%;aspect-ratio:16/9;max-height:340px;background:#0d0f1a;overflow:hidden}
-.hero-thumb-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(18px) brightness(.55);transform:scale(1.15)}
-.hero-thumb-img{position:relative;display:block;width:100%;height:100%;object-fit:contain}
-.poster{width:105px;height:155px;object-fit:cover;border-radius:6px;background:#0d0f1a;border:1px solid rgba(255,0,60,.35);flex-shrink:0}
+
+.hero{
+  border-radius:10px;
+  overflow:hidden;
+  position:relative;
+  background:var(--surface);
+  border:1px solid rgba(255,0,60,.18);
+  margin-bottom:14px;
+}
+
+.hero-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:.22;
+}
+
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(to top,#040508 10%,rgba(4,5,8,.78) 60%,transparent);
+}
+
+.hero-content{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  gap:14px;
+  padding:16px 14px;
+}
+
+.hero-thumb{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  max-height:340px;
+  background:#0d0f1a;
+  overflow:hidden;
+}
+
+.hero-thumb-bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  filter:blur(18px) brightness(.55);
+  transform:scale(1.15);
+}
+
+.hero-thumb-img{
+  position:relative;
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.poster{
+  width:105px;
+  height:155px;
+  object-fit:cover;
+  border-radius:6px;
+  background:#0d0f1a;
+  border:1px solid rgba(255,0,60,.35);
+  flex-shrink:0;
+}
+
 .info{flex:1;min-width:0}
-.info h1{font-size:18px;font-weight:800;line-height:1.25;margin-bottom:6px}
-.tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px}
-.tag{background:rgba(255,0,60,.12);border:1px solid rgba(255,0,60,.35);color:#ff3b68;padding:2px 7px;border-radius:4px;font-size:9.5px;font-weight:700}
-.meta{color:var(--muted);font-size:11px;margin:3px 0 6px}
-.description{color:#a4a9bd;line-height:1.45;font-size:11.5px;max-height:65px;overflow-y:auto}
+
+.info h1{
+  font-size:18px;
+  font-weight:800;
+  line-height:1.25;
+  margin-bottom:6px;
+}
+
+.tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-bottom:6px;
+}
+
+.tag{
+  background:rgba(255,0,60,.12);
+  border:1px solid rgba(255,0,60,.35);
+  color:#ff3b68;
+  padding:2px 7px;
+  border-radius:4px;
+  font-size:9.5px;
+  font-weight:700;
+}
+
+.meta{
+  color:var(--muted);
+  font-size:11px;
+  margin:3px 0 6px;
+}
+
+.description{
+  color:#a4a9bd;
+  line-height:1.45;
+  font-size:11.5px;
+  max-height:65px;
+  overflow-y:auto;
+}
 
 /* SHARE */
-.share-box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:14px}
-.share-title{color:var(--accent);font-size:12.5px;font-weight:800;margin-bottom:8px}
-.share-buttons{display:flex;flex-wrap:wrap;gap:6px}
-.share-btn{border:none;cursor:pointer;color:#fff;padding:6px 12px;border-radius:5px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:4px}
+
+.share-box{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px 12px;
+  margin-bottom:14px;
+}
+
+.share-title{
+  color:var(--accent);
+  font-size:12.5px;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.share-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.share-btn{
+  border:none;
+  cursor:pointer;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:700;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
 .share-main{background:var(--gradient)}
 .copy-btn{background:#141728;border:1px solid var(--line)}
 .whatsapp-btn{background:#128c7e}
 .telegram-btn{background:#229ed9}
-.share-message{color:#00e676;font-size:11px;margin-top:6px;display:none}
+
+.share-message{
+  color:#00e676;
+  font-size:11px;
+  margin-top:6px;
+  display:none;
+}
 
 /* SECTIONS */
-.section{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 12px;margin-bottom:14px}
-.section h2{color:var(--accent);font-size:14.5px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+
+.section{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px 12px;
+  margin-bottom:14px;
+}
+
+.section h2{
+  color:var(--accent);
+  font-size:14.5px;
+  font-weight:800;
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
 
 /* EPISODES */
-@keyframes rotateEpisodeGlow{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-.episodes{display:grid;grid-template-columns:repeat(auto-fill,minmax(115px,1fr));gap:10px}
-.episode-btn{position:relative;border-radius:10px;padding:10px 14px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;z-index:1;box-shadow:0 2px 10px rgba(0,0,0,.5)}
-.episode-btn:before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(transparent 0deg,rgba(255,0,60,.4) 60deg,#ff003c 110deg,#fff 140deg,#ff2a5f 170deg,transparent 230deg);animation:rotateEpisodeGlow 3s linear infinite;z-index:-2}
-.episode-btn:after{content:'';position:absolute;inset:1.5px;background:#0d0f1a;border-radius:8px;z-index:-1}
+
+@keyframes rotateEpisodeGlow{
+  0%{transform:rotate(0deg)}
+  100%{transform:rotate(360deg)}
+}
+
+.episodes{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(115px,1fr));
+  gap:10px;
+}
+
+.episode-btn{
+  position:relative;
+  border-radius:10px;
+  padding:10px 14px;
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  z-index:1;
+  box-shadow:0 2px 10px rgba(0,0,0,.5);
+}
+
+.episode-btn:before{
+  content:'';
+  position:absolute;
+  top:-50%;
+  left:-50%;
+  width:200%;
+  height:200%;
+  background:conic-gradient(transparent 0deg,rgba(255,0,60,.4) 60deg,#ff003c 110deg,#fff 140deg,#ff2a5f 170deg,transparent 230deg);
+  animation:rotateEpisodeGlow 3s linear infinite;
+  z-index:-2;
+}
+
+.episode-btn:after{
+  content:'';
+  position:absolute;
+  inset:1.5px;
+  background:#0d0f1a;
+  border-radius:8px;
+  z-index:-1;
+}
+
 .ep-num{font-size:12px;font-weight:800}
 .ep-tag{font-size:9px;font-weight:800;color:#ff3b68;margin-top:3px}
 
 /* INFO PILLS */
-.info-pills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:8px}
-.info-pill{background:var(--card);border:1px solid var(--line);border-radius:5px;padding:8px 10px}
-.info-pill span{display:block;font-size:9.5px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:3px}
+
+.info-pills-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+  gap:8px;
+  margin-top:8px;
+}
+
+.info-pill{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:5px;
+  padding:8px 10px;
+}
+
+.info-pill span{
+  display:block;
+  font-size:9.5px;
+  color:var(--muted);
+  text-transform:uppercase;
+  font-weight:700;
+  margin-bottom:3px;
+}
+
 .info-pill strong{font-size:12px;font-weight:800}
 
 /* TRAILER */
-.trailer-wrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:5px;overflow:hidden;background:#000}
+
+.trailer-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:5px;
+  overflow:hidden;
+  background:#000;
+}
+
 .trailer-wrap iframe{width:100%;height:100%;border:0}
 
 /* RELATIONS AND RECOMMENDATIONS */
-.relation-grid,.rec-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px}
-.rel-card{background:var(--card);border:1px solid var(--line);border-radius:5px;overflow:hidden;display:flex;flex-direction:column;color:inherit}
-.rel-thumb{width:100%;aspect-ratio:2/3;object-fit:cover;background:#07080f;display:block}
-.rel-body{padding:7px 8px;display:flex;flex-direction:column;flex:1}
-.rel-type{font-size:8.5px;font-weight:800;color:var(--accent);text-transform:uppercase}
-.rel-title{font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.rel-meta{font-size:9px;color:var(--muted);margin-top:2px}
+
+.relation-grid,.rec-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(135px,1fr));
+  gap:10px;
+}
+
+.rel-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:5px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  color:inherit;
+}
+
+.rel-thumb{
+  width:100%;
+  aspect-ratio:2/3;
+  object-fit:cover;
+  background:#07080f;
+  display:block;
+}
+
+.rel-body{
+  padding:7px 8px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.rel-type{
+  font-size:8.5px;
+  font-weight:800;
+  color:var(--accent);
+  text-transform:uppercase;
+}
+
+.rel-title{
+  font-size:11px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  margin-top:2px;
+}
+
+.rel-meta{
+  font-size:9px;
+  color:var(--muted);
+  margin-top:2px;
+}
 
 /* CHARACTERS */
-.character-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px}
-.char-card{background:var(--card);border:1px solid var(--line);border-radius:5px;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;gap:8px}
-.char-part,.va-part{display:flex;align-items:center;gap:8px;min-width:0}
+
+.character-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:10px;
+}
+
+.char-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:5px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 10px;
+  gap:8px;
+}
+
+.char-part,.va-part{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+
 .va-part{flex-direction:row-reverse;text-align:right}
-.actor-img{width:42px;height:56px;object-fit:cover;border-radius:4px;background:#090a12;flex-shrink:0}
+
+.actor-img{
+  width:42px;
+  height:56px;
+  object-fit:cover;
+  border-radius:4px;
+  background:#090a12;
+  flex-shrink:0;
+}
+
 .actor-text{min-width:0}
-.actor-name{font-size:11.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px}
-.actor-sub{font-size:9.5px;color:var(--muted);display:block}
+
+.actor-name{
+  font-size:11.5px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:90px;
+}
+
+.actor-sub{
+  font-size:9.5px;
+  color:var(--muted);
+  display:block;
+}
 
 /* COMMENTS */
-.comment-form{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:12px}
-.comment-input,.comment-textarea{width:100%;padding:8px 12px;background:#07080f;border:1px solid var(--line);border-radius:5px;color:#fff;font-size:12px}
-.comment-textarea{min-height:65px;resize:vertical;margin-top:6px;line-height:1.5}
-.comment-input:focus,.comment-textarea:focus{border-color:var(--accent)}
-.comment-btn{background:var(--gradient);color:#fff;border:none;padding:8px 16px;border-radius:5px;font-size:11px;font-weight:800;cursor:pointer;margin-top:6px}
-.comment-btn:disabled{opacity:.5;cursor:not-allowed}
+
+.comment-form{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px;
+  margin-bottom:12px;
+}
+
+.comment-input,.comment-textarea{
+  width:100%;
+  padding:8px 12px;
+  background:#07080f;
+  border:1px solid var(--line);
+  border-radius:5px;
+  color:#fff;
+  font-size:12px;
+}
+
+.comment-textarea{
+  min-height:65px;
+  resize:vertical;
+  margin-top:6px;
+  line-height:1.5;
+}
+
+.comment-input:focus,.comment-textarea:focus{
+  border-color:var(--accent);
+}
+
+.comment-btn{
+  background:var(--gradient);
+  color:#fff;
+  border:none;
+  padding:8px 16px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:6px;
+}
+
+.comment-btn:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
 
 /* PROFILE IN COMMENTS */
-.comment-profile{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.comment-profile-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;background:#181b29;border:2px solid var(--accent);flex-shrink:0}
-.comment-profile-name{font-size:12px;font-weight:800}
-.comment-profile-status{font-size:10px;color:#00e676;margin-top:3px}
-.comment-login-link{display:inline-block;color:#ff5578;font-size:12px;font-weight:800;margin:8px 0}
-.comment-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:10px;margin-bottom:8px}
-.comment-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px}
-.comment-author-row{display:flex;align-items:center;gap:9px;min-width:0}
-.comment-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;background:#181b29;border:1px solid rgba(255,0,60,.4);flex-shrink:0}
-.comment-author-info{display:flex;flex-direction:column;min-width:0;gap:2px}
-.comment-author{font-weight:800;color:#ff3b68;font-size:11.5px;overflow-wrap:anywhere}
-.comment-member{font-size:9px;color:var(--muted)}
-.comment-date{color:var(--muted);font-size:9.5px;white-space:nowrap}
-.comment-body{color:#d1d5db;font-size:11.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+
+.comment-profile{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.comment-profile-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#181b29;
+  border:2px solid var(--accent);
+  flex-shrink:0;
+}
+
+.comment-profile-name{
+  font-size:12px;
+  font-weight:800;
+}
+
+.comment-profile-status{
+  font-size:10px;
+  color:#00e676;
+  margin-top:3px;
+}
+
+.comment-login-link{
+  display:inline-block;
+  color:#ff5578;
+  font-size:12px;
+  font-weight:800;
+  margin:8px 0;
+}
+
+.comment-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:10px;
+  margin-bottom:8px;
+}
+
+.comment-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  margin-bottom:7px;
+}
+
+.comment-author-row{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-width:0;
+}
+
+.comment-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#181b29;
+  border:1px solid rgba(255,0,60,.4);
+  flex-shrink:0;
+}
+
+.comment-author-info{
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  gap:2px;
+}
+
+.comment-author{
+  font-weight:800;
+  color:#ff3b68;
+  font-size:11.5px;
+  overflow-wrap:anywhere;
+}
+
+.comment-member{
+  font-size:9px;
+  color:var(--muted);
+}
+
+.comment-date{
+  color:var(--muted);
+  font-size:9.5px;
+  white-space:nowrap;
+}
+
+.comment-body{
+  color:#d1d5db;
+  font-size:11.5px;
+  line-height:1.5;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
 
 /* ADMIN REPLY */
-.admin-reply{margin-top:10px;margin-left:12px;padding:10px;background:rgba(255,0,60,.055);border:1px solid rgba(255,0,60,.25);border-left:3px solid var(--accent);border-radius:7px}
-.admin-reply-header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:6px}
-.admin-name{display:flex;align-items:center;gap:6px;color:#ff5578;font-size:11px;font-weight:900}
-.admin-badge{display:inline-flex;background:var(--gradient);color:#fff;padding:3px 7px;border-radius:4px;font-size:8px;font-weight:900}
-.admin-reply-date{color:var(--muted);font-size:9px}
-.admin-reply-text{color:#f0dce2;font-size:11.5px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 
-.loading,.error,.empty{text-align:center;color:var(--muted);padding:16px 8px;font-size:11.5px}
+.admin-reply{
+  margin-top:10px;
+  margin-left:12px;
+  padding:10px;
+  background:rgba(255,0,60,.055);
+  border:1px solid rgba(255,0,60,.25);
+  border-left:3px solid var(--accent);
+  border-radius:7px;
+}
+
+.admin-reply-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.admin-name{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#ff5578;
+  font-size:11px;
+  font-weight:900;
+}
+
+.admin-badge{
+  display:inline-flex;
+  background:var(--gradient);
+  color:#fff;
+  padding:3px 7px;
+  border-radius:4px;
+  font-size:8px;
+  font-weight:900;
+}
+
+.admin-reply-date{
+  color:var(--muted);
+  font-size:9px;
+}
+
+.admin-reply-text{
+  color:#f0dce2;
+  font-size:11.5px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.loading,.error,.empty{
+  text-align:center;
+  color:var(--muted);
+  padding:16px 8px;
+  font-size:11.5px;
+}
+
 .error{color:#ff3b68}
-
-/* SCHEDULE BUTTON (niche fixed) */
-.schedule-bar{position:fixed;bottom:0;left:0;right:0;z-index:9999;background:var(--gradient);color:#fff;text-align:center;padding:13px;font-weight:800;font-size:14px}
 
 @media(max-width:480px){
   .hero-content{padding:12px 10px;gap:10px}
@@ -165,7 +719,7 @@ header{background:rgba(4,5,8,.94);border-bottom:1px solid rgba(255,0,60,.18);pad
       <span class="logo-badge">PRO</span>
       <span>Ani<b>Stream</b></span>
     </a>
-    <div><a href="/">Home</a> &nbsp; <a href="/schedule.html">Schedule</a></div>
+    <div><a href="/">Home</a></div>
   </div>
 </header>
 
@@ -179,12 +733,14 @@ header{background:rgba(4,5,8,.94);border-bottom:1px solid rgba(255,0,60,.18);pad
 
   <div class="share-box">
     <div class="share-title">📤 Share Anime</div>
+
     <div class="share-buttons">
       <button class="share-btn share-main" onclick="shareAnime()">📤 Share</button>
       <button class="share-btn copy-btn" onclick="copyAnimeLink()">📋 Copy Link</button>
       <a id="whatsappShare" class="share-btn whatsapp-btn" href="#" target="_blank" rel="noopener noreferrer">🟢 WhatsApp</a>
       <a id="telegramShare" class="share-btn telegram-btn" href="#" target="_blank" rel="noopener noreferrer">✈️ Telegram</a>
     </div>
+
     <div id="shareMessage" class="share-message">Link copied successfully!</div>
   </div>
 
@@ -223,17 +779,30 @@ header{background:rgba(4,5,8,.94);border-bottom:1px solid rgba(255,0,60,.18);pad
   </div>
 
   <!-- PROFILE CONNECTED COMMENTS -->
+
   <div class="section">
     <h2>💬 Comments</h2>
 
     <div class="comment-form">
+
       <div id="commentProfileInfo">
         <div class="loading">Profile loading...</div>
       </div>
 
-      <textarea id="commentTextInput" class="comment-textarea" placeholder="Apna comment likhein..." maxlength="500"></textarea>
+      <textarea
+        id="commentTextInput"
+        class="comment-textarea"
+        placeholder="Apna comment likhein..."
+        maxlength="500">
+      </textarea>
 
-      <button type="button" class="comment-btn" id="postCommentButton" onclick="postComment()">Post Comment</button>
+      <button
+        type="button"
+        class="comment-btn"
+        id="postCommentButton"
+        onclick="postComment()">
+        Post Comment
+      </button>
 
       <div id="commentPostMessage" style="font-size:11px;margin-top:5px;"></div>
     </div>
@@ -246,11 +815,20 @@ header{background:rgba(4,5,8,.94);border-bottom:1px solid rgba(255,0,60,.18);pad
 </div>
 
 <script>
-/* SUPABASE CONFIGURATION */
-const SUPABASE_URL = "https://gmacsiymybvfcxydvkla.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+/* ===================================
+   SUPABASE CONFIGURATION
+=================================== */
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+const SUPABASE_URL =
+  "https://gmacsiymybvfcxydvkla.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY
+);
 
 const params = new URLSearchParams(window.location.search);
 const routeSlug = window.location.pathname.match(/^\/anime\/([^/]+)\/?$/i)?.[1] || "";
@@ -264,6 +842,7 @@ function getAnimeSlug(anime){
 function getAnimeDetailsUrl(anime){return "/anime/"+encodeURIComponent(getAnimeSlug(anime))+"/";}
 
 let dbAnimeList = [];
+
 let currentAuthUser = null;
 let currentCommentProfile = null;
 let authListenerRegistered = false;
@@ -277,7 +856,10 @@ const telegramShare = document.getElementById("telegramShare");
 const commentProfileInfo = document.getElementById("commentProfileInfo");
 const postCommentButton = document.getElementById("postCommentButton");
 
-/* COMMON HELPERS */
+/* ===================================
+   COMMON HELPERS
+=================================== */
+
 function escapeHtml(value) {
   return String(value ?? "")
     .replace(/&/g,"&amp;")
@@ -289,23 +871,50 @@ function escapeHtml(value) {
 
 function formatDate(dateValue,includeTime=false) {
   if (!dateValue) return "";
+
   const date = new Date(dateValue);
+
   if (Number.isNaN(date.getTime())) return "";
+
   return date.toLocaleString("en-IN",includeTime
-    ? {day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}
-    : {day:"numeric",month:"short",year:"numeric"}
+    ? {
+        day:"numeric",
+        month:"short",
+        year:"numeric",
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    : {
+        day:"numeric",
+        month:"short",
+        year:"numeric"
+      }
   );
 }
 
-/* PROFILE SYSTEM */
+/* ===================================
+   PROFILE SYSTEM
+=================================== */
+
+/*
+  Existing profile.js system:
+  username
+  full_name
+  avatar_path
+  avatar_url
+  picture (Google)
+*/
+
 function getProfileDetails(user) {
   const meta = user?.user_metadata || {};
+
   const name =
     meta.username ||
     meta.full_name ||
     meta.name ||
     user?.email?.split("@")[0] ||
     "AniStream User";
+
   return {
     name:String(name).trim(),
     avatarPath:meta.avatar_path || "",
@@ -313,8 +922,14 @@ function getProfileDetails(user) {
   };
 }
 
+/* DEFAULT AVATAR */
+
 function getAvatarFallback(name) {
-  const letter = String(name || "U").trim().charAt(0).toUpperCase() || "U";
+  const letter = String(name || "U")
+    .trim()
+    .charAt(0)
+    .toUpperCase() || "U";
+
   return "data:image/svg+xml," + encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">
       <rect width="100%" height="100%" rx="40" fill="#181b29"/>
@@ -326,110 +941,214 @@ function getAvatarFallback(name) {
   `);
 }
 
-async function getCommentAvatar(path,externalUrl) {
-  if (path) {
-    const {data,error} = await supabaseClient.storage.from("avatars").createSignedUrl(path,3600);
-    if (!error && data?.signedUrl) return data.signedUrl;
+/* GET USER PROFILE PHOTO */
 
-    const {data:publicData} = supabaseClient.storage.from("avatars").getPublicUrl(path);
-    if (publicData?.publicUrl) return publicData.publicUrl;
+async function getCommentAvatar(path,externalUrl) {
+
+  if (path) {
+    const {data,error} = await supabaseClient
+      .storage
+      .from("avatars")
+      .createSignedUrl(path,3600);
+
+    if (!error && data?.signedUrl) {
+      return data.signedUrl;
+    }
+
+    // Public bucket fallback
+
+    const {data:publicData} = supabaseClient
+      .storage
+      .from("avatars")
+      .getPublicUrl(path);
+
+    if (publicData?.publicUrl) {
+      return publicData.publicUrl;
+    }
   }
+
   return externalUrl || "";
 }
 
+/* LOAD CURRENT USER PROFILE */
+
 async function refreshCommentProfile(user) {
+
   currentAuthUser = user || null;
   currentCommentProfile = null;
 
   if (!user) {
+
     commentProfileInfo.innerHTML = `
-      <div style="font-size:12px;color:#aaa;">Comment karne ke liye login karein.</div>
-      <a class="comment-login-link" href="/profile.html">🔐 Login / Create Account →</a>
+      <div style="font-size:12px;color:#aaa;">
+        Comment karne ke liye login karein.
+      </div>
+
+      <a class="comment-login-link" href="/profile.html">
+        🔐 Login / Create Account →
+      </a>
     `;
+
     postCommentButton.disabled = true;
     return;
   }
 
   const profile = getProfileDetails(user);
-  const avatar = await getCommentAvatar(profile.avatarPath, profile.avatarUrl);
+
+  const avatar = await getCommentAvatar(
+    profile.avatarPath,
+    profile.avatarUrl
+  );
+
+  // Avoid showing an old profile after an account switch.
 
   if (currentAuthUser?.id !== user.id) return;
 
   currentCommentProfile = profile;
+
   const fallback = getAvatarFallback(profile.name);
 
   commentProfileInfo.innerHTML = `
     <div class="comment-profile">
-      <img class="comment-profile-avatar" src="${escapeHtml(avatar || fallback)}"
-        onerror="this.onerror=null;this.src='${fallback}'" alt="Profile Photo">
+
+      <img
+        class="comment-profile-avatar"
+        src="${escapeHtml(avatar || fallback)}"
+        onerror="this.onerror=null;this.src='${fallback}'"
+        alt="Profile Photo">
+
       <div>
-        <div class="comment-profile-name">${escapeHtml(profile.name)}</div>
-        <div class="comment-profile-status">✓ Logged in</div>
+        <div class="comment-profile-name">
+          ${escapeHtml(profile.name)}
+        </div>
+
+        <div class="comment-profile-status">
+          ✓ Logged in
+        </div>
       </div>
+
     </div>
   `;
+
   postCommentButton.disabled = false;
 }
 
+/* INITIAL AUTH CHECK */
+
 async function initCommentAuth() {
+
   const {data,error} = await supabaseClient.auth.getUser();
-  if (error) console.error("Auth error:",error);
+
+  if (error) {
+    console.error("Auth error:",error);
+  }
 
   await refreshCommentProfile(data?.user || null);
 
   if (!authListenerRegistered) {
+
     authListenerRegistered = true;
-    supabaseClient.auth.onAuthStateChange((event,session) => {
-      refreshCommentProfile(session?.user || null);
-    });
+
+    supabaseClient.auth.onAuthStateChange(
+      (event,session) => {
+
+        // Refresh profile after login/logout/account changes.
+
+        refreshCommentProfile(session?.user || null);
+
+      }
+    );
   }
 }
 
-/* SHARE SYSTEM */
-function getAnimeShareLink() { return window.location.href; }
+/* ===================================
+   SHARE SYSTEM
+=================================== */
+
+function getAnimeShareLink() {
+  return window.location.href;
+}
 
 function updateShareLinks() {
+
   const shareUrl = getAnimeShareLink();
-  const shareText = "Watch " + (document.title || "Anime") + " on AniStream";
-  whatsappShare.href = "https://wa.me/?text=" + encodeURIComponent(shareText + "\n\n" + shareUrl);
-  telegramShare.href = "https://t.me/share/url?url=" + encodeURIComponent(shareUrl) + "&text=" + encodeURIComponent(shareText);
+
+  const shareText =
+    "Watch " + (document.title || "Anime") + " on AniStream";
+
+  whatsappShare.href =
+    "https://wa.me/?text=" +
+    encodeURIComponent(shareText + "\n\n" + shareUrl);
+
+  telegramShare.href =
+    "https://t.me/share/url?url=" +
+    encodeURIComponent(shareUrl) +
+    "&text=" +
+    encodeURIComponent(shareText);
 }
 
 async function shareAnime() {
+
   const shareUrl = getAnimeShareLink();
+
   if (navigator.share) {
+
     try {
-      await navigator.share({title:document.title || "AniStream",text:"Watch this anime on AniStream",url:shareUrl});
+      await navigator.share({
+        title:document.title || "AniStream",
+        text:"Watch this anime on AniStream",
+        url:shareUrl
+      });
     } catch(e) {}
+
   } else {
+
     copyAnimeLink();
+
   }
 }
 
 async function copyAnimeLink() {
+
   const shareUrl = getAnimeShareLink();
+
   try {
+
     await navigator.clipboard.writeText(shareUrl);
     showShareMessage("✅ Link copied!");
+
   } catch {
+
     const textArea = document.createElement("textarea");
+
     textArea.value = shareUrl;
     document.body.appendChild(textArea);
     textArea.select();
+
     document.execCommand("copy");
     textArea.remove();
+
     showShareMessage("✅ Link copied!");
+
   }
 }
 
 function showShareMessage(message) {
+
   shareMessage.innerText = message;
   shareMessage.style.display = "block";
-  setTimeout(() => { shareMessage.style.display = "none"; },2000);
+
+  setTimeout(() => {
+    shareMessage.style.display = "none";
+  },2000);
 }
 
-/* ANIME MATCHING */
+/* ===================================
+   ANIME MATCHING
+=================================== */
+
 function normalizeTitle(t) {
+
   return String(t || "")
     .toLowerCase()
     .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+|part\s*\d+|movie|the\s*movie)\b/gi,"")
@@ -438,51 +1157,105 @@ function normalizeTitle(t) {
 }
 
 function findDbMatch(targetTitle,list) {
+
   const normTarget = normalizeTitle(targetTitle);
+
   if (!normTarget || normTarget.length < 3) return null;
+
   return list.find(a => {
+
     const normA = normalizeTitle(a.title);
-    return normA && (normA === normTarget || normA.includes(normTarget) || normTarget.includes(normA));
+
+    return normA &&
+      (
+        normA === normTarget ||
+        normA.includes(normTarget) ||
+        normTarget.includes(normA)
+      );
+
   });
 }
 
-/* LOAD ANIME */
+/* ===================================
+   LOAD ANIME
+=================================== */
+
 async function loadAnime() {
+
   if (!animeId) {
-    animeContainer.innerHTML = '<div class="error">❌ Anime ID nahi mila.</div>';
-    episodeContainer.innerHTML = '<div class="empty">Anime select karo.</div>';
-    commentsContainer.innerHTML = '<div class="empty">Comments unavailable.</div>';
+
+    animeContainer.innerHTML =
+      '<div class="error">❌ Anime ID nahi mila.</div>';
+
+    episodeContainer.innerHTML =
+      '<div class="empty">Anime select karo.</div>';
+
+    commentsContainer.innerHTML =
+      '<div class="empty">Comments unavailable.</div>';
+
     return;
   }
 
   const [currentRes,allRes] = await Promise.all([
-    supabaseClient.from("anime").select("*").eq("anime_id",animeId).maybeSingle(),
-    supabaseClient.from("anime").select("anime_id,id,title,thumbnail_url,genre,season,status")
+
+    supabaseClient
+      .from("anime")
+      .select("*")
+      .eq("anime_id",animeId)
+      .maybeSingle(),
+
+    supabaseClient
+      .from("anime")
+      .select("anime_id,id,title,thumbnail_url,genre,season,status")
+
   ]);
 
   if (currentRes.error || !currentRes.data) {
+
     console.error("Anime loading error:",currentRes.error);
-    animeContainer.innerHTML = '<div class="error">❌ Anime nahi mila ya database load failed.</div>';
+
+    animeContainer.innerHTML =
+      '<div class="error">❌ Anime nahi mila ya database load failed.</div>';
+
     return;
   }
 
   const currentAnime = currentRes.data;
+
   dbAnimeList = allRes.data || [];
 
   renderAnime(currentAnime);
+
   loadEpisodes(currentAnime.anime_id);
+
   loadComments(currentAnime.anime_id);
+
   fetchAllAnimeDetails(currentAnime);
 }
 
-/* RENDER ANIME */
+/* ===================================
+   RENDER ANIME
+=================================== */
+
 function renderAnime(anime) {
-  const genres = anime.genre ? anime.genre.split(",").map(g => g.trim()).filter(Boolean) : [];
+
+  const genres = anime.genre
+    ? anime.genre.split(",").map(g => g.trim()).filter(Boolean)
+    : [];
 
   let tags = "";
-  genres.forEach(genre => { tags += `<span class="tag">${escapeHtml(genre)}</span>`; });
-  if (anime.language) tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
-  if (anime.status) tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
+
+  genres.forEach(genre => {
+    tags += `<span class="tag">${escapeHtml(genre)}</span>`;
+  });
+
+  if (anime.language) {
+    tags += `<span class="tag">${escapeHtml(anime.language)}</span>`;
+  }
+
+  if (anime.status) {
+    tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
+  }
 
   const pageTitle = (anime.title || "Anime") + " Hindi Dub, Episodes & Details — AniStream Hindi";
   const pageDescription = String(anime.description || ("Explore " + (anime.title || "this anime") + " details, episodes and available languages on AniStream Hindi."))
@@ -496,6 +1269,7 @@ function renderAnime(anime) {
   document.getElementById("ogUrl")?.setAttribute("content",canonical);
 
   animeContainer.innerHTML = `
+
     <div class="hero${anime.banner_url ? " has-thumb" : ""}">
 
       ${anime.banner_url
@@ -509,22 +1283,37 @@ function renderAnime(anime) {
           : ""}
 
         <div class="info">
+
           <h1>${escapeHtml(anime.title)}</h1>
+
           <div class="tags">${tags}</div>
-          ${anime.season ? `<div class="meta">Format: ${escapeHtml(anime.season)}</div>` : ""}
-          <div class="description">${escapeHtml(anime.description || "Description available nahi hai.")}</div>
+
+          ${anime.season
+            ? `<div class="meta">Format: ${escapeHtml(anime.season)}</div>`
+            : ""}
+
+          <div class="description">
+            ${escapeHtml(anime.description || "Description available nahi hai.")}
+          </div>
+
         </div>
 
       </div>
     </div>
+
   `;
 
   updateShareLinks();
 }
 
-/* LOAD EPISODES */
+/* ===================================
+   LOAD EPISODES
+=================================== */
+
 async function loadEpisodes(targetAnimeId) {
-  episodeContainer.innerHTML = '<div class="loading">Loading episodes...</div>';
+
+  episodeContainer.innerHTML =
+    '<div class="loading">Loading episodes...</div>';
 
   const {data,error} = await supabaseClient
     .from("episodes")
@@ -533,28 +1322,47 @@ async function loadEpisodes(targetAnimeId) {
     .order("episode_number",{ascending:true});
 
   if (error || !data || data.length === 0) {
+
     console.error("Episode error:",error);
-    episodeContainer.innerHTML = '<div class="empty">Abhi koi episode available nahi hai.</div>';
+
+    episodeContainer.innerHTML =
+      '<div class="empty">Abhi koi episode available nahi hai.</div>';
+
     return;
   }
 
   episodeContainer.innerHTML = "";
 
   data.forEach(episode => {
+
     const a = document.createElement("a");
+
     a.className = "episode-btn";
-    a.href = `/watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}`;
+
+    a.href =
+      `/watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}`;
+
     a.innerHTML = `
-      <span class="ep-num">EPISODE ${escapeHtml(String(episode.episode_number))}</span>
+      <span class="ep-num">
+        EPISODE ${escapeHtml(String(episode.episode_number))}
+      </span>
+
       <span class="ep-tag">▶ Play Now</span>
     `;
+
     episodeContainer.appendChild(a);
+
   });
 }
 
-/* ANILIST SEARCH */
+/* ===================================
+   ANILIST SEARCH
+=================================== */
+
 function cleanSearchQuery(title) {
+
   if (!title) return "";
+
   return String(title)
     .replace(/\b(hindi\s*dub|hindi|dub|sub|dual\s*audio|multi\s*audio|season\s*\d+|s\d+|part\s*\d+)\b/gi,"")
     .replace(/\[.*?\]|\(.*?\)/g,"")
@@ -564,9 +1372,13 @@ function cleanSearchQuery(title) {
 }
 
 async function queryAniListFull(searchTerm) {
+
   const query = `
+
     query ($search: String) {
+
       Media(search: $search, type: ANIME, isAdult: false) {
+
         id
         averageScore
         source
@@ -576,13 +1388,25 @@ async function queryAniListFull(searchTerm) {
         episodes
         duration
         favourites
+
         startDate { year month day }
         endDate { year month day }
-        studios(isMain: true) { nodes { name } }
-        trailer { id site }
+
+        studios(isMain: true) {
+          nodes { name }
+        }
+
+        trailer {
+          id
+          site
+        }
+
         relations {
+
           edges {
+
             relationType
+
             node {
               id
               title { english romaji }
@@ -590,426 +1414,908 @@ async function queryAniListFull(searchTerm) {
               format
               status
             }
+
           }
+
         }
+
         recommendations(perPage: 12, sort: RATING_DESC) {
+
           nodes {
+
             mediaRecommendation {
               id
               title { english romaji }
               coverImage { medium }
               averageScore
             }
+
           }
+
         }
+
         characters(sort: [ROLE, RELEVANCE], perPage: 8) {
+
           edges {
+
             role
+
             node {
               name { full }
               image { medium }
             }
+
             voiceActors(sort: RELEVANCE) {
               name { full }
               image { medium }
               languageV2
             }
+
           }
+
         }
+
       }
+
     }
+
   `;
 
   const controller = new AbortController();
+
   const timer = setTimeout(() => controller.abort(),7000);
 
   try {
+
     const res = await fetch("https://graphql.anilist.co",{
+
       method:"POST",
-      headers:{"Content-Type":"application/json","Accept":"application/json"},
-      body:JSON.stringify({query,variables:{search:searchTerm}}),
+
+      headers:{
+        "Content-Type":"application/json",
+        "Accept":"application/json"
+      },
+
+      body:JSON.stringify({
+        query,
+        variables:{search:searchTerm}
+      }),
+
       signal:controller.signal
+
     });
+
     clearTimeout(timer);
+
     if (!res.ok) return null;
+
     const json = await res.json();
+
     return json.data?.Media || null;
+
   } catch(e) {
+
     clearTimeout(timer);
+
     return null;
+
   }
 }
 
-/* FETCH ANIME DETAILS */
+/* ===================================
+   FETCH ANIME DETAILS
+=================================== */
+
 async function fetchAllAnimeDetails(currentAnime) {
-  const clean = cleanSearchQuery(currentAnime.title) || currentAnime.title;
+
+  const clean =
+    cleanSearchQuery(currentAnime.title) || currentAnime.title;
+
   let media = await queryAniListFull(clean);
 
   if (!media) {
+
     const words = clean.split(" ");
-    if (words.length > 4) media = await queryAniListFull(words.slice(0,4).join(" "));
+
+    if (words.length > 4) {
+      media = await queryAniListFull(words.slice(0,4).join(" "));
+    }
+
   }
 
   /* TRAILER */
-  if (media && media.trailer && media.trailer.site === "youtube" && media.trailer.id) {
-    const trailerSection = document.getElementById("trailerSection");
-    const trailerWrap = document.getElementById("trailerWrap");
+
+  if (
+    media &&
+    media.trailer &&
+    media.trailer.site === "youtube" &&
+    media.trailer.id
+  ) {
+
+    const trailerSection =
+      document.getElementById("trailerSection");
+
+    const trailerWrap =
+      document.getElementById("trailerWrap");
+
     trailerWrap.innerHTML = `
-      <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(media.trailer.id)}?rel=0" allowfullscreen loading="lazy"></iframe>
+
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(media.trailer.id)}?rel=0"
+        allowfullscreen
+        loading="lazy">
+      </iframe>
+
     `;
+
     trailerSection.style.display = "block";
   }
 
   /* METRICS */
-  if (media) {
-    const metaSection = document.getElementById("metaSection");
-    const pillsGrid = document.getElementById("infoPillsGrid");
 
-    const studio = media.studios?.nodes?.[0]?.name || "N/A";
-    const score = media.averageScore ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10` : "N/A";
-    const source = media.source ? media.source.replace(/_/g," ") : "N/A";
-    const status = media.status ? media.status.replace(/_/g," ") : "Ongoing";
-    const eps = media.episodes ? `${media.episodes} Ep` : "TBA";
-    const duration = media.duration ? `${media.duration} Mins / Ep` : "N/A";
-    const airedSeason = media.season ? `${media.season} ${media.seasonYear || ""}` : (media.seasonYear || "N/A");
+  if (media) {
+
+    const metaSection =
+      document.getElementById("metaSection");
+
+    const pillsGrid =
+      document.getElementById("infoPillsGrid");
+
+    const studio =
+      media.studios?.nodes?.[0]?.name || "N/A";
+
+    const score = media.averageScore
+      ? `⭐ ${(media.averageScore / 10).toFixed(1)} / 10`
+      : "N/A";
+
+    const source = media.source
+      ? media.source.replace(/_/g," ")
+      : "N/A";
+
+    const status = media.status
+      ? media.status.replace(/_/g," ")
+      : "Ongoing";
+
+    const eps = media.episodes
+      ? `${media.episodes} Ep`
+      : "TBA";
+
+    const duration = media.duration
+      ? `${media.duration} Mins / Ep`
+      : "N/A";
+
+    const airedSeason = media.season
+      ? `${media.season} ${media.seasonYear || ""}`
+      : (media.seasonYear || "N/A");
 
     let dateStr = "N/A";
+
     if (media.startDate?.year) {
-      dateStr = `${media.startDate.day || 1}/${media.startDate.month || 1}/${media.startDate.year}`;
+
+      dateStr =
+        `${media.startDate.day || 1}/${media.startDate.month || 1}/${media.startDate.year}`;
+
     }
 
     pillsGrid.innerHTML = `
-      <div class="info-pill"><span>Rating / Score</span><strong>${escapeHtml(score)}</strong></div>
-      <div class="info-pill"><span>Total Episodes</span><strong>${escapeHtml(eps)}</strong></div>
-      <div class="info-pill"><span>Duration</span><strong>${escapeHtml(duration)}</strong></div>
-      <div class="info-pill"><span>Airing Season</span><strong>${escapeHtml(airedSeason)}</strong></div>
-      <div class="info-pill"><span>Start Date</span><strong>${escapeHtml(dateStr)}</strong></div>
-      <div class="info-pill"><span>Studio</span><strong>${escapeHtml(studio)}</strong></div>
-      <div class="info-pill"><span>Source</span><strong>${escapeHtml(source)}</strong></div>
-      <div class="info-pill"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
+
+      <div class="info-pill">
+        <span>Rating / Score</span>
+        <strong>${escapeHtml(score)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Total Episodes</span>
+        <strong>${escapeHtml(eps)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Duration</span>
+        <strong>${escapeHtml(duration)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Airing Season</span>
+        <strong>${escapeHtml(airedSeason)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Start Date</span>
+        <strong>${escapeHtml(dateStr)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Studio</span>
+        <strong>${escapeHtml(studio)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Source</span>
+        <strong>${escapeHtml(source)}</strong>
+      </div>
+
+      <div class="info-pill">
+        <span>Status</span>
+        <strong>${escapeHtml(status)}</strong>
+      </div>
+
     `;
+
     metaSection.style.display = "block";
   }
 
   /* RELATIONS */
-  const otherDbAnime = dbAnimeList.filter(a => String(a.anime_id || a.id) !== String(currentAnime.anime_id));
+
+  const otherDbAnime = dbAnimeList.filter(
+    a => String(a.anime_id || a.id) !== String(currentAnime.anime_id)
+  );
 
   if (media && media.relations?.edges?.length) {
-    const relationSection = document.getElementById("relationSection");
-    const relationGrid = document.getElementById("relationGrid");
+
+    const relationSection =
+      document.getElementById("relationSection");
+
+    const relationGrid =
+      document.getElementById("relationGrid");
+
     relationGrid.innerHTML = "";
+
     let relCount = 0;
 
     media.relations.edges.forEach(edge => {
-      const relNode = edge.node;
-      const relTitle = relNode.title?.english || relNode.title?.romaji || "Related Anime";
-      const matchedInDb = findDbMatch(relTitle,otherDbAnime);
 
-      const card = document.createElement(matchedInDb ? "a" : "div");
+      const relNode = edge.node;
+
+      const relTitle =
+        relNode.title?.english ||
+        relNode.title?.romaji ||
+        "Related Anime";
+
+      const matchedInDb =
+        findDbMatch(relTitle,otherDbAnime);
+
+      const card =
+        document.createElement(matchedInDb ? "a" : "div");
+
       card.className = "rel-card";
-      if (matchedInDb) card.href = getAnimeDetailsUrl(matchedInDb);
+
+      if (matchedInDb) {
+
+        card.href =
+          getAnimeDetailsUrl(matchedInDb);
+
+      }
 
       card.innerHTML = `
-        <img class="rel-thumb"
+
+        <img
+          class="rel-thumb"
           src="${escapeHtml(matchedInDb?.thumbnail_url || relNode.coverImage?.medium || '')}"
           alt="${escapeHtml(relTitle)}"
           onerror="this.style.opacity='0.2'">
+
         <div class="rel-body">
-          <div class="rel-type">${escapeHtml(edge.relationType.replace(/_/g," "))}</div>
-          <div class="rel-title" title="${escapeHtml(relTitle)}">${escapeHtml(relTitle)}</div>
-          ${matchedInDb ? `<div class="rel-meta" style="color:#00e676;">▶ Watch on AniStream</div>` : ""}
+
+          <div class="rel-type">
+            ${escapeHtml(edge.relationType.replace(/_/g," "))}
+          </div>
+
+          <div class="rel-title" title="${escapeHtml(relTitle)}">
+            ${escapeHtml(relTitle)}
+          </div>
+
+          ${matchedInDb
+            ? `<div class="rel-meta" style="color:#00e676;">▶ Watch on AniStream</div>`
+            : ""}
+
         </div>
+
       `;
 
       relationGrid.appendChild(card);
+
       relCount++;
+
     });
 
-    if (relCount > 0) relationSection.style.display = "block";
+    if (relCount > 0) {
+      relationSection.style.display = "block";
+    }
+
   }
 
   /* CHARACTERS */
-  const castGrid = document.getElementById("characterGrid");
-  const edges = media?.characters?.edges || [];
+
+  const castGrid =
+    document.getElementById("characterGrid");
+
+  const edges =
+    media?.characters?.edges || [];
 
   if (edges.length) {
+
     castGrid.innerHTML = "";
 
     edges.forEach(edge => {
+
       const char = edge.node;
-      const roleText = edge.role === "MAIN" ? "Main" : "Supporting";
+
+      const roleText =
+        edge.role === "MAIN" ? "Main" : "Supporting";
+
       const vas = edge.voiceActors || [];
-      const va = vas.find(v => v.languageV2 === "Japanese") || vas[0] || null;
+
+      const va =
+        vas.find(v => v.languageV2 === "Japanese") ||
+        vas[0] ||
+        null;
 
       const card = document.createElement("div");
+
       card.className = "char-card";
 
       card.innerHTML = `
+
         <div class="char-part">
-          <img src="${escapeHtml(char.image?.medium || '')}" class="actor-img"
-            alt="${escapeHtml(char.name?.full)}" onerror="this.style.opacity='0.2'">
+
+          <img
+            src="${escapeHtml(char.image?.medium || '')}"
+            class="actor-img"
+            alt="${escapeHtml(char.name?.full)}"
+            onerror="this.style.opacity='0.2'">
+
           <div class="actor-text">
-            <div class="actor-name" title="${escapeHtml(char.name?.full)}">${escapeHtml(char.name?.full)}</div>
-            <span class="actor-sub">${escapeHtml(roleText)}</span>
+
+            <div class="actor-name" title="${escapeHtml(char.name?.full)}">
+              ${escapeHtml(char.name?.full)}
+            </div>
+
+            <span class="actor-sub">
+              ${escapeHtml(roleText)}
+            </span>
+
           </div>
+
         </div>
 
         ${va ? `
+
           <div class="va-part">
-            <img src="${escapeHtml(va.image?.medium || '')}" class="actor-img"
-              alt="${escapeHtml(va.name?.full)}" onerror="this.style.opacity='0.2'">
+
+            <img
+              src="${escapeHtml(va.image?.medium || '')}"
+              class="actor-img"
+              alt="${escapeHtml(va.name?.full)}"
+              onerror="this.style.opacity='0.2'">
+
             <div class="actor-text">
-              <div class="actor-name" title="${escapeHtml(va.name?.full)}">${escapeHtml(va.name?.full)}</div>
-              <span class="actor-sub">🎙️ ${escapeHtml(va.languageV2 || "Voice")}</span>
+
+              <div class="actor-name" title="${escapeHtml(va.name?.full)}">
+                ${escapeHtml(va.name?.full)}
+              </div>
+
+              <span class="actor-sub">
+                🎙️ ${escapeHtml(va.languageV2 || "Voice")}
+              </span>
+
             </div>
+
           </div>
+
         ` : ""}
+
       `;
 
       castGrid.appendChild(card);
+
     });
+
   } else {
-    castGrid.innerHTML = '<div class="empty">Koi character information available nahi hai.</div>';
+
+    castGrid.innerHTML =
+      '<div class="empty">Koi character information available nahi hai.</div>';
+
   }
 
-  renderSmartDatabaseRecommendations(currentAnime, media?.recommendations?.nodes || []);
+  renderSmartDatabaseRecommendations(
+    currentAnime,
+    media?.recommendations?.nodes || []
+  );
+
 }
 
-/* SMART RECOMMENDATIONS */
-function renderSmartDatabaseRecommendations(currentAnime, aniListRecNodes) {
-  const recSection = document.getElementById("recSection");
-  const recGrid = document.getElementById("recGrid");
+/* ===================================
+   SMART RECOMMENDATIONS
+=================================== */
+
+function renderSmartDatabaseRecommendations(
+  currentAnime,
+  aniListRecNodes
+) {
+
+  const recSection =
+    document.getElementById("recSection");
+
+  const recGrid =
+    document.getElementById("recGrid");
+
   recGrid.innerHTML = "";
 
-  const candidateList = dbAnimeList.filter(a => String(a.anime_id || a.id) !== String(currentAnime.anime_id));
+  const candidateList = dbAnimeList.filter(
+    a => String(a.anime_id || a.id) !== String(currentAnime.anime_id)
+  );
 
   if (!candidateList.length) {
+
     recSection.style.display = "none";
+
     return;
   }
 
-  const currentGenres = (currentAnime.genre || "").toLowerCase().split(",").map(g => g.trim()).filter(Boolean);
+  const currentGenres = (currentAnime.genre || "")
+    .toLowerCase()
+    .split(",")
+    .map(g => g.trim())
+    .filter(Boolean);
+
   const matchedSet = new Set();
+
   const finalRecs = [];
 
   aniListRecNodes.forEach(n => {
+
     const item = n?.mediaRecommendation;
+
     if (!item) return;
 
-    const recTitle = item.title?.english || item.title?.romaji || "";
-    const dbMatch = findDbMatch(recTitle,candidateList);
+    const recTitle =
+      item.title?.english ||
+      item.title?.romaji ||
+      "";
 
-    if (dbMatch && !matchedSet.has(dbMatch.anime_id || dbMatch.id)) {
+    const dbMatch =
+      findDbMatch(recTitle,candidateList);
+
+    if (
+      dbMatch &&
+      !matchedSet.has(dbMatch.anime_id || dbMatch.id)
+    ) {
+
       matchedSet.add(dbMatch.anime_id || dbMatch.id);
-      finalRecs.push({anime:dbMatch,badge:"⭐ TOP MATCH"});
+
+      finalRecs.push({
+        anime:dbMatch,
+        badge:"⭐ TOP MATCH"
+      });
+
     }
+
   });
 
   const scoredCandidates = candidateList
+
     .filter(a => !matchedSet.has(a.anime_id || a.id))
+
     .map(a => {
-      const aGenres = (a.genre || "").toLowerCase().split(",").map(g => g.trim());
-      const overlap = aGenres.filter(g => currentGenres.includes(g)).length;
+
+      const aGenres = (a.genre || "")
+        .toLowerCase()
+        .split(",")
+        .map(g => g.trim());
+
+      const overlap = aGenres.filter(
+        g => currentGenres.includes(g)
+      ).length;
+
       return {anime:a,score:overlap};
+
     })
+
     .sort((a,b) => b.score - a.score);
 
   scoredCandidates.forEach(item => {
+
     if (finalRecs.length < 6) {
+
       matchedSet.add(item.anime.anime_id || item.anime.id);
+
       finalRecs.push({
+
         anime:item.anime,
-        badge:item.anime.season ? item.anime.season.toUpperCase() : "SIMILAR"
+
+        badge:item.anime.season
+          ? item.anime.season.toUpperCase()
+          : "SIMILAR"
+
       });
+
     }
+
   });
 
   if (!finalRecs.length) {
+
     recSection.style.display = "none";
+
     return;
   }
 
   finalRecs.forEach(entry => {
+
     const an = entry.anime;
+
+    const aid = an.anime_id || an.id;
+
     const card = document.createElement("a");
+
     card.className = "rel-card";
-    card.href = getAnimeDetailsUrl(an);
+
+    card.href =
+      getAnimeDetailsUrl(an);
 
     card.innerHTML = `
-      <img class="rel-thumb" src="${escapeHtml(an.thumbnail_url || '')}"
-        alt="${escapeHtml(an.title)}" onerror="this.style.opacity='0.2'">
+
+      <img
+        class="rel-thumb"
+        src="${escapeHtml(an.thumbnail_url || '')}"
+        alt="${escapeHtml(an.title)}"
+        onerror="this.style.opacity='0.2'">
+
       <div class="rel-body">
-        <div class="rel-type">${escapeHtml(entry.badge)}</div>
-        <div class="rel-title" title="${escapeHtml(an.title)}">${escapeHtml(an.title)}</div>
-        <div class="rel-meta">${escapeHtml(an.genre ? an.genre.split(",").slice(0,2).join(", ") : "Anime")}</div>
+
+        <div class="rel-type">
+          ${escapeHtml(entry.badge)}
+        </div>
+
+        <div class="rel-title" title="${escapeHtml(an.title)}">
+          ${escapeHtml(an.title)}
+        </div>
+
+        <div class="rel-meta">
+          ${escapeHtml(an.genre ? an.genre.split(",").slice(0,2).join(", ") : "Anime")}
+        </div>
+
       </div>
+
     `;
 
     recGrid.appendChild(card);
+
   });
 
   recSection.style.display = "block";
 }
 
-/* LOAD COMMENTS (profile connected + admin reply) */
+/* =========================================
+   PROFILE CONNECTED COMMENTS + ADMIN REPLY
+========================================= */
+
+/* LOAD COMMENTS */
+
 async function loadComments(targetAnimeId) {
-  commentsContainer.innerHTML = '<div class="loading">Loading comments...</div>';
+
+  commentsContainer.innerHTML =
+    '<div class="loading">Loading comments...</div>';
 
   const {data,error} = await supabaseClient
+
     .from("anime_comments")
+
     .select("*")
+
     .eq("anime_id",targetAnimeId)
+
     .order("created_at",{ascending:false});
 
   if (error) {
+
     console.error("Comments loading error:",error);
-    commentsContainer.innerHTML = '<div class="error">❌ Comments load nahi ho paaye. Please refresh karein.</div>';
+
+    commentsContainer.innerHTML =
+      '<div class="error">❌ Comments load nahi ho paaye. Please refresh karein.</div>';
+
     return;
   }
 
   if (!data || data.length === 0) {
-    commentsContainer.innerHTML = '<div class="empty">Abhi koi comment nahi hai. Pehle comment aap karein!</div>';
+
+    commentsContainer.innerHTML =
+      '<div class="empty">Abhi koi comment nahi hai. Pehle comment aap karein!</div>';
+
     return;
   }
 
   commentsContainer.innerHTML = "";
 
   for (const c of data) {
+
     const card = document.createElement("div");
+
     card.className = "comment-card";
 
-    const commentDate = formatDate(c.created_at);
-    const userName = c.user_name || "AniStream User";
-    const avatarUrl = await getCommentAvatar(c.user_avatar_path, c.user_avatar_url);
-    const fallback = getAvatarFallback(userName);
+    const commentDate =
+      formatDate(c.created_at);
 
-    const hasAdminReply = typeof c.admin_reply === "string" && c.admin_reply.trim().length > 0;
+    const userName =
+      c.user_name || "AniStream User";
+
+    const avatarUrl =
+      await getCommentAvatar(
+        c.user_avatar_path,
+        c.user_avatar_url
+      );
+
+    const fallback =
+      getAvatarFallback(userName);
+
+    /*
+      Admin reply is preserved.
+      It appears only when admin_reply contains text.
+    */
+
+    const hasAdminReply =
+      typeof c.admin_reply === "string" &&
+      c.admin_reply.trim().length > 0;
 
     let adminReplyHTML = "";
 
     if (hasAdminReply) {
-      const replyDate = formatDate(c.admin_replied_at,true);
+
+      const replyDate = formatDate(
+        c.admin_replied_at,
+        true
+      );
 
       adminReplyHTML = `
+
         <div class="admin-reply">
+
           <div class="admin-reply-header">
+
             <div class="admin-name">
+
               <span>🛡️ AniStream Admin</span>
+
               <span class="admin-badge">ADMIN</span>
+
             </div>
-            ${replyDate ? `<span class="admin-reply-date">${escapeHtml(replyDate)}</span>` : ""}
+
+            ${replyDate
+              ? `<span class="admin-reply-date">${escapeHtml(replyDate)}</span>`
+              : ""}
+
           </div>
-          <div class="admin-reply-text">${escapeHtml(c.admin_reply)}</div>
+
+          <div class="admin-reply-text">
+            ${escapeHtml(c.admin_reply)}
+          </div>
+
         </div>
+
       `;
+
     }
 
     card.innerHTML = `
+
       <div class="comment-header">
+
         <div class="comment-author-row">
-          <img class="comment-avatar" src="${escapeHtml(avatarUrl || fallback)}"
-            alt="User Profile" onerror="this.onerror=null;this.src='${fallback}'">
+
+          <img
+            class="comment-avatar"
+            src="${escapeHtml(avatarUrl || fallback)}"
+            alt="User Profile"
+            onerror="this.onerror=null;this.src='${fallback}'">
+
           <div class="comment-author-info">
-            <span class="comment-author">${escapeHtml(userName)}</span>
-            <span class="comment-member">AniStream Member</span>
+
+            <span class="comment-author">
+              ${escapeHtml(userName)}
+            </span>
+
+            <span class="comment-member">
+              AniStream Member
+            </span>
+
           </div>
+
         </div>
-        <span class="comment-date">${escapeHtml(commentDate)}</span>
+
+        <span class="comment-date">
+          ${escapeHtml(commentDate)}
+        </span>
+
       </div>
 
-      <p class="comment-body">${escapeHtml(c.comment_text)}</p>
+      <p class="comment-body">
+        ${escapeHtml(c.comment_text)}
+      </p>
 
       ${adminReplyHTML}
+
     `;
 
     commentsContainer.appendChild(card);
+
   }
+
 }
 
-/* POST COMMENT */
+/* ===================================
+   POST COMMENT
+=================================== */
+
 async function postComment() {
-  const textInput = document.getElementById("commentTextInput");
-  const msg = document.getElementById("commentPostMessage");
-  const commentText = textInput.value.trim();
+
+  const textInput =
+    document.getElementById("commentTextInput");
+
+  const msg =
+    document.getElementById("commentPostMessage");
+
+  const commentText =
+    textInput.value.trim();
+
+  /* CHECK LOGIN */
 
   if (!currentAuthUser) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Comment karne ke liye pehle login karein.";
+
+    msg.textContent =
+      "❌ Comment karne ke liye pehle login karein.";
+
     return;
   }
 
+  /* CHECK COMMENT */
+
   if (!commentText) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Comment likhna zaroori hai.";
+
+    msg.textContent =
+      "❌ Comment likhna zaroori hai.";
+
     return;
   }
 
   if (commentText.length > 500) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Maximum 500 characters allowed hain.";
+
+    msg.textContent =
+      "❌ Maximum 500 characters allowed hain.";
+
     return;
   }
 
   if (!animeId) {
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Anime ID nahi mila.";
+
+    msg.textContent =
+      "❌ Anime ID nahi mila.";
+
     return;
   }
 
-  const {data:authData,error:authError} = await supabaseClient.auth.getUser();
+  /*
+    Always read latest auth user before posting.
+    This prevents posting with an outdated session.
+  */
+
+  const {data:authData,error:authError} =
+    await supabaseClient.auth.getUser();
 
   if (authError || !authData?.user) {
+
     currentAuthUser = null;
+
     await refreshCommentProfile(null);
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Session expire ho gaya. Dobara login karein.";
+
+    msg.textContent =
+      "❌ Session expire ho gaya. Dobara login karein.";
+
     return;
   }
 
   const user = authData.user;
+
   const profile = getProfileDetails(user);
 
   msg.style.color = "#aaa";
+
   msg.textContent = "Posting...";
+
   postCommentButton.disabled = true;
 
+  /*
+    New comments save:
+    anime_id
+    user_id
+    user_name
+    user_avatar_path
+    user_avatar_url
+    comment_text
+
+    user_id is linked with Supabase Auth.
+  */
+
   const commentData = {
+
     anime_id:animeId,
+
     user_id:user.id,
+
     user_name:profile.name,
-    user_avatar_path:profile.avatarPath || null,
-    user_avatar_url:profile.avatarPath ? null : profile.avatarUrl || null,
+
+    user_avatar_path:
+      profile.avatarPath || null,
+
+    user_avatar_url:
+      profile.avatarPath
+        ? null
+        : profile.avatarUrl || null,
+
     comment_text:commentText
+
   };
 
-  const {error} = await supabaseClient.from("anime_comments").insert([commentData]);
+  const {error} = await supabaseClient
+
+    .from("anime_comments")
+
+    .insert([commentData]);
 
   postCommentButton.disabled = false;
 
   if (error) {
+
     console.error("Comment posting error:",error);
+
     msg.style.color = "#ff003c";
-    msg.textContent = "❌ Comment failed: " + error.message;
+
+    msg.textContent =
+      "❌ Comment failed: " + error.message;
+
     return;
   }
 
   msg.style.color = "#00e676";
-  msg.textContent = "✅ Comment posted successfully!";
+
+  msg.textContent =
+    "✅ Comment posted successfully!";
+
   textInput.value = "";
+
+  // Refresh comments after successful post.
 
   await loadComments(animeId);
 
-  setTimeout(() => { msg.textContent = ""; },2500);
+  setTimeout(() => {
+    msg.textContent = "";
+  },2500);
+
 }
 
-/* INITIAL LOAD */
-initCommentAuth();
-loadAnime();
-</script><script data-cfasync="false" 
-<script data-cfasync="false" src="https://bauval.org/14/23dd832d3b47dd985dd73c4e9c1aab37"></script>
+/* ===================================
+   INITIAL LOAD
+=================================== */
 
-<!-- NICHE SCHEDULE BUTTON -->
-<a href="/schedule.html" class="schedule-bar">📅 Anime Schedule</a>
+/*
+  Profile and anime load independently.
+  Comments use the same Supabase project.
+*/
+
+initCommentAuth();
+
+loadAnime();
+
+</script><script data-cfasync="false" src="https://bauval.org/14/23dd832d3b47dd985dd73c4e9c1aab37"></script>
 
 </body>
 </html>
