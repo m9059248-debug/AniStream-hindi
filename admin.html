@@ -2134,8 +2134,9 @@ async function loadGlobalSchedules(){
 
 async function deleteGlobalSchedule(id){
   if(!confirm("Is schedule ko delete karna hai?"))return;
-  const {error}=await supabaseClient.from("schedule").delete().eq("id",id);
+  const {data,error}=await supabaseClient.from("schedule").delete().eq("id",id).select();
   if(error){alert("❌ "+error.message);return;}
+  if(!data||!data.length){alert("❌ Delete nahi hua. Supabase me delete permission nahi hai. delete_fix.sql ko SQL Editor me run karo.");return;}
   if(schEditId===id)schResetForm();
   loadGlobalSchedules();
 }
@@ -2206,10 +2207,14 @@ async function displaySchedules(){
 async function deleteSchedule(id){
   if(!confirm("Delete schedule?"))return;
 
-  const {error}=await supabaseClient.from("schedule").delete().eq("id",id);
+  const {data,error}=await supabaseClient.from("schedule").delete().eq("id",id).select();
 
   if(error){
     alert("❌ "+error.message);
+    return;
+  }
+  if(!data||!data.length){
+    alert("❌ Delete nahi hua. Supabase me delete permission nahi hai. delete_fix.sql ko SQL Editor me run karo.");
     return;
   }
 
