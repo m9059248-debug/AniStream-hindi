@@ -9,6 +9,7 @@
 :root{--bg:#17131f;--card:#241d31;--line:#3a3050;--text:#f2eefa;--mute:#a79cc0;--ok:#5fd0c4;--red:#ff3b4e}
 *{box-sizing:border-box;margin:0}
 body{background:var(--bg);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;padding:16px;max-width:900px;margin:auto}
+#backBtn{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 13px;font-size:14px;cursor:pointer}
 header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:14px}
 h1{font-size:22px}
 #clock{font-size:20px;font-variant-numeric:tabular-nums;color:var(--ok);font-weight:600}
@@ -42,6 +43,14 @@ h1{font-size:22px}
 </style>
 </head>
 <body>
+<header>
+  <button id="backBtn" type="button" onclick="if(history.length>1){history.back()}else{location.href='index.html'}" aria-label="Back">← Back</button>
+  <h1>Anime Release Schedule</h1>
+  <div id="clock"></div>
+</header>
+<div id="tabs"></div>
+<div id="list"></div>
+
 <!-- Adsterra Native Banner -->
 <div class="adsterra-native-slot" aria-label="Advertisement">
   <script async fetchpriority="high" data-cfasync="false" src="https://bauval.org/21/bcec0b7f5f15213b14b2ee8f760ead2f"></script>
@@ -60,13 +69,6 @@ h1{font-size:22px}
   </script>
   <script data-cfasync="false" src="https://bauval.org/22/7a84d0255f44123874ac8067380a0eb3"></script>
 </div>
-<header>
-  <h1>Anime Release Schedule</h1>
-  <div id="clock"></div>
-</header>
-<div id="tabs"></div>
-<div id="list"></div>
-
 <script>
 /* ============================================================
    YAHAN APNE ANIME ADD KARO (sirf yehi part edit karna hai)
