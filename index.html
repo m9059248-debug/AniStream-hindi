@@ -844,6 +844,17 @@ function getAnimeId(anime){
   return String(anime.anime_id||anime.id||"");
 }
 
+function getAnimeSlug(anime){
+  const source=String(anime?.anime_id||anime?.id||anime?.title||"");
+  return source.normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "anime";
+}
+
+function getAnimeDetailsUrl(anime){
+  const slug=getAnimeSlug(anime);
+  return "/anime/"+encodeURIComponent(slug)+"/";
+}
+
 function isMovie(anime){
   const s=String(anime.season||"").toLowerCase();
   const g=String(anime.genre||"").toLowerCase();
@@ -1391,7 +1402,7 @@ function createAnimeCard(anime){
 
   const details=document.createElement("a");
   details.className="watch-btn";
-  details.href="anime-details.html?id="+encodeURIComponent(id);
+  details.href=getAnimeDetailsUrl(anime);
   details.textContent=isMov?"▶ Movie":"▶ Details";
 
   const likeBtn=document.createElement("button");
@@ -1512,7 +1523,7 @@ function renderHero(index,animate=true){
     ?String(featured.description).replace(/<br\s*\/?\s*>/gi," ").replace(/<[^>]*>/g," ").slice(0,200)
     :"Stream popular anime series and movies in "+selectedLanguage+".";
 
-  $("heroWatch").href="anime-details.html?id="+encodeURIComponent(getAnimeId(featured));
+  $("heroWatch").href=getAnimeDetailsUrl(featured);
   $("heroWatch").textContent=isMovie(featured)?"🎬 Movie":"▶ Series";
 
   const meta=$("heroMeta");
