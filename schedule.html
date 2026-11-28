@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Anime Schedule</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#17131f;--card:#241d31;--line:#3a3050;--text:#f2eefa;--mute:#a79cc0;--ok:#5fd0c4;--red:#ff3b4e}
 *{box-sizing:border-box;margin:0}
@@ -14,19 +14,28 @@ header{display:flex;justify-content:space-between;align-items:center;flex-wrap:w
 h1{font-size:22px}
 #clock{font-size:20px;font-variant-numeric:tabular-nums;color:var(--ok);font-weight:600}
 #clock small{display:block;font-size:12px;color:var(--mute);font-weight:400;text-align:right}
+.filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.filters input,.filters select{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:14px;outline:none}
+.filters input{flex:1;min-width:160px}
 #tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}
 #tabs button{flex:none;background:var(--card);color:var(--mute);border:1px solid var(--line);border-radius:8px;padding:8px 14px;font-size:14px;cursor:pointer}
 #tabs button.active{background:var(--text);color:var(--bg);font-weight:600}
 #tabs button.today::after{content:" •";color:var(--ok)}
+.sec-title{font-size:15px;font-weight:700;margin:16px 0 8px;color:var(--mute)}
 .item{display:flex;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:10px}
 .item.done{border-color:var(--red)}
+.item.old{opacity:.65}
 .thumb{width:96px;height:130px;border-radius:6px;object-fit:cover;flex:none;background:var(--line)}
 .info{flex:1;min-width:0}
 .info h2{font-size:17px;margin-bottom:2px}
+.ep{font-size:14px;margin-bottom:2px}
 .meta{font-size:13px;color:var(--mute);margin-bottom:8px}
 .timer{display:inline-block;font-size:18px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ok);padding:4px 10px;border:1px solid var(--ok);border-radius:6px}
 .item.done .timer{color:#fff;background:var(--red);border-color:var(--red)}
-.more{margin-top:8px;background:none;border:none;color:var(--mute);font-size:13px;cursor:pointer;padding:0;text-decoration:underline}
+.item.old .timer{color:var(--mute);border-color:var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.chip{font-size:11px;padding:2px 8px;border-radius:10px;background:var(--bg);border:1px solid var(--line);color:var(--mute)}
+.more{margin-top:8px;background:none;border:none;color:var(--mute);font-size:13px;cursor:pointer;padding:0;text-decoration:underline;display:block}
 .details{display:none;margin-top:6px;font-size:13px;line-height:1.5;color:var(--mute)}
 .details.open{display:block}
 .empty{color:var(--mute);padding:30px 0;text-align:center}
@@ -39,7 +48,6 @@ h1{font-size:22px}
 }
 .adsterra-banner-slot{min-height:50px;max-width:320px}
 .adsterra-native-slot{min-height:90px}
-
 </style>
 </head>
 <body>
@@ -48,8 +56,16 @@ h1{font-size:22px}
   <h1>Anime Release Schedule</h1>
   <div id="clock"></div>
 </header>
+
+<div class="filters">
+  <input id="q" type="search" placeholder="🔎 Anime search karo...">
+  <select id="lang">
+    <option value="">Saari Languages</option>
+    <option>Hindi</option><option>English</option><option>Japanese</option><option>Tamil</option><option>Telugu</option>
+  </select>
+</div>
 <div id="tabs"></div>
-<div id="list"></div>
+<div id="list"><div class="empty">Schedule load ho raha hai...</div></div>
 
 <!-- Adsterra Native Banner -->
 <div class="adsterra-native-slot" aria-label="Advertisement">
@@ -69,81 +85,149 @@ h1{font-size:22px}
   </script>
   <script data-cfasync="false" src="https://bauval.org/22/7a84d0255f44123874ac8067380a0eb3"></script>
 </div>
+
 <script>
-/* ============================================================
-   YAHAN APNE ANIME ADD KARO (sirf yehi part edit karna hai)
-   day:  0=Sunday 1=Monday 2=Tuesday 3=Wednesday 4=Thursday 5=Friday 6=Saturday
-   time: 24 ghante format me, India time (IST). Jaise 8:30 PM = "20:30"
-   thumb: image ka link (khali chhodo to simple box dikhega)
-   ============================================================ */
-const ANIME = [
-  { name:"Anime Name 1", ep:5,  day:1, time:"18:00", thumb:"", genre:"Action, Fantasy", lang:"Hindi, Tamil, Telugu",
-    about:"Yahan anime ki story ya details likho." },
-  { name:"Anime Name 2", ep:12, day:1, time:"21:30", thumb:"", genre:"Romance, Comedy", lang:"Hindi",
-    about:"Yahan anime ki story ya details likho." },
-  { name:"Anime Name 3", ep:3,  day:3, time:"20:00", thumb:"", genre:"Adventure", lang:"Hindi, English",
-    about:"Yahan anime ki story ya details likho." },
-  { name:"Anime Name 4", ep:8,  day:6, time:"19:00", thumb:"", genre:"Sci-Fi", lang:"Hindi",
-    about:"Yahan anime ki story ya details likho." }
-];
-/* ============== Yahan se neeche kuch change mat karo ============== */
+/* Supabase (admin panel wala hi project) */
+const sb = window.supabase.createClient(
+  "https://gmacsiymybvfcxydvkla.supabase.co",
+  "sb_publishable_Li6BRvLN87cvF8zghHQCxw_STmBDeGF"
+);
 
 const DAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const IST = 5.5*3600*1000;
 const pad = n => String(n).padStart(2,"0");
-const istNow = () => new Date(Date.now()+IST);          // IST ko UTC fields se padhte hain
+const esc = v => String(v ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+const istDate = ms => new Date(ms + IST);          // IST ko UTC fields se padhte hain
+const RELEASED_DAYS = 14;                           // released episodes kitne din tak dikhein
 
-function targetOf(a){
-  const n = istNow(), [h,m] = a.time.split(":").map(Number);
-  let t = Date.UTC(n.getUTCFullYear(), n.getUTCMonth(), n.getUTCDate() + (a.day - n.getUTCDay()), h, m);
-  if (n.getTime() - t > 24*3600*1000) t += 7*24*3600*1000;   // 24 ghante baad agle hafte ka timer
-  return t;
+let ROWS = [];
+let selected = "all";          // "all" ya 0-6
+const state = new Map();       // id -> true agar timer khatam ho chuka
+
+function fmtDateTime(iso){
+  const d = istDate(new Date(iso).getTime()), h = d.getUTCHours();
+  return DAYS[d.getUTCDay()].slice(0,3) + ", " + d.getUTCDate() + " " +
+    ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getUTCMonth()] + " " + d.getUTCFullYear() +
+    " • " + (h%12||12) + ":" + pad(d.getUTCMinutes()) + " " + (h<12?"AM":"PM") + " IST";
 }
-function fmt12(t){ const [h,m]=t.split(":").map(Number); return (h%12||12)+":"+pad(m)+" "+(h<12?"AM":"PM"); }
+const dayOf = iso => istDate(new Date(iso).getTime()).getUTCDay();
 
-let selected = istNow().getUTCDay();
+/* ---- data load ---- */
+async function load(){
+  const [sch, ani] = await Promise.all([
+    sb.from("schedule").select("*").order("release_at",{ascending:true}),
+    sb.from("anime").select("id,title,thumbnail_url,description,genre,language")
+  ]);
+  if (sch.error){
+    document.getElementById("list").innerHTML = '<div class="empty">Schedule load nahi ho paya.</div>';
+    console.error(sch.error);
+    return;
+  }
+  const byId = new Map((ani.data||[]).map(a => [a.id, a]));
+  ROWS = (sch.data||[]).map(r => {
+    const a = byId.get(r.anime_id) || {};
+    return {
+      id: r.id,
+      name: r.anime_title || a.title || "Anime",
+      poster: r.poster_url || a.thumbnail_url || "",
+      season: r.season_number,
+      ep: r.episode_number,
+      epTitle: r.episode_title || "",
+      desc: r.description || a.description || "",
+      lang: r.language || a.language || "",
+      genre: r.genre || a.genre || "",
+      at: r.release_at,
+      ms: new Date(r.release_at).getTime()
+    };
+  });
+  render();
+}
+
+/* ---- filters ---- */
+function visible(){
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const lang = document.getElementById("lang").value;
+  return ROWS.filter(r =>
+    (selected==="all" || dayOf(r.at)===selected) &&
+    (!q || r.name.toLowerCase().includes(q)) &&
+    (!lang || r.lang.split(/[,|;]/).map(s=>s.trim()).includes(lang))
+  );
+}
 
 function buildTabs(){
-  const today = istNow().getUTCDay();
-  document.getElementById("tabs").innerHTML = DAYS.map((d,i)=>
-    `<button data-d="${i}" class="${i===selected?"active":""} ${i===today?"today":""}">${d.slice(0,3)}</button>`).join("");
+  const today = istDate(Date.now()).getUTCDay();
+  const labels = [["all","All"], ...DAYS.map((d,i)=>[i,d.slice(0,3)])];
+  document.getElementById("tabs").innerHTML = labels.map(([v,t]) =>
+    `<button data-d="${v}" class="${v===selected?"active":""} ${v===today?"today":""}">${t}</button>`).join("");
 }
-function buildList(){
-  const items = ANIME.filter(a=>a.day===selected).sort((a,b)=>a.time.localeCompare(b.time));
-  document.getElementById("list").innerHTML = items.length ? items.map((a,i)=>`
-    <div class="item" data-i="${ANIME.indexOf(a)}">
-      <img class="thumb" src="${a.thumb}" alt="${a.name}" onerror="this.removeAttribute('src')">
-      <div class="info">
-        <h2>${a.name}</h2>
-        <div class="meta">Episode ${a.ep} &nbsp;|&nbsp; ${DAYS[a.day]}, ${fmt12(a.time)} IST</div>
-        <span class="timer">--:--:--</span><br>
-        <button class="more">Details dekho</button>
-        <div class="details"><b>Genre:</b> ${a.genre}<br><b>Language:</b> ${a.lang}<br>${a.about}</div>
-      </div>
-    </div>`).join("") : `<div class="empty">Is din koi anime nahi aa raha.</div>`;
+
+function card(r, kind){
+  const chips = [...r.lang.split(/[,|;]/), ...r.genre.split(",")].map(s=>s.trim()).filter(Boolean)
+    .map(s=>`<span class="chip">${esc(s)}</span>`).join("");
+  return `
+  <div class="item ${kind==="old"?"old":""}" data-id="${r.id}">
+    <img class="thumb" src="${esc(r.poster)}" alt="${esc(r.name)}" onerror="this.removeAttribute('src')">
+    <div class="info">
+      <h2>${esc(r.name)}</h2>
+      <div class="ep">${r.season?"Season "+esc(r.season)+" • ":""}Episode ${esc(r.ep)}${r.epTitle?" — "+esc(r.epTitle):""}</div>
+      <div class="meta">${fmtDateTime(r.at)}</div>
+      <span class="timer">--:--:--</span>
+      <div class="chips">${chips}</div>
+      ${r.desc ? `<button class="more">Details dekho</button><div class="details">${esc(r.desc)}</div>` : ""}
+    </div>
+  </div>`;
 }
+
+function render(){
+  buildTabs();
+  const now = Date.now(), list = visible();
+  const upcoming = list.filter(r => r.ms > now).sort((a,b)=>a.ms-b.ms);
+  const released = list.filter(r => r.ms <= now && now - r.ms <= RELEASED_DAYS*864e5).sort((a,b)=>b.ms-a.ms);
+  let html = "";
+  if (upcoming.length) html += `<div class="sec-title">⏳ Upcoming Episodes</div>` + upcoming.map(r=>card(r,"up")).join("");
+  if (released.length) html += `<div class="sec-title">✅ Released Episodes</div>` + released.map(r=>card(r,"rel")).join("");
+  document.getElementById("list").innerHTML = html || `<div class="empty">Koi anime nahi mila.</div>`;
+  state.clear();
+  list.forEach(r => state.set(r.id, r.ms <= now));
+  tick();
+}
+
 function tick(){
-  const n = istNow();
+  const now = Date.now(), n = istDate(now);
   document.getElementById("clock").innerHTML =
     `${pad(n.getUTCHours())}:${pad(n.getUTCMinutes())}:${pad(n.getUTCSeconds())}<small>${DAYS[n.getUTCDay()]} • India Time</small>`;
-  document.querySelectorAll(".item").forEach(el=>{
-    const a = ANIME[el.dataset.i], diff = targetOf(a) - n.getTime(), t = el.querySelector(".timer");
-    if (diff <= 0){ el.classList.add("done"); t.textContent = "Episode aa gaya!"; }
-    else{
+  let crossed = false;
+  document.querySelectorAll(".item").forEach(el => {
+    const r = ROWS.find(x => String(x.id) === el.dataset.id); if (!r) return;
+    const diff = r.ms - now, t = el.querySelector(".timer");
+    if (diff <= 0){
+      if (state.get(r.id) === false) crossed = true;     // timer abhi khatam hua
+      const fresh = -diff < 864e5;                        // 24 ghante tak red
+      el.classList.toggle("done", fresh);
+      t.textContent = fresh ? "Episode aa gaya!" : "Released";
+    } else {
       el.classList.remove("done");
       const s = Math.floor(diff/1000), d = Math.floor(s/86400);
       t.textContent = (d?d+"d ":"") + pad(Math.floor(s%86400/3600))+":"+pad(Math.floor(s%3600/60))+":"+pad(s%60);
     }
   });
+  if (crossed) setTimeout(render, 1200);   // Upcoming se Released me shift
 }
-document.getElementById("tabs").onclick = e=>{
-  if(e.target.dataset.d===undefined) return;
-  selected = +e.target.dataset.d; buildTabs(); buildList(); tick();
+
+/* ---- events ---- */
+document.getElementById("tabs").onclick = e => {
+  const v = e.target.dataset.d; if (v === undefined) return;
+  selected = v === "all" ? "all" : +v; render();
 };
-document.getElementById("list").onclick = e=>{
-  if(e.target.classList.contains("more")) e.target.nextElementSibling.classList.toggle("open");
+document.getElementById("q").oninput = render;
+document.getElementById("lang").onchange = render;
+document.getElementById("list").onclick = e => {
+  if (e.target.classList.contains("more")) e.target.nextElementSibling.classList.toggle("open");
 };
-buildTabs(); buildList(); tick(); setInterval(tick,1000);
+
+load();
+setInterval(tick, 1000);
+setInterval(load, 60000);   // admin ke changes 1 minute me apne aap aa jate hain
 </script>
 <!-- Adsterra Social Bar -->
 <script data-cfasync="false" src="https://bauval.org/14/23dd832d3b47dd985dd73c4e9c1aab37"></script>
