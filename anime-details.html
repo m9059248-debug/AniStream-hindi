@@ -8,7 +8,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#040508">
-<title>Anime Details — AniStream</title>
+<title>Anime Details — AniStream Hindi</title>
+<meta name="description" content="Explore anime details, episodes and Hindi dub information on AniStream Hindi.">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link id="canonicalUrl" rel="canonical" href="https://anistreamhindi.in/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="AniStream Hindi">
+<meta id="ogTitle" property="og:title" content="Anime Details — AniStream Hindi">
+<meta id="ogDescription" property="og:description" content="Explore anime details and episodes on AniStream Hindi.">
+<meta id="ogUrl" property="og:url" content="https://anistreamhindi.in/">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -708,17 +716,17 @@ header{
 
 <header>
   <div class="nav">
-    <a href="index.html" class="logo">
+    <a href="/" class="logo">
       <span class="logo-badge">PRO</span>
       <span>Ani<b>Stream</b></span>
     </a>
-    <div><a href="index.html">Home</a></div>
+    <div><a href="/">Home</a></div>
   </div>
 </header>
 
 <div class="container">
 
-  <a href="index.html" class="back">‹ Back to Home</a>
+  <a href="/" class="back">‹ Back to Home</a>
 
   <div id="animeContainer">
     <div class="loading">Anime details load ho rahe hain...</div>
@@ -824,7 +832,15 @@ const supabaseClient = window.supabase.createClient(
 );
 
 const params = new URLSearchParams(window.location.search);
-const animeId = params.get("id");
+const routeSlug = window.location.pathname.match(/^\/anime\/([^/]+)\/?$/i)?.[1] || "";
+const animeId = window.ANISTREAM_ROUTE_ANIME_ID || params.get("id");
+
+function getAnimeSlug(anime){
+  const source=String(anime?.anime_id||anime?.id||anime?.title||"");
+  return source.normalize("NFKD").replace(/[\u0300-\u036f]/g,"")
+    .toLowerCase().trim().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"") || "anime";
+}
+function getAnimeDetailsUrl(anime){return "/anime/"+encodeURIComponent(getAnimeSlug(anime))+"/";}
 
 let dbAnimeList = [];
 
@@ -969,7 +985,7 @@ async function refreshCommentProfile(user) {
         Comment karne ke liye login karein.
       </div>
 
-      <a class="comment-login-link" href="profile.html">
+      <a class="comment-login-link" href="/profile.html">
         🔐 Login / Create Account →
       </a>
     `;
@@ -1242,7 +1258,16 @@ function renderAnime(anime) {
     tags += `<span class="tag">${escapeHtml(anime.status)}</span>`;
   }
 
-  document.title = (anime.title || "Anime") + " — AniStream";
+  const pageTitle = (anime.title || "Anime") + " Hindi Dub, Episodes & Details — AniStream Hindi";
+  const pageDescription = String(anime.description || ("Explore " + (anime.title || "this anime") + " details, episodes and available languages on AniStream Hindi."))
+    .replace(/<[^>]*>/g," ").replace(/\s+/g," ").trim().slice(0,155);
+  const canonical = "https://anistreamhindi.in" + getAnimeDetailsUrl(anime);
+  document.title = pageTitle;
+  document.querySelector('meta[name="description"]')?.setAttribute("content",pageDescription);
+  document.getElementById("canonicalUrl")?.setAttribute("href",canonical);
+  document.getElementById("ogTitle")?.setAttribute("content",pageTitle);
+  document.getElementById("ogDescription")?.setAttribute("content",pageDescription);
+  document.getElementById("ogUrl")?.setAttribute("content",canonical);
 
   animeContainer.innerHTML = `
 
@@ -1316,7 +1341,7 @@ async function loadEpisodes(targetAnimeId) {
     a.className = "episode-btn";
 
     a.href =
-      `watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}`;
+      `/watch.html?id=${encodeURIComponent(targetAnimeId)}&episode=${encodeURIComponent(episode.episode_number)}`;
 
     a.innerHTML = `
       <span class="ep-num">
@@ -1658,7 +1683,7 @@ async function fetchAllAnimeDetails(currentAnime) {
       if (matchedInDb) {
 
         card.href =
-          `anime-details.html?id=${encodeURIComponent(matchedInDb.anime_id || matchedInDb.id)}`;
+          getAnimeDetailsUrl(matchedInDb);
 
       }
 
@@ -1927,7 +1952,7 @@ function renderSmartDatabaseRecommendations(
     card.className = "rel-card";
 
     card.href =
-      `anime-details.html?id=${encodeURIComponent(aid)}`;
+      getAnimeDetailsUrl(an);
 
     card.innerHTML = `
 
