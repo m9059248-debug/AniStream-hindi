@@ -2,8 +2,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Adsterra Popunder -->
-<script data-cfasync="false" src="https://abscloud.org/1/174963677a6a865aff7ab48e0d386872"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#040508">
@@ -708,6 +706,16 @@ header{
   .relation-grid,.rec-grid{grid-template-columns:repeat(3,1fr);gap:6px}
   .admin-reply{margin-left:6px}
 }
+
+/* Adsterra ad spacing */
+.adsterra-native-slot,.adsterra-banner-slot{
+  width:100%;max-width:100%;margin:16px auto;
+  display:flex;justify-content:center;align-items:center;
+  overflow:hidden;clear:both;text-align:center;
+}
+.adsterra-banner-slot{min-height:50px;max-width:320px}
+.adsterra-native-slot{min-height:90px}
+
 </style>
 </head>
 
@@ -2316,6 +2324,25 @@ initCommentAuth();
 loadAnime();
 
 </script><script data-cfasync="false" src="https://bauval.org/14/23dd832d3b47dd985dd73c4e9c1aab37"></script>
+
+<!-- Adsterra Native Banner -->
+<div class="adsterra-native-slot" aria-label="Advertisement">
+  <script async fetchpriority="high" data-cfasync="false" src="https://bauval.org/21/bcec0b7f5f15213b14b2ee8f760ead2f"></script>
+  <div id="container-bcec0b7f5f15213b14b2ee8f760ead2f"></div>
+</div>
+<!-- Adsterra 320x50 Banner -->
+<div class="adsterra-banner-slot" aria-label="Advertisement">
+  <script>
+    atOptions = {
+      'key' : '7a84d0255f44123874ac8067380a0eb3',
+      'format' : 'iframe',
+      'height' : 50,
+      'width' : 320,
+      'params' : {}
+    };
+  </script>
+  <script data-cfasync="false" src="https://bauval.org/22/7a84d0255f44123874ac8067380a0eb3"></script>
+</div>
 
 </body>
 </html>
